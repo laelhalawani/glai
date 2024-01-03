@@ -27,8 +27,6 @@ Visit API documentation at: https://laelhalawani.github.io/glai/
 - Can be initialized from URL, file, or ModelDB search.
 - Used by ModelDB to download model gguf file 
 
-Detailed API documentation can be found here: https://laelhalawani.github.io/glai/
-
 ## Installation
 To install the package use pip
 ```
@@ -198,3 +196,4 @@ eai.generate(
     include_stop_str=True,
 )
 ```
+Detailed API documentation can be found here: https://laelhalawani.github.io/glai/

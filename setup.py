@@ -4,7 +4,7 @@ with open("./README.md", "r") as fh:
     long_description = fh.read()
 setup(
     name="glai",
-    version="0.0.11",
+    version="0.0.12",
     packages=find_packages(),
     install_requires=[
         'llama-cpp-python>=0.2.26',
@@ -32,5 +32,6 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     keywords=['llama', 'ai', 'artificial intelligence', 'natural language processing', 'nlp', 'quantization', 'cpu', 'deployment', 'inference', 'model', 'models', 'model database', 'model repo', 'model repository', 'model library', 'model libraries',
-              'gguf', 'llm cpu', 'llm']
+              'gguf', 'llm cpu', 'llm'],
+    url="https://github.com/laelhalawani/glai",
 )
