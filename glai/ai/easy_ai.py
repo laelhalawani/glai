@@ -122,14 +122,14 @@ class EasyAI:
             
 
 
-    def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR) -> None:
+    def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR, copy_examples=True) -> None:
         """
         Load ModelDB from given directory.
 
         Args:
             db_dir: Directory to load ModelDB from.
         """
-        self.model_db = ModelDB(model_db_dir=db_dir)
+        self.model_db = ModelDB(model_db_dir=db_dir, copy_examples=copy_examples)
 
     def find_model_data(self,
                         model_name: Optional[str] = None,  
