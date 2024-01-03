@@ -4,7 +4,7 @@ with open("./README.md", "r") as fh:
     long_description = fh.read()
 setup(
     name="glai",
-    version="0.0.14",
+    version="0.0.15",
     packages=find_packages(),
     install_requires=[
         'llama-cpp-python>=0.2.26',
