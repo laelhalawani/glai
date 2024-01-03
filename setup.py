@@ -31,6 +31,7 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
     long_description=long_description,
-    long_description_content_type='text/markdown'
-
+    long_description_content_type='text/markdown',
+    keywords=['llama', 'ai', 'artificial intelligence', 'natural language processing', 'nlp', 'quantization', 'cpu', 'deployment', 'inference', 'model', 'models', 'model database', 'model repo', 'model repository', 'model library', 'model libraries',
+              'gguf', 'llm cpu', 'llm']
 )
