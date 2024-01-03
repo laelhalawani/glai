@@ -28,40 +28,16 @@
 </summary>
 <pre><code class="python">from .ai import AutoAI, EasyAI
 from .back_end import LlamaAI, AIMessages, ModelDB, ModelData
-__version__ = &#34;0.0.1a&#34;
+__version__ = &#34;0.0.15&#34;
 
 __all__ = [&#39;AutoAI&#39;, &#39;EasyAI&#39;, &#39;LlamaAI&#39;, &#39;ModelDB&#39;, &#39;AIMessages&#39;, &#39;ModelData&#39;]
-print(f&#34;&#34;&#34;
-glai - GGUF LLAMA AI - Package for simplified text generation with Llama models quantized to GGUF format is loaded.
-
-Provides high level APIs for loading models and generating text completions.
-
-High Level API Classes:
-
-AutoAI:
-- Automatically searches for and loads a model based on name/quantization/keyword. 
-- Handles downloading model data, loading it to memory, and configuring message formatting.
-- Use generate() method to get completions by providing a user message.
-
-EasyAI:
-- Allows manually configuring model data source - from file, URL, or ModelDB search.
-- Handles downloading model data, loading it to memory, and configuring message formatting.
-- Use generate() method to get completions by providing a user message.
-
-ModelDB (used by AutoAI and EasyAI)):
-- Manages database of model data files. via ModelData class objects.
-- Useful for searching for models and retrieving model metadata.
-- Can import models from HuggingFace repo URLs or import and download models from .gguf urls on huggingface.
-
-ModelData (used by ModelDB):
-- Represents metadata and info about a specific model.
-- Used by ModelDB to track and load models.
-- Can be initialized from URL, file, or ModelDB search.
-- Used by ModelDB to download model gguf file 
-
-For more information, see check the repo for the README.md file, 
-and the examples.py file for more examples of usage.
-&#34;&#34;&#34;)</code></pre>
+# print(f&#34;&#34;&#34;
+# glai
+# GGUF LLAMA AI - Package for simplified text generation with Llama models quantized to GGUF format is loaded.
+# Provides high level APIs for loading models and generating text completions.
+# For more information please check README.md file or visit https://github.com/laelhalawani/glai 
+# Detailed API documentation can be found here: https://laelhalawani.github.io/glai/
+# &#34;&#34;&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -896,6 +872,8 @@ Downloads model and sets up LlamaAI.</p>
         Args:
             user_message_text: User message text.
             ai_message_to_be_continued: Optional text to prepend.
+            stop_at: Optional string to stop generation at.
+            include_stop_str: Whether to include the stop string in the generated message.
 
         Returns:
             Generated AIMessage object.
@@ -1031,6 +1009,10 @@ Downloads model and sets up LlamaAI.</p>
 <dd>User message text.</dd>
 <dt><strong><code>ai_message_to_be_continued</code></strong></dt>
 <dd>Optional text to prepend.</dd>
+<dt><strong><code>stop_at</code></strong></dt>
+<dd>Optional string to stop generation at.</dd>
+<dt><strong><code>include_stop_str</code></strong></dt>
+<dd>Whether to include the stop string in the generated message.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>Generated AIMessage object.</p></div>
@@ -1051,6 +1033,8 @@ Downloads model and sets up LlamaAI.</p>
     Args:
         user_message_text: User message text.
         ai_message_to_be_continued: Optional text to prepend.
+        stop_at: Optional string to stop generation at.
+        include_stop_str: Whether to include the stop string in the generated message.
 
     Returns:
         Generated AIMessage object.
@@ -1348,14 +1332,15 @@ LLama</p></div>
             
 
 
-    def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR) -&gt; None:
+    def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR, copy_examples=True) -&gt; None:
         &#34;&#34;&#34;
         Load ModelDB from given directory.
 
         Args:
             db_dir: Directory to load ModelDB from.
+            copy_examples: Whether to copy example GGUF files to db_dir if db_dir is empty.
         &#34;&#34;&#34;
-        self.model_db = ModelDB(model_db_dir=db_dir)
+        self.model_db = ModelDB(model_db_dir=db_dir, copy_examples=copy_examples)
 
     def find_model_data(self,
                         model_name: Optional[str] = None,  
@@ -1498,6 +1483,8 @@ LLama</p></div>
         Args:
             user_message: User message text.
             ai_response_content_tbc: Optional text to prepend to AI response.
+            stop_at: Optional string to stop generation at.
+            include_stop_str: Whether to include stop string in generated message.
 
         Returns:
             Generated AIMessage object.
@@ -1778,6 +1765,10 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 <dd>User message text.</dd>
 <dt><strong><code>ai_response_content_tbc</code></strong></dt>
 <dd>Optional text to prepend to AI response.</dd>
+<dt><strong><code>stop_at</code></strong></dt>
+<dd>Optional string to stop generation at.</dd>
+<dt><strong><code>include_stop_str</code></strong></dt>
+<dd>Whether to include stop string in generated message.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>Generated AIMessage object.</p>
@@ -1805,6 +1796,8 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
     Args:
         user_message: User message text.
         ai_response_content_tbc: Optional text to prepend to AI response.
+        stop_at: Optional string to stop generation at.
+        include_stop_str: Whether to include stop string in generated message.
 
     Returns:
         Generated AIMessage object.
@@ -1920,7 +1913,7 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 </details>
 </dd>
 <dt id="glai.EasyAI.load_model_db"><code class="name flex">
-<span>def <span class="ident">load_model_db</span></span>(<span>self, db_dir: str = './gguf_db') ‑> None</span>
+<span>def <span class="ident">load_model_db</span></span>(<span>self, db_dir: str = './gguf_db', copy_examples=True) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Load ModelDB from given directory.</p>
@@ -1928,19 +1921,22 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 <dl>
 <dt><strong><code>db_dir</code></strong></dt>
 <dd>Directory to load ModelDB from.</dd>
+<dt><strong><code>copy_examples</code></strong></dt>
+<dd>Whether to copy example GGUF files to db_dir if db_dir is empty.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR) -&gt; None:
+<pre><code class="python">def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR, copy_examples=True) -&gt; None:
     &#34;&#34;&#34;
     Load ModelDB from given directory.
 
     Args:
         db_dir: Directory to load ModelDB from.
+        copy_examples: Whether to copy example GGUF files to db_dir if db_dir is empty.
     &#34;&#34;&#34;
-    self.model_db = ModelDB(model_db_dir=db_dir)</code></pre>
+    self.model_db = ModelDB(model_db_dir=db_dir, copy_examples=copy_examples)</code></pre>
 </details>
 </dd>
 <dt id="glai.EasyAI.model_data_from_file"><code class="name flex">

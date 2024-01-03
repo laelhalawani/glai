@@ -83,6 +83,8 @@ class AutoAI:
         Args:
             user_message_text: User message text.
             ai_message_to_be_continued: Optional text to prepend.
+            stop_at: Optional string to stop generation at.
+            include_stop_str: Whether to include the stop string in the generated message.
 
         Returns:
             Generated AIMessage object.
