@@ -128,6 +128,7 @@ class EasyAI:
 
         Args:
             db_dir: Directory to load ModelDB from.
+            copy_examples: Whether to copy example GGUF files to db_dir if db_dir is empty.
         """
         self.model_db = ModelDB(model_db_dir=db_dir, copy_examples=copy_examples)
 
@@ -272,6 +273,8 @@ class EasyAI:
         Args:
             user_message: User message text.
             ai_response_content_tbc: Optional text to prepend to AI response.
+            stop_at: Optional string to stop generation at.
+            include_stop_str: Whether to include stop string in generated message.
 
         Returns:
             Generated AIMessage object.
