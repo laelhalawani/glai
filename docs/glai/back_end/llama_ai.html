@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>glai.back_end.llama_ai API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>glai.back_end.llama_ai</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from llama_cpp import Llama, LlamaTokenizer
+from ..helpers.text_preprocessor import remove_list_formatting, remove_non_letters
+
+#This class is compatible with any llama architecture encoder-decoder model (except MOE models)
+class LlamaAI:
+    def __init__(self, model_path:str, max_tokens:int, max_input_tokens:int) -&gt; None:
+        &#34;&#34;&#34;
+        
+        &#34;&#34;&#34;
+        self.model_path = model_path
+        self.max_tokens = max_tokens
+        self.max_input_tokens = max_input_tokens
+        self.llm = None
+        self.tokenizer = None
+        self._loaded = False
+        self.load()
+        
+    @staticmethod
+    def from_dict(settings_dict: dict) -&gt; None:
+        &#34;&#34;&#34;
+        Create a LlamaAI object from a dictionary containing:
+        - model: The path to the model to be used.
+        - tokens: The maximum number of tokens to be used.
+        - input_tokens: The maximum number of input tokens to be used.
+
+        &#34;&#34;&#34;
+
+        model_path = settings_dict[&#34;model&#34;]
+        max_tokens = settings_dict[&#34;tokens&#34;]
+        max_input_tokens = settings_dict[&#34;input_tokens&#34;]
+        lai = LlamaAI(model_path, max_tokens, max_input_tokens)
+        lai.load()
+        return lai
+    
+    def load(self) -&gt; None:
+        &#34;&#34;&#34;
+        Load the model and tokenizer using the model_path, max_tokens, and max_input_tokens attributes.
+        &#34;&#34;&#34;
+        print(f&#34;Loading model from {self.model_path}...&#34;)
+        self.llm = Llama(model_path=self.model_path, verbose=False, n_ctx=self.max_tokens)
+        self.tokenizer = LlamaTokenizer(self.llm)
+        self._loaded = True
+
+    def try_fixing_format(self, text: str, only_letters: bool = False, rem_list_formatting: bool = False) -&gt; str:
+        &#34;&#34;&#34;
+        Fixes the format of the given text by removing extra newlines and non-letter characters if specified.
+
+        Args:
+            text (str): The text to be fixed.
+            only_letters (bool, optional): If True, only letters will be kept. Defaults to False.
+
+        Returns:
+            str: The fixed text.
+        &#34;&#34;&#34;
+        print(&#34;Trying to fix formatting... this might have some undersired effects&#34;)
+        changes = False
+        if &#34;\n\n&#34; in text:
+            #split text in that place
+            core_info = text.split(&#34;\n\n&#34;)[1:]
+            text = &#34; &#34;.join(core_info)
+            changes = True
+        if &#34;\n&#34; in text:
+            text = text.replace(&#34;\n&#34;, &#34; &#34;)
+            changes = True
+        if only_letters:
+            text = remove_non_letters(text)
+            changes = True
+        if rem_list_formatting:
+            text = remove_list_formatting(text)
+        if changes:
+            print(&#34;The text has been sucessfully modified.&#34;)
+        return text
+
+    def _check_loaded(self)-&gt;None:
+        if not self._loaded:
+            try:
+                self.load()
+                raise Warning(&#34;Model not loaded, trying a default reload...&#34;)
+            except:
+                raise Exception(&#34;Model not loaded! Please provide model settings when creating the class or use load_model method after creation.&#34;)
+        
+    def _adjust_max_tokens(self, new_max_tokens:int) -&gt; None:
+        self.max_tokens = new_max_tokens
+        self._loaded = False
+   
+    def _adjust_max_input_tokens(self, new_max_input_tokens:int) -&gt; None:
+        if new_max_input_tokens &lt; self.max_tokens:
+            raise Exception(&#34;The new maximum input tokens must be greater than the current maximum tokens.&#34;)
+        self.max_input_tokens = new_max_input_tokens
+
+    def adjust_tokens(self, new_max_tokens:int, new_max_input_tokens:int) -&gt; None:
+        &#34;&#34;&#34;
+        Adjust the maximum number of tokens for the current llm.
+
+        Args:
+            new_max_tokens (int): The new maximum number of tokens.
+            new_max_input_tokens (int): The new maximum number of input tokens.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        self._adjust_max_tokens(new_max_tokens)
+        self._adjust_max_input_tokens(new_max_input_tokens)
+        self.load()
+
+    def tokenize(self, text: str) -&gt; list:
+        &#34;&#34;&#34;
+        Create and return tokens for the given text.
+
+        Parameters:
+            text (str): The input text.
+
+        Returns:
+            list: A list of tokens.
+        &#34;&#34;&#34;
+        ts = self.tokenizer.encode(text)
+        return ts
+    
+    def untokenize(self, tokens: list) -&gt; str:
+        &#34;&#34;&#34;
+        Decode tokens into a string.
+
+        Args:
+            tokens (list): The list of tokens to decode.
+
+        Returns:
+            str: The decoded string.
+        &#34;&#34;&#34;
+        return self.tokenizer.decode(tokens)
+    
+    def count_tokens(self, text: str) -&gt; int:
+        &#34;&#34;&#34;
+        Converts string and counts and returns the number of tokens.
+
+        Parameters:
+            text (str): The text to count tokens in.
+
+        Returns:
+            int: The number of tokens in the text.
+        &#34;&#34;&#34;
+        return len(self.tokenize(text))    
+    
+    def is_within_input_limit(self, text: str) -&gt; bool:
+        &#34;&#34;&#34;
+        Check if the length of the given text is within the maximum allowed input tokens for the current llm.
+
+        Args:
+            text (str): The text to be checked.
+
+        Returns:
+            bool: True if the length of the text is within the maximum allowed input tokens, False otherwise.
+        &#34;&#34;&#34;
+        return self.count_tokens(text) &lt;= self.max_input_tokens
+    
+    def infer(self,text:str, only_string: bool = False, max_tokens_if_needed=-1, stop_at_str=None, include_stop_str=True) -&gt; str:
+        &#34;&#34;&#34;
+        Infer the completion for the given text.
+
+        Args:
+            text (str): The input text to generate completion for.
+            only_string (bool, optional): Whether to return the completion as a string only. 
+                If True, the completion will be returned as a single string. 
+                If False, the completion will be returned as a list of OpenAI compatible completion dictionary objects.
+                Defaults to False.
+            max_tokens_if_needed (int, optional): The maximum number of tokens to use if the text is too long, allows for adaptive memory allocation. Defaults to -1.
+            stop_at_str (str, optional): The string to stop at. Defaults to None. If None but model has defined EOS token, EOS token will be used. 
+            include_stop_str (bool): Whether to include the stop string in the output. Defaults to True. 
+        Returns:
+            str OR list: The completion.
+        &#34;&#34;&#34;
+        text = str(text) 
+        self._check_loaded()
+        adjusted = False
+        if not self.is_within_input_limit(text):
+            if not max_tokens_if_needed:
+                raise Exception(&#34;Text is too long!&#34;)
+            else:
+                print(&#34;Text is too long. Adjusting model...&#34;)
+                current_max_tokens = self.max_tokens
+                current_max_input_tokens = self.max_input_tokens
+                input_to_total_ratio = current_max_input_tokens / current_max_tokens
+
+                desired_prompt_len = self.count_tokens(text)
+                if not any([max_tokens_if_needed &gt; 0, desired_prompt_len - current_max_input_tokens &lt;= max_tokens_if_needed]):
+                    raise Exception(&#34;Text is too long and the model cannot be adjusted to fit it!&#34;)
+                desired_input_len = int(desired_prompt_len * input_to_total_ratio)
+                print(f&#34;Adjusting model to {desired_input_len} input tokens and {desired_prompt_len} tokens.&#34;&#34;&#34;)
+                self.adjust_tokens(desired_input_len, desired_prompt_len)
+                adjusted = True
+                
+        stop_at = None if any([stop_at_str is None, stop_at_str == &#34;&#34;]) else stop_at_str
+        output = self.llm(text, max_tokens=self.max_tokens, stop=stop_at)
+        if only_string:
+            output = self._text_from_inference_obj(output)
+            if include_stop_str:
+                output += stop_at_str if stop_at_str is not None else &#34;&#34;
+        if adjusted:
+            print(f&#34;Adjusting model back to {current_max_tokens} tokens and {current_max_input_tokens} input tokens.&#34;)
+            self.adjust_tokens(current_max_tokens, current_max_input_tokens)
+        return output
+    
+    def _text_from_inference_obj(self, answer_dict: dict) -&gt; str:
+        #print(f&#34;Checking answer: {ans}&#34;)
+        if &#39;choices&#39; in answer_dict and &#39;text&#39; in answer_dict[&#39;choices&#39;][0]:
+            #print(f&#34;Detected answer: {ans[&#39;choices&#39;][0][&#39;text&#39;]}&#34;)
+            extracted_answ = answer_dict[&#39;choices&#39;][0][&#39;text&#39;]
+        return extracted_answ</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="glai.back_end.llama_ai.LlamaAI"><code class="flex name class">
+<span>class <span class="ident">LlamaAI</span></span>
+<span>(</span><span>model_path: str, max_tokens: int, max_input_tokens: int)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LlamaAI:
+    def __init__(self, model_path:str, max_tokens:int, max_input_tokens:int) -&gt; None:
+        &#34;&#34;&#34;
+        
+        &#34;&#34;&#34;
+        self.model_path = model_path
+        self.max_tokens = max_tokens
+        self.max_input_tokens = max_input_tokens
+        self.llm = None
+        self.tokenizer = None
+        self._loaded = False
+        self.load()
+        
+    @staticmethod
+    def from_dict(settings_dict: dict) -&gt; None:
+        &#34;&#34;&#34;
+        Create a LlamaAI object from a dictionary containing:
+        - model: The path to the model to be used.
+        - tokens: The maximum number of tokens to be used.
+        - input_tokens: The maximum number of input tokens to be used.
+
+        &#34;&#34;&#34;
+
+        model_path = settings_dict[&#34;model&#34;]
+        max_tokens = settings_dict[&#34;tokens&#34;]
+        max_input_tokens = settings_dict[&#34;input_tokens&#34;]
+        lai = LlamaAI(model_path, max_tokens, max_input_tokens)
+        lai.load()
+        return lai
+    
+    def load(self) -&gt; None:
+        &#34;&#34;&#34;
+        Load the model and tokenizer using the model_path, max_tokens, and max_input_tokens attributes.
+        &#34;&#34;&#34;
+        print(f&#34;Loading model from {self.model_path}...&#34;)
+        self.llm = Llama(model_path=self.model_path, verbose=False, n_ctx=self.max_tokens)
+        self.tokenizer = LlamaTokenizer(self.llm)
+        self._loaded = True
+
+    def try_fixing_format(self, text: str, only_letters: bool = False, rem_list_formatting: bool = False) -&gt; str:
+        &#34;&#34;&#34;
+        Fixes the format of the given text by removing extra newlines and non-letter characters if specified.
+
+        Args:
+            text (str): The text to be fixed.
+            only_letters (bool, optional): If True, only letters will be kept. Defaults to False.
+
+        Returns:
+            str: The fixed text.
+        &#34;&#34;&#34;
+        print(&#34;Trying to fix formatting... this might have some undersired effects&#34;)
+        changes = False
+        if &#34;\n\n&#34; in text:
+            #split text in that place
+            core_info = text.split(&#34;\n\n&#34;)[1:]
+            text = &#34; &#34;.join(core_info)
+            changes = True
+        if &#34;\n&#34; in text:
+            text = text.replace(&#34;\n&#34;, &#34; &#34;)
+            changes = True
+        if only_letters:
+            text = remove_non_letters(text)
+            changes = True
+        if rem_list_formatting:
+            text = remove_list_formatting(text)
+        if changes:
+            print(&#34;The text has been sucessfully modified.&#34;)
+        return text
+
+    def _check_loaded(self)-&gt;None:
+        if not self._loaded:
+            try:
+                self.load()
+                raise Warning(&#34;Model not loaded, trying a default reload...&#34;)
+            except:
+                raise Exception(&#34;Model not loaded! Please provide model settings when creating the class or use load_model method after creation.&#34;)
+        
+    def _adjust_max_tokens(self, new_max_tokens:int) -&gt; None:
+        self.max_tokens = new_max_tokens
+        self._loaded = False
+   
+    def _adjust_max_input_tokens(self, new_max_input_tokens:int) -&gt; None:
+        if new_max_input_tokens &lt; self.max_tokens:
+            raise Exception(&#34;The new maximum input tokens must be greater than the current maximum tokens.&#34;)
+        self.max_input_tokens = new_max_input_tokens
+
+    def adjust_tokens(self, new_max_tokens:int, new_max_input_tokens:int) -&gt; None:
+        &#34;&#34;&#34;
+        Adjust the maximum number of tokens for the current llm.
+
+        Args:
+            new_max_tokens (int): The new maximum number of tokens.
+            new_max_input_tokens (int): The new maximum number of input tokens.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        self._adjust_max_tokens(new_max_tokens)
+        self._adjust_max_input_tokens(new_max_input_tokens)
+        self.load()
+
+    def tokenize(self, text: str) -&gt; list:
+        &#34;&#34;&#34;
+        Create and return tokens for the given text.
+
+        Parameters:
+            text (str): The input text.
+
+        Returns:
+            list: A list of tokens.
+        &#34;&#34;&#34;
+        ts = self.tokenizer.encode(text)
+        return ts
+    
+    def untokenize(self, tokens: list) -&gt; str:
+        &#34;&#34;&#34;
+        Decode tokens into a string.
+
+        Args:
+            tokens (list): The list of tokens to decode.
+
+        Returns:
+            str: The decoded string.
+        &#34;&#34;&#34;
+        return self.tokenizer.decode(tokens)
+    
+    def count_tokens(self, text: str) -&gt; int:
+        &#34;&#34;&#34;
+        Converts string and counts and returns the number of tokens.
+
+        Parameters:
+            text (str): The text to count tokens in.
+
+        Returns:
+            int: The number of tokens in the text.
+        &#34;&#34;&#34;
+        return len(self.tokenize(text))    
+    
+    def is_within_input_limit(self, text: str) -&gt; bool:
+        &#34;&#34;&#34;
+        Check if the length of the given text is within the maximum allowed input tokens for the current llm.
+
+        Args:
+            text (str): The text to be checked.
+
+        Returns:
+            bool: True if the length of the text is within the maximum allowed input tokens, False otherwise.
+        &#34;&#34;&#34;
+        return self.count_tokens(text) &lt;= self.max_input_tokens
+    
+    def infer(self,text:str, only_string: bool = False, max_tokens_if_needed=-1, stop_at_str=None, include_stop_str=True) -&gt; str:
+        &#34;&#34;&#34;
+        Infer the completion for the given text.
+
+        Args:
+            text (str): The input text to generate completion for.
+            only_string (bool, optional): Whether to return the completion as a string only. 
+                If True, the completion will be returned as a single string. 
+                If False, the completion will be returned as a list of OpenAI compatible completion dictionary objects.
+                Defaults to False.
+            max_tokens_if_needed (int, optional): The maximum number of tokens to use if the text is too long, allows for adaptive memory allocation. Defaults to -1.
+            stop_at_str (str, optional): The string to stop at. Defaults to None. If None but model has defined EOS token, EOS token will be used. 
+            include_stop_str (bool): Whether to include the stop string in the output. Defaults to True. 
+        Returns:
+            str OR list: The completion.
+        &#34;&#34;&#34;
+        text = str(text) 
+        self._check_loaded()
+        adjusted = False
+        if not self.is_within_input_limit(text):
+            if not max_tokens_if_needed:
+                raise Exception(&#34;Text is too long!&#34;)
+            else:
+                print(&#34;Text is too long. Adjusting model...&#34;)
+                current_max_tokens = self.max_tokens
+                current_max_input_tokens = self.max_input_tokens
+                input_to_total_ratio = current_max_input_tokens / current_max_tokens
+
+                desired_prompt_len = self.count_tokens(text)
+                if not any([max_tokens_if_needed &gt; 0, desired_prompt_len - current_max_input_tokens &lt;= max_tokens_if_needed]):
+                    raise Exception(&#34;Text is too long and the model cannot be adjusted to fit it!&#34;)
+                desired_input_len = int(desired_prompt_len * input_to_total_ratio)
+                print(f&#34;Adjusting model to {desired_input_len} input tokens and {desired_prompt_len} tokens.&#34;&#34;&#34;)
+                self.adjust_tokens(desired_input_len, desired_prompt_len)
+                adjusted = True
+                
+        stop_at = None if any([stop_at_str is None, stop_at_str == &#34;&#34;]) else stop_at_str
+        output = self.llm(text, max_tokens=self.max_tokens, stop=stop_at)
+        if only_string:
+            output = self._text_from_inference_obj(output)
+            if include_stop_str:
+                output += stop_at_str if stop_at_str is not None else &#34;&#34;
+        if adjusted:
+            print(f&#34;Adjusting model back to {current_max_tokens} tokens and {current_max_input_tokens} input tokens.&#34;)
+            self.adjust_tokens(current_max_tokens, current_max_input_tokens)
+        return output
+    
+    def _text_from_inference_obj(self, answer_dict: dict) -&gt; str:
+        #print(f&#34;Checking answer: {ans}&#34;)
+        if &#39;choices&#39; in answer_dict and &#39;text&#39; in answer_dict[&#39;choices&#39;][0]:
+            #print(f&#34;Detected answer: {ans[&#39;choices&#39;][0][&#39;text&#39;]}&#34;)
+            extracted_answ = answer_dict[&#39;choices&#39;][0][&#39;text&#39;]
+        return extracted_answ</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="glai.back_end.llama_ai.LlamaAI.from_dict"><code class="name flex">
+<span>def <span class="ident">from_dict</span></span>(<span>settings_dict: dict) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a LlamaAI object from a dictionary containing:
+- model: The path to the model to be used.
+- tokens: The maximum number of tokens to be used.
+- input_tokens: The maximum number of input tokens to be used.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def from_dict(settings_dict: dict) -&gt; None:
+    &#34;&#34;&#34;
+    Create a LlamaAI object from a dictionary containing:
+    - model: The path to the model to be used.
+    - tokens: The maximum number of tokens to be used.
+    - input_tokens: The maximum number of input tokens to be used.
+
+    &#34;&#34;&#34;
+
+    model_path = settings_dict[&#34;model&#34;]
+    max_tokens = settings_dict[&#34;tokens&#34;]
+    max_input_tokens = settings_dict[&#34;input_tokens&#34;]
+    lai = LlamaAI(model_path, max_tokens, max_input_tokens)
+    lai.load()
+    return lai</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="glai.back_end.llama_ai.LlamaAI.adjust_tokens"><code class="name flex">
+<span>def <span class="ident">adjust_tokens</span></span>(<span>self, new_max_tokens: int, new_max_input_tokens: int) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adjust the maximum number of tokens for the current llm.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>new_max_tokens</code></strong> :&ensp;<code>int</code></dt>
+<dd>The new maximum number of tokens.</dd>
+<dt><strong><code>new_max_input_tokens</code></strong> :&ensp;<code>int</code></dt>
+<dd>The new maximum number of input tokens.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def adjust_tokens(self, new_max_tokens:int, new_max_input_tokens:int) -&gt; None:
+    &#34;&#34;&#34;
+    Adjust the maximum number of tokens for the current llm.
+
+    Args:
+        new_max_tokens (int): The new maximum number of tokens.
+        new_max_input_tokens (int): The new maximum number of input tokens.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    self._adjust_max_tokens(new_max_tokens)
+    self._adjust_max_input_tokens(new_max_input_tokens)
+    self.load()</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.llama_ai.LlamaAI.count_tokens"><code class="name flex">
+<span>def <span class="ident">count_tokens</span></span>(<span>self, text: str) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts string and counts and returns the number of tokens.</p>
+<h2 id="parameters">Parameters</h2>
+<p>text (str): The text to count tokens in.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>The number of tokens in the text.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def count_tokens(self, text: str) -&gt; int:
+    &#34;&#34;&#34;
+    Converts string and counts and returns the number of tokens.
+
+    Parameters:
+        text (str): The text to count tokens in.
+
+    Returns:
+        int: The number of tokens in the text.
+    &#34;&#34;&#34;
+    return len(self.tokenize(text))    </code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.llama_ai.LlamaAI.infer"><code class="name flex">
+<span>def <span class="ident">infer</span></span>(<span>self, text: str, only_string: bool = False, max_tokens_if_needed=-1, stop_at_str=None, include_stop_str=True) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Infer the completion for the given text.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input text to generate completion for.</dd>
+<dt><strong><code>only_string</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to return the completion as a string only.
+If True, the completion will be returned as a single string.
+If False, the completion will be returned as a list of OpenAI compatible completion dictionary objects.
+Defaults to False.</dd>
+<dt><strong><code>max_tokens_if_needed</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of tokens to use if the text is too long, allows for adaptive memory allocation. Defaults to -1.</dd>
+<dt><strong><code>stop_at_str</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The string to stop at. Defaults to None. If None but model has defined EOS token, EOS token will be used. </dd>
+<dt><strong><code>include_stop_str</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to include the stop string in the output. Defaults to True. </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str OR list</code></dt>
+<dd>The completion.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def infer(self,text:str, only_string: bool = False, max_tokens_if_needed=-1, stop_at_str=None, include_stop_str=True) -&gt; str:
+    &#34;&#34;&#34;
+    Infer the completion for the given text.
+
+    Args:
+        text (str): The input text to generate completion for.
+        only_string (bool, optional): Whether to return the completion as a string only. 
+            If True, the completion will be returned as a single string. 
+            If False, the completion will be returned as a list of OpenAI compatible completion dictionary objects.
+            Defaults to False.
+        max_tokens_if_needed (int, optional): The maximum number of tokens to use if the text is too long, allows for adaptive memory allocation. Defaults to -1.
+        stop_at_str (str, optional): The string to stop at. Defaults to None. If None but model has defined EOS token, EOS token will be used. 
+        include_stop_str (bool): Whether to include the stop string in the output. Defaults to True. 
+    Returns:
+        str OR list: The completion.
+    &#34;&#34;&#34;
+    text = str(text) 
+    self._check_loaded()
+    adjusted = False
+    if not self.is_within_input_limit(text):
+        if not max_tokens_if_needed:
+            raise Exception(&#34;Text is too long!&#34;)
+        else:
+            print(&#34;Text is too long. Adjusting model...&#34;)
+            current_max_tokens = self.max_tokens
+            current_max_input_tokens = self.max_input_tokens
+            input_to_total_ratio = current_max_input_tokens / current_max_tokens
+
+            desired_prompt_len = self.count_tokens(text)
+            if not any([max_tokens_if_needed &gt; 0, desired_prompt_len - current_max_input_tokens &lt;= max_tokens_if_needed]):
+                raise Exception(&#34;Text is too long and the model cannot be adjusted to fit it!&#34;)
+            desired_input_len = int(desired_prompt_len * input_to_total_ratio)
+            print(f&#34;Adjusting model to {desired_input_len} input tokens and {desired_prompt_len} tokens.&#34;&#34;&#34;)
+            self.adjust_tokens(desired_input_len, desired_prompt_len)
+            adjusted = True
+            
+    stop_at = None if any([stop_at_str is None, stop_at_str == &#34;&#34;]) else stop_at_str
+    output = self.llm(text, max_tokens=self.max_tokens, stop=stop_at)
+    if only_string:
+        output = self._text_from_inference_obj(output)
+        if include_stop_str:
+            output += stop_at_str if stop_at_str is not None else &#34;&#34;
+    if adjusted:
+        print(f&#34;Adjusting model back to {current_max_tokens} tokens and {current_max_input_tokens} input tokens.&#34;)
+        self.adjust_tokens(current_max_tokens, current_max_input_tokens)
+    return output</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.llama_ai.LlamaAI.is_within_input_limit"><code class="name flex">
+<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, text: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if the length of the given text is within the maximum allowed input tokens for the current llm.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>The text to be checked.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the length of the text is within the maximum allowed input tokens, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_within_input_limit(self, text: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Check if the length of the given text is within the maximum allowed input tokens for the current llm.
+
+    Args:
+        text (str): The text to be checked.
+
+    Returns:
+        bool: True if the length of the text is within the maximum allowed input tokens, False otherwise.
+    &#34;&#34;&#34;
+    return self.count_tokens(text) &lt;= self.max_input_tokens</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.llama_ai.LlamaAI.load"><code class="name flex">
+<span>def <span class="ident">load</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load the model and tokenizer using the model_path, max_tokens, and max_input_tokens attributes.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load(self) -&gt; None:
+    &#34;&#34;&#34;
+    Load the model and tokenizer using the model_path, max_tokens, and max_input_tokens attributes.
+    &#34;&#34;&#34;
+    print(f&#34;Loading model from {self.model_path}...&#34;)
+    self.llm = Llama(model_path=self.model_path, verbose=False, n_ctx=self.max_tokens)
+    self.tokenizer = LlamaTokenizer(self.llm)
+    self._loaded = True</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.llama_ai.LlamaAI.tokenize"><code class="name flex">
+<span>def <span class="ident">tokenize</span></span>(<span>self, text: str) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create and return tokens for the given text.</p>
+<h2 id="parameters">Parameters</h2>
+<p>text (str): The input text.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>A list of tokens.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tokenize(self, text: str) -&gt; list:
+    &#34;&#34;&#34;
+    Create and return tokens for the given text.
+
+    Parameters:
+        text (str): The input text.
+
+    Returns:
+        list: A list of tokens.
+    &#34;&#34;&#34;
+    ts = self.tokenizer.encode(text)
+    return ts</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.llama_ai.LlamaAI.try_fixing_format"><code class="name flex">
+<span>def <span class="ident">try_fixing_format</span></span>(<span>self, text: str, only_letters: bool = False, rem_list_formatting: bool = False) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fixes the format of the given text by removing extra newlines and non-letter characters if specified.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>The text to be fixed.</dd>
+<dt><strong><code>only_letters</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, only letters will be kept. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The fixed text.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def try_fixing_format(self, text: str, only_letters: bool = False, rem_list_formatting: bool = False) -&gt; str:
+    &#34;&#34;&#34;
+    Fixes the format of the given text by removing extra newlines and non-letter characters if specified.
+
+    Args:
+        text (str): The text to be fixed.
+        only_letters (bool, optional): If True, only letters will be kept. Defaults to False.
+
+    Returns:
+        str: The fixed text.
+    &#34;&#34;&#34;
+    print(&#34;Trying to fix formatting... this might have some undersired effects&#34;)
+    changes = False
+    if &#34;\n\n&#34; in text:
+        #split text in that place
+        core_info = text.split(&#34;\n\n&#34;)[1:]
+        text = &#34; &#34;.join(core_info)
+        changes = True
+    if &#34;\n&#34; in text:
+        text = text.replace(&#34;\n&#34;, &#34; &#34;)
+        changes = True
+    if only_letters:
+        text = remove_non_letters(text)
+        changes = True
+    if rem_list_formatting:
+        text = remove_list_formatting(text)
+    if changes:
+        print(&#34;The text has been sucessfully modified.&#34;)
+    return text</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.llama_ai.LlamaAI.untokenize"><code class="name flex">
+<span>def <span class="ident">untokenize</span></span>(<span>self, tokens: list) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Decode tokens into a string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tokens</code></strong> :&ensp;<code>list</code></dt>
+<dd>The list of tokens to decode.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The decoded string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def untokenize(self, tokens: list) -&gt; str:
+    &#34;&#34;&#34;
+    Decode tokens into a string.
+
+    Args:
+        tokens (list): The list of tokens to decode.
+
+    Returns:
+        str: The decoded string.
+    &#34;&#34;&#34;
+    return self.tokenizer.decode(tokens)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="glai.back_end" href="index.html">glai.back_end</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="glai.back_end.llama_ai.LlamaAI" href="#glai.back_end.llama_ai.LlamaAI">LlamaAI</a></code></h4>
+<ul class="">
+<li><code><a title="glai.back_end.llama_ai.LlamaAI.adjust_tokens" href="#glai.back_end.llama_ai.LlamaAI.adjust_tokens">adjust_tokens</a></code></li>
+<li><code><a title="glai.back_end.llama_ai.LlamaAI.count_tokens" href="#glai.back_end.llama_ai.LlamaAI.count_tokens">count_tokens</a></code></li>
+<li><code><a title="glai.back_end.llama_ai.LlamaAI.from_dict" href="#glai.back_end.llama_ai.LlamaAI.from_dict">from_dict</a></code></li>
+<li><code><a title="glai.back_end.llama_ai.LlamaAI.infer" href="#glai.back_end.llama_ai.LlamaAI.infer">infer</a></code></li>
+<li><code><a title="glai.back_end.llama_ai.LlamaAI.is_within_input_limit" href="#glai.back_end.llama_ai.LlamaAI.is_within_input_limit">is_within_input_limit</a></code></li>
+<li><code><a title="glai.back_end.llama_ai.LlamaAI.load" href="#glai.back_end.llama_ai.LlamaAI.load">load</a></code></li>
+<li><code><a title="glai.back_end.llama_ai.LlamaAI.tokenize" href="#glai.back_end.llama_ai.LlamaAI.tokenize">tokenize</a></code></li>
+<li><code><a title="glai.back_end.llama_ai.LlamaAI.try_fixing_format" href="#glai.back_end.llama_ai.LlamaAI.try_fixing_format">try_fixing_format</a></code></li>
+<li><code><a title="glai.back_end.llama_ai.LlamaAI.untokenize" href="#glai.back_end.llama_ai.LlamaAI.untokenize">untokenize</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
