@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
-
+# read the contents of your README file
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 setup(
     name="glai",
     version="0.0.1",
@@ -27,7 +30,7 @@ setup(
         "Topic :: Text Processing",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
-    long_description=open('README.md').read(),
-    long_description_content_type="text/markdown",
+    long_description=long_description,
+    long_description_content_type='text/markdown'
 
 )
