@@ -1,10 +1,11 @@
 from setuptools import setup, find_packages
+from .glai import __version__
 
 with open("./README.md", "r") as fh:
     long_description = fh.read()
 setup(
     name="glai",
-    version="0.0.12",
+    version=__version__,
     packages=find_packages(),
     install_requires=[
         'llama-cpp-python>=0.2.26',
