@@ -1,4 +1,4 @@
-llama-cpp-python,
+llama-cpp-python>=0.2.26,
 requests>=2.31.0,
 beautifulsoup4>=4.9.3
 pdoc3>=0.10.0
