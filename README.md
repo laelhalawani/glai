@@ -1,4 +1,5 @@
-glai - GGUF LLAMA AI - Package for simplified text generation with Llama models quantized to GGUF format is loaded.
+glai - GGUF LLAMA AI - Package for simplified text generation with Llama models quantized to GGUF format
+
 
 Provides high level APIs for loading models and generating text completions.
 
@@ -25,18 +26,23 @@ ModelData (used by ModelDB):
 - Can be initialized from URL, file, or ModelDB search.
 - Used by ModelDB to download model gguf file 
 
-Usage:
 
-# Import package
+# Installation
+```
+pip install glai
+```
+# Usage:
+
+## Import package
 ```python
 from glai import AutoAI, EasyAI, ModelDB, ModelData
 ```
-# AutoAI - automatic model loading
+## AutoAI - automatic model loading
 ```python
 ai = AutoAI(name_search="Mistral")
 ai.generate("Hello") 
 ```
-# EasyAI - manual model configuration 
+## EasyAI - manual model configuration 
 ```python
 easy = EasyAI()
 easy.load_model_db()
@@ -44,7 +50,7 @@ easy.find_model_data(name_search="Mistral")
 easy.load_ai()
 easy.generate("Hello")
 ```
-# ModelDB - search models and show db info
+## ModelDB - search models and show db info
 ```python
 from llgg import ModelDB
 db = ModelDB()
