@@ -1,48 +1,52 @@
-glai - GGUF LLAMA AI - Package for simplified text generation with Llama models quantized to GGUF format
-
+# glai
+GGUF LLAMA AI - Package for simplified text generation with Llama models quantized to GGUF format
 
 Provides high level APIs for loading models and generating text completions.
+Visit API documentation at: https://laelhalawani.github.io/glai/
 
-High Level API Classes:
+## High Level API Classes:
 
-AutoAI:
+### AutoAI:
 - Automatically searches for and loads a model based on name/quantization/keyword. 
 - Handles downloading model data, loading it to memory, and configuring message formatting.
 - Use generate() method to get completions by providing a user message.
 
-EasyAI:
+### EasyAI:
 - Allows manually configuring model data source - from file, URL, or ModelDB search.
 - Handles downloading model data, loading it to memory, and configuring message formatting.
 - Use generate() method to get completions by providing a user message.
 
-ModelDB (used by AutoAI and EasyAI):
+### ModelDB (used by AutoAI and EasyAI):
 - Manages database of model data files. via ModelData class objects.
 - Useful for searching for models and retrieving model metadata.
 - Can import models from HuggingFace repo URLs or import and download models from .gguf urls on huggingface.
 
-ModelData (used by ModelDB):
+### ModelData (used by ModelDB):
 - Represents metadata and info about a specific model.
 - Used by ModelDB to track and load models.
 - Can be initialized from URL, file, or ModelDB search.
 - Used by ModelDB to download model gguf file 
 
+Detailed API documentation can be found here: https://laelhalawani.github.io/glai/
 
-# Installation
+## Installation
+To install the package use pip
 ```
 pip install glai
 ```
-# Usage:
+## Usage:
+Usage examples. 
 
-## Import package
+### Import package
 ```python
 from glai import AutoAI, EasyAI, ModelDB, ModelData
 ```
-## AutoAI - automatic model loading
+### AutoAI - automatic model loading
 ```python
 ai = AutoAI(name_search="Mistral")
 ai.generate("Hello") 
 ```
-## EasyAI - manual model configuration 
+### EasyAI - manual model configuration 
 ```python
 easy = EasyAI()
 easy.load_model_db()
@@ -50,7 +54,7 @@ easy.find_model_data(name_search="Mistral")
 easy.load_ai()
 easy.generate("Hello")
 ```
-## ModelDB - search models and show db info
+### ModelDB - search models and show db info
 ```python
 from llgg import ModelDB
 db = ModelDB()
@@ -58,7 +62,7 @@ model = db.find_model(name_search="Mistral")
 print(model.name)
 db.show_db_info()
 ```
-## Import Models from Repo
+### Import Models from Repo
 Import models from a HuggingFace repo into the model database:
 ```python
 from glai.back_end.model_db.db import ModelDB
@@ -74,7 +78,7 @@ mdb.import_models_from_repo(
 )
 mdb.show_db_info()
 ```
-## AutoAI Quick Example
+### AutoAI Quick Example
 Quickly generate using AutoAI:
 ```python
 from glai.ai import AutoAI
@@ -87,7 +91,7 @@ auto_ai.generate(
     include_stop_str=True
 )
 ```
-## EasyAI Step By Step Example
+### EasyAI Step By Step Example
 Step by step generation with EasyAI:
 
 ```python
@@ -103,7 +107,7 @@ easy_ai.generate(
     "']"
 )
 ```
-## EasyAI All In One Example
+### EasyAI All In One Example
 All in one generation with EasyAI:
 
 ```python
@@ -123,7 +127,7 @@ easy_ai.generate(
     "']"
 )
 ```
-## AutoAI from Dict Example
+### AutoAI from Dict Example
 Generate from AutoAI using a config dict:
 ```python
 from glai.ai import AutoAI
@@ -144,7 +148,7 @@ AutoAI(**conf).generate(
   True
 )
 ```
-## EasyAI from Dict Example
+### EasyAI from Dict Example
 Generate from EasyAI using a config dict:
 
 ```python
@@ -166,7 +170,7 @@ EasyAI(**conf).generate(
   True  
 )
 ```
-## EasyAI from URL Example
+### EasyAI from URL Example
 Get a model from a URL and generate:
 
 ```python
