@@ -58,10 +58,6 @@ model = db.find_model(name_search="Mistral")
 print(model.name)
 db.show_db_info()
 ```
-
-# GGUF Examples Tutorial
-This tutorial provides examples for using the GGUF package.
-
 ## Import Models from Repo
 Import models from a HuggingFace repo into the model database:
 ```python
