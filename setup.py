@@ -15,7 +15,7 @@ setup(
     include_package_data=True,
     author="Łael Al-Halawani",
     author_email="laelhalawani@gmail.com",
-    description="A for easy deployment of quantized llama models on cpu",
+    description="Easy deployment of quantized llama models on cpu",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
