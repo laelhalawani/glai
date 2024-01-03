@@ -1,0 +1,23 @@
+{
+    "url": "https://huggingface.co/TheBloke/stablelm-zephyr-3b-GGUF/blob/main/stablelm-zephyr-3b.Q4_K_S.gguf",
+    "gguf_file_path": "./models_db/gguf_models\\stablelm-zephyr-3b.Q4_K_S.gguf",
+    "model_name": "stablelm-zephyr-3b",
+    "model_quantization": "Q4_K_S",
+    "description": "Zephyr 3B Instruct",
+    "keywords": [
+        "zephyr",
+        "3b",
+        "instruct",
+        "non-commercial",
+        "research"
+    ],
+    "user_tags": {
+        "open": "<|user|>",
+        "close": "<|endoftext|>"
+    },
+    "ai_tags": {
+        "open": "<|assistant|>",
+        "close": "<|endoftext|>"
+    },
+    "save_dir": "./models_db/gguf_models"
+}
