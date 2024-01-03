@@ -1,0 +1,2831 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>glai.back_end API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>glai.back_end</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from .llama_ai import LlamaAI
+from .messages import AIMessage, AIMessages
+from .model_db import ModelDB, ModelData, MODEL_EXAMPLES_DB_DIR, DEFAULT_LOCAL_GGUF_DIR
+
+
+# Making certain symbols available when the package is imported
+__all__ = [&#39;LlamaAI&#39;, &#39;AIMessage&#39;, &#39;AIMessages&#39;, &#39;ModelDB&#39;, &#39;ModelData&#39;, &#39;MODEL_EXAMPLES_DB_DIR&#39;, &#39;DEFAULT_LOCAL_GGUF_DIR&#39;]
+#print(f&#34;Initializing ai package, available classes: {__all__}&#34;)</code></pre>
+</details>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="glai.back_end.llama_ai" href="llama_ai.html">glai.back_end.llama_ai</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="glai.back_end.messages" href="messages.html">glai.back_end.messages</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="glai.back_end.model_db" href="model_db/index.html">glai.back_end.model_db</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="glai.back_end.AIMessage"><code class="flex name class">
+<span>class <span class="ident">AIMessage</span></span>
+<span>(</span><span>content: str, tag_open: str, tag_close: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a message in an AI system.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>content</code></strong> :&ensp;<code>str</code></dt>
+<dd>The content of the message.</dd>
+<dt><strong><code>tag_open</code></strong> :&ensp;<code>str</code></dt>
+<dd>The opening tag for the message.</dd>
+<dt><strong><code>tag_close</code></strong> :&ensp;<code>str</code></dt>
+<dd>The closing tag for the message.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AIMessage:
+    &#34;&#34;&#34;
+    Represents a message in an AI system.
+
+    Attributes:
+        content (str): The content of the message.
+        tag_open (str): The opening tag for the message.
+        tag_close (str): The closing tag for the message.
+    &#34;&#34;&#34;
+
+    def __init__(self, content:str, tag_open:str, tag_close:str):
+        self.content = content
+        self.tag_open = tag_open
+        self.tag_close = tag_close
+
+    def __str__(self) -&gt; str:
+        return f&#34;{self.tag_open}{self.content}{self.tag_close}&#34;
+    
+    def __repr__(self) -&gt; str:
+        return self.__str__()
+    
+    def edit(self, new_content, new_tag_open=None, new_tag_close=None):
+        &#34;&#34;&#34;
+        Edits the content of the message.
+
+        Args:
+            new_content (str): The new content for the message.
+        &#34;&#34;&#34;
+        self.content = new_content
+        if new_tag_open is not None:
+            self.tag_open = new_tag_open
+        if new_tag_close is not None:
+            self.tag_close = new_tag_close
+    
+    def text(self):
+        &#34;&#34;&#34;
+        Returns the text representation of the message.
+
+        Returns:
+            str: The text representation of the message.
+        &#34;&#34;&#34;
+        return self.__str__()
+    
+    def get_tags(self) -&gt; tuple:
+        &#34;&#34;&#34;
+        Returns the tags of the message.
+
+        Returns:
+            tuple: The tags of the message.
+        &#34;&#34;&#34;
+        return (self.tag_open, self.tag_close)
+    
+    def to_dict(self) -&gt; dict:
+        &#34;&#34;&#34;
+        Returns the message as a dictionary.
+
+        Returns:
+            dict: The message as a dictionary.
+        &#34;&#34;&#34;
+        return {
+            &#34;content&#34;: self.content,
+            &#34;tag_open&#34;: self.tag_open,
+            &#34;tag_close&#34;: self.tag_close,
+        }
+    
+    @staticmethod 
+    def from_dict(message_dict:dict) -&gt; &#34;AIMessage&#34;:
+        &#34;&#34;&#34;
+        Creates a new AIMessage from a dictionary.
+
+        Args:
+            message_dict (dict): The dictionary to create the AIMessage from.
+
+        Returns:
+            AIMessage: The created AIMessage.
+        &#34;&#34;&#34;
+        return AIMessage(message_dict[&#34;content&#34;], message_dict[&#34;tag_open&#34;], message_dict[&#34;tag_close&#34;])</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="glai.back_end.AIMessage.from_dict"><code class="name flex">
+<span>def <span class="ident">from_dict</span></span>(<span>message_dict: dict) ‑> <a title="glai.back_end.messages.AIMessage" href="messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a new AIMessage from a dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message_dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The dictionary to create the AIMessage from.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="glai.back_end.AIMessage" href="#glai.back_end.AIMessage">AIMessage</a></code></dt>
+<dd>The created AIMessage.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod 
+def from_dict(message_dict:dict) -&gt; &#34;AIMessage&#34;:
+    &#34;&#34;&#34;
+    Creates a new AIMessage from a dictionary.
+
+    Args:
+        message_dict (dict): The dictionary to create the AIMessage from.
+
+    Returns:
+        AIMessage: The created AIMessage.
+    &#34;&#34;&#34;
+    return AIMessage(message_dict[&#34;content&#34;], message_dict[&#34;tag_open&#34;], message_dict[&#34;tag_close&#34;])</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="glai.back_end.AIMessage.edit"><code class="name flex">
+<span>def <span class="ident">edit</span></span>(<span>self, new_content, new_tag_open=None, new_tag_close=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Edits the content of the message.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>new_content</code></strong> :&ensp;<code>str</code></dt>
+<dd>The new content for the message.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def edit(self, new_content, new_tag_open=None, new_tag_close=None):
+    &#34;&#34;&#34;
+    Edits the content of the message.
+
+    Args:
+        new_content (str): The new content for the message.
+    &#34;&#34;&#34;
+    self.content = new_content
+    if new_tag_open is not None:
+        self.tag_open = new_tag_open
+    if new_tag_close is not None:
+        self.tag_close = new_tag_close</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessage.get_tags"><code class="name flex">
+<span>def <span class="ident">get_tags</span></span>(<span>self) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the tags of the message.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>The tags of the message.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_tags(self) -&gt; tuple:
+    &#34;&#34;&#34;
+    Returns the tags of the message.
+
+    Returns:
+        tuple: The tags of the message.
+    &#34;&#34;&#34;
+    return (self.tag_open, self.tag_close)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessage.text"><code class="name flex">
+<span>def <span class="ident">text</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the text representation of the message.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The text representation of the message.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def text(self):
+    &#34;&#34;&#34;
+    Returns the text representation of the message.
+
+    Returns:
+        str: The text representation of the message.
+    &#34;&#34;&#34;
+    return self.__str__()</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessage.to_dict"><code class="name flex">
+<span>def <span class="ident">to_dict</span></span>(<span>self) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the message as a dictionary.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>The message as a dictionary.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_dict(self) -&gt; dict:
+    &#34;&#34;&#34;
+    Returns the message as a dictionary.
+
+    Returns:
+        dict: The message as a dictionary.
+    &#34;&#34;&#34;
+    return {
+        &#34;content&#34;: self.content,
+        &#34;tag_open&#34;: self.tag_open,
+        &#34;tag_close&#34;: self.tag_close,
+    }</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="glai.back_end.AIMessages"><code class="flex name class">
+<span>class <span class="ident">AIMessages</span></span>
+<span>(</span><span>user_tags: Union[tuple[str], list[str], dict] = ('[INST]', '[/INST]'), ai_tags: Union[tuple[str], list[str], dict] = ('', ''))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a collection of messages in an AI system.</p>
+<h2 id="properties">Properties</h2>
+<p>user_tag_open (str): The opening tag for user messages.
+user_tag_close (str): The closing tag for user messages.
+ai_tag_open (str): The opening tag for AI messages.
+ai_tag_close (str): The closing tag for AI messages.
+messages (dict): The messages in the collection: {id: AIMessage}.
+_message_id_generator (int): The id generator for the messages.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>messages</code></strong> :&ensp;<code>Union[<a title="glai.back_end.AIMessages" href="#glai.back_end.AIMessages">AIMessages</a>, <a title="glai.back_end.AIMessage" href="#glai.back_end.AIMessage">AIMessage</a>, str, list]</code></dt>
+<dd>The messages to add to the collection.</dd>
+<dt><strong><code>user_tags</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>The tags to use for user messages.</dd>
+<dt><strong><code>ai_tags</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>The tags to use for AI messages.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AIMessages:
+    &#34;&#34;&#34;
+    Represents a collection of messages in an AI system.
+    Properties:
+        user_tag_open (str): The opening tag for user messages.
+        user_tag_close (str): The closing tag for user messages.
+        ai_tag_open (str): The opening tag for AI messages.
+        ai_tag_close (str): The closing tag for AI messages.
+        messages (dict): The messages in the collection: {id: AIMessage}.
+        _message_id_generator (int): The id generator for the messages.
+
+    Args:
+        messages (Union[AIMessages, AIMessage, str, list]): The messages to add to the collection.
+        user_tags (tuple): The tags to use for user messages.
+        ai_tags (tuple): The tags to use for AI messages.
+    &#34;&#34;&#34;
+
+    def __init__(self,user_tags:Union[tuple[str], list[str], dict]=(&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[tuple[str], list[str], dict]=(&#34;&#34;, &#34;&#34;)):
+        if isinstance(user_tags, dict):
+            if &#34;open&#34; in user_tags and &#34;close&#34; in user_tags:
+                self.user_tag_open = user_tags[&#34;open&#34;]
+                self.user_tag_close = user_tags[&#34;close&#34;]
+            else:
+                raise ValueError(f&#34;Invalid user tags: {user_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+        elif isinstance(user_tags, set) or isinstance(user_tags, list) or isinstance(user_tags, tuple):
+            self.user_tag_open = user_tags[0]
+            self.user_tag_close = user_tags[1]
+        else:
+            raise TypeError(f&#34;Invalid type for user tags: {type(user_tags)}, must be dict, set or list.&#34;)
+        
+        if isinstance(ai_tags, dict):
+            if &#34;open&#34; in ai_tags and &#34;close&#34; in ai_tags:
+                self.ai_tag_open = ai_tags[&#34;open&#34;]
+                self.ai_tag_close = ai_tags[&#34;close&#34;]
+            else:
+                raise ValueError(f&#34;Invalid user tags: {ai_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+        elif isinstance(ai_tags, set) or isinstance(ai_tags, list) or isinstance(ai_tags, tuple):
+            self.ai_tag_open = ai_tags[0]
+            self.ai_tag_close = ai_tags[1]
+        else:
+            raise TypeError(f&#34;Invalid type for user tags: {type(ai_tags)}, must be dict, set or list.&#34;)
+        self.messages = {}
+        self._message_id_generator = 0
+    
+    def user_tags(self) -&gt; tuple[str]:
+        &#34;&#34;&#34;
+        Returns the user tags.
+
+        Returns:
+            tuple[str]: The user tags.
+        &#34;&#34;&#34;
+        return (self.user_tag_open, self.user_tag_close)
+    
+    def ai_tags(self) -&gt; tuple[str]:
+        &#34;&#34;&#34;
+        Returns the AI tags.
+
+        Returns:
+            tuple[str]: The AI tags.
+        &#34;&#34;&#34;
+        return (self.ai_tag_open, self.ai_tag_close)    
+    
+    def load_messages(self, messages:Union[Any, AIMessage, str, list[Union[dict, AIMessage]]]) -&gt; None:
+        if messages is not None:
+            if isinstance(messages, AIMessages):
+                self.messages = messages.messages
+            elif isinstance(messages, AIMessage):
+                self.messages = [messages]
+            elif isinstance(messages, str):
+                self.messages = [AIMessage(messages, self.user_tag_open, self.user_tag_close)]
+            elif isinstance(messages, list):
+                if all([isinstance(message, AIMessage) for message in messages]):
+                    self.messages = messages
+                elif all(isinstance(message, str) for message in messages):
+                    self.messages = [AIMessage(message, tag_open=self.user_tag_open, tag_close=self.user_tag_close) for message in messages]
+                elif all(isinstance(message, dict) for message in messages):
+                    self.messages = [AIMessage.from_dict(message_dict) for message_dict in messages]
+                else:
+                    raise TypeError(&#34;If passing list as messages it must be a list of AIMessage or str&#34;)
+            else:
+                raise TypeError(&#34;messages must be a list of AIMessage or str&#34;)
+    
+    def to_dict(self) -&gt; dict:
+        &#34;&#34;&#34;
+        Returns the messages as a dictionary.
+
+        Returns:
+            dict: The messages as a dictionary.
+        &#34;&#34;&#34;
+        return {
+            &#34;user_tag_open&#34;: self.user_tag_open,
+            &#34;user_tag_close&#34;: self.user_tag_close,
+            &#34;ai_tag_open&#34;: self.ai_tag_open,
+            &#34;ai_tag_close&#34;: self.ai_tag_close,
+            &#34;messages&#34;: [message.to_dict() for message in self.messages]
+        }
+    
+    @staticmethod
+    def from_dict(messages_dict:dict) -&gt; &#34;AIMessages&#34;:
+        &#34;&#34;&#34;
+        Creates a new AIMessages from a dictionary.
+
+        Args:
+            messages_dict (dict): The dictionary to create the AIMessages from.
+
+        Returns:
+            AIMessages: The created AIMessages.
+        &#34;&#34;&#34;
+        ai_msgs = AIMessages()
+        ai_msgs.user_tag_open = messages_dict[&#34;user_tag_open&#34;]
+        ai_msgs.user_tag_close = messages_dict[&#34;user_tag_close&#34;]
+        ai_msgs.ai_tag_open = messages_dict[&#34;ai_tag_open&#34;]
+        ai_msgs.ai_tag_close = messages_dict[&#34;ai_tag_close&#34;]
+        ai_msgs.load_messages(messages_dict[&#34;messages&#34;])
+        return ai_msgs
+    
+    def _generate_message_id(self) -&gt; int:
+        &#34;&#34;&#34;
+        Generates a unique message ID.
+        Iters the message ID generator.
+
+        Returns:
+            int: The generated message ID.
+        &#34;&#34;&#34;
+        self._message_id_generator += 1
+        id = self._message_id_generator
+        return id
+    
+    def add_message(self, message:str, tag_open:str, tag_close:str) -&gt; AIMessage:
+        &#34;&#34;&#34;
+        Adds a new message to the messages dictionary.
+        Iters the message ID generator.
+
+        Parameters:
+        - message (str): The content of the message.
+        - tag_open (str): The opening tag for the message.
+        - tag_close (str): The closing tag for the message.
+
+        Returns:
+        AIMessage
+        &#34;&#34;&#34;
+        self.messages[self._generate_message_id()] = AIMessage(message, tag_open, tag_close)
+        return self.messages[self._message_id_generator]
+
+    def add_user_message(self, message: str) -&gt; AIMessage:
+        &#34;&#34;&#34;
+        Adds a user message to the message list.
+        Uses add_message() with the user tags.
+        Automatically iters the message ID generator.
+
+        Parameters:
+            message (str): The message to be added.
+
+        Returns:
+            AIMessage
+        &#34;&#34;&#34;
+        return self.add_message(message, self.user_tag_open, self.user_tag_close)
+
+    def add_ai_message(self, message:str) -&gt; AIMessage:
+        &#34;&#34;&#34;
+        Adds a ai message to the message list.
+        Uses add_message() with the ai tags.
+        Automatically iters the message ID generator.
+
+        Parameters:
+            message (str): The message to be added.
+
+        Returns:
+            AIMessage
+        &#34;&#34;&#34;
+        return self.add_message(message, self.ai_tag_open, self.ai_tag_close)
+
+    def reset_messages(self) -&gt; None:
+        self.messages = {}
+        self._message_id_generator = 0
+
+    def __str__(self) -&gt; str:
+        return &#34;&#34;.join([str(message) for message in self.messages.values()])
+
+    def __repr__(self) -&gt; str:
+        return self.__str__()
+    
+    def text(self):
+        return self.__str__()
+    
+    def get_last_message(self) -&gt; AIMessage:
+        &#34;&#34;&#34;
+        Returns the last message in the collection.
+
+        Returns:
+            AIMessage: The last message in the collection.
+        &#34;&#34;&#34;
+        return self.messages[self._message_id_generator]
+    
+    def edit_last_message(self, new_content:str, tag_open:str=None, tag_close:str=None) -&gt; None:
+        &#34;&#34;&#34;
+        Updates the content of the last message in the collection.
+
+        Parameters:
+            new_content (str): The new content for the message.
+            tag_open (str): Optional. The new opening tag for the message.
+            tag_close (str): Optional. The new closing tag for the message.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        self.get_last_message().edit(new_content, tag_open, tag_close)
+    
+    def edit_message(self, message_id:int, new_content:str, tag_open:str=None, tag_close:str=None) -&gt; None:
+        &#34;&#34;&#34;
+        Updates the content of a message in the collection.
+
+        Parameters:
+            message_id (int): The id of the message to edit.
+            new_content (str): The new content for the message.
+            tag_open (str): The new opening tag for the message.
+            tag_close (str): The new closing tag for the message.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        self.messages[message_id].edit(new_content, tag_open, tag_close)
+    
+    def save_json(self, file_path:str) -&gt; None:
+        &#34;&#34;&#34;
+        Saves the messages as a json file.
+
+        Parameters:
+            file_path (str): The path to save the json file to.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        save_json_file(self.to_dict(), file_path)
+    
+    @staticmethod
+    def from_json(file_path:str) -&gt; &#34;AIMessages&#34;:
+        &#34;&#34;&#34;
+        Creates a new AIMessages from a json file.
+
+        Args:
+            file_path (str): The path to the json file.
+
+        Returns:
+            AIMessages: The created AIMessages.
+        &#34;&#34;&#34;
+        return AIMessages.from_dict(load_json_file(file_path))</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="glai.back_end.AIMessages.from_dict"><code class="name flex">
+<span>def <span class="ident">from_dict</span></span>(<span>messages_dict: dict) ‑> <a title="glai.back_end.messages.AIMessages" href="messages.html#glai.back_end.messages.AIMessages">AIMessages</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a new AIMessages from a dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>messages_dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The dictionary to create the AIMessages from.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="glai.back_end.AIMessages" href="#glai.back_end.AIMessages">AIMessages</a></code></dt>
+<dd>The created AIMessages.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def from_dict(messages_dict:dict) -&gt; &#34;AIMessages&#34;:
+    &#34;&#34;&#34;
+    Creates a new AIMessages from a dictionary.
+
+    Args:
+        messages_dict (dict): The dictionary to create the AIMessages from.
+
+    Returns:
+        AIMessages: The created AIMessages.
+    &#34;&#34;&#34;
+    ai_msgs = AIMessages()
+    ai_msgs.user_tag_open = messages_dict[&#34;user_tag_open&#34;]
+    ai_msgs.user_tag_close = messages_dict[&#34;user_tag_close&#34;]
+    ai_msgs.ai_tag_open = messages_dict[&#34;ai_tag_open&#34;]
+    ai_msgs.ai_tag_close = messages_dict[&#34;ai_tag_close&#34;]
+    ai_msgs.load_messages(messages_dict[&#34;messages&#34;])
+    return ai_msgs</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.from_json"><code class="name flex">
+<span>def <span class="ident">from_json</span></span>(<span>file_path: str) ‑> <a title="glai.back_end.messages.AIMessages" href="messages.html#glai.back_end.messages.AIMessages">AIMessages</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a new AIMessages from a json file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>file_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>The path to the json file.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="glai.back_end.AIMessages" href="#glai.back_end.AIMessages">AIMessages</a></code></dt>
+<dd>The created AIMessages.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def from_json(file_path:str) -&gt; &#34;AIMessages&#34;:
+    &#34;&#34;&#34;
+    Creates a new AIMessages from a json file.
+
+    Args:
+        file_path (str): The path to the json file.
+
+    Returns:
+        AIMessages: The created AIMessages.
+    &#34;&#34;&#34;
+    return AIMessages.from_dict(load_json_file(file_path))</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="glai.back_end.AIMessages.add_ai_message"><code class="name flex">
+<span>def <span class="ident">add_ai_message</span></span>(<span>self, message: str) ‑> <a title="glai.back_end.messages.AIMessage" href="messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds a ai message to the message list.
+Uses add_message() with the ai tags.
+Automatically iters the message ID generator.</p>
+<h2 id="parameters">Parameters</h2>
+<p>message (str): The message to be added.</p>
+<h2 id="returns">Returns</h2>
+<p>AIMessage</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_ai_message(self, message:str) -&gt; AIMessage:
+    &#34;&#34;&#34;
+    Adds a ai message to the message list.
+    Uses add_message() with the ai tags.
+    Automatically iters the message ID generator.
+
+    Parameters:
+        message (str): The message to be added.
+
+    Returns:
+        AIMessage
+    &#34;&#34;&#34;
+    return self.add_message(message, self.ai_tag_open, self.ai_tag_close)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.add_message"><code class="name flex">
+<span>def <span class="ident">add_message</span></span>(<span>self, message: str, tag_open: str, tag_close: str) ‑> <a title="glai.back_end.messages.AIMessage" href="messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds a new message to the messages dictionary.
+Iters the message ID generator.</p>
+<p>Parameters:
+- message (str): The content of the message.
+- tag_open (str): The opening tag for the message.
+- tag_close (str): The closing tag for the message.</p>
+<p>Returns:
+AIMessage</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_message(self, message:str, tag_open:str, tag_close:str) -&gt; AIMessage:
+    &#34;&#34;&#34;
+    Adds a new message to the messages dictionary.
+    Iters the message ID generator.
+
+    Parameters:
+    - message (str): The content of the message.
+    - tag_open (str): The opening tag for the message.
+    - tag_close (str): The closing tag for the message.
+
+    Returns:
+    AIMessage
+    &#34;&#34;&#34;
+    self.messages[self._generate_message_id()] = AIMessage(message, tag_open, tag_close)
+    return self.messages[self._message_id_generator]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.add_user_message"><code class="name flex">
+<span>def <span class="ident">add_user_message</span></span>(<span>self, message: str) ‑> <a title="glai.back_end.messages.AIMessage" href="messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds a user message to the message list.
+Uses add_message() with the user tags.
+Automatically iters the message ID generator.</p>
+<h2 id="parameters">Parameters</h2>
+<p>message (str): The message to be added.</p>
+<h2 id="returns">Returns</h2>
+<p>AIMessage</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_user_message(self, message: str) -&gt; AIMessage:
+    &#34;&#34;&#34;
+    Adds a user message to the message list.
+    Uses add_message() with the user tags.
+    Automatically iters the message ID generator.
+
+    Parameters:
+        message (str): The message to be added.
+
+    Returns:
+        AIMessage
+    &#34;&#34;&#34;
+    return self.add_message(message, self.user_tag_open, self.user_tag_close)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.ai_tags"><code class="name flex">
+<span>def <span class="ident">ai_tags</span></span>(<span>self) ‑> tuple[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the AI tags.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple[str]</code></dt>
+<dd>The AI tags.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ai_tags(self) -&gt; tuple[str]:
+    &#34;&#34;&#34;
+    Returns the AI tags.
+
+    Returns:
+        tuple[str]: The AI tags.
+    &#34;&#34;&#34;
+    return (self.ai_tag_open, self.ai_tag_close)    </code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.edit_last_message"><code class="name flex">
+<span>def <span class="ident">edit_last_message</span></span>(<span>self, new_content: str, tag_open: str = None, tag_close: str = None) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Updates the content of the last message in the collection.</p>
+<h2 id="parameters">Parameters</h2>
+<p>new_content (str): The new content for the message.
+tag_open (str): Optional. The new opening tag for the message.
+tag_close (str): Optional. The new closing tag for the message.</p>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def edit_last_message(self, new_content:str, tag_open:str=None, tag_close:str=None) -&gt; None:
+    &#34;&#34;&#34;
+    Updates the content of the last message in the collection.
+
+    Parameters:
+        new_content (str): The new content for the message.
+        tag_open (str): Optional. The new opening tag for the message.
+        tag_close (str): Optional. The new closing tag for the message.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    self.get_last_message().edit(new_content, tag_open, tag_close)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.edit_message"><code class="name flex">
+<span>def <span class="ident">edit_message</span></span>(<span>self, message_id: int, new_content: str, tag_open: str = None, tag_close: str = None) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Updates the content of a message in the collection.</p>
+<h2 id="parameters">Parameters</h2>
+<p>message_id (int): The id of the message to edit.
+new_content (str): The new content for the message.
+tag_open (str): The new opening tag for the message.
+tag_close (str): The new closing tag for the message.</p>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def edit_message(self, message_id:int, new_content:str, tag_open:str=None, tag_close:str=None) -&gt; None:
+    &#34;&#34;&#34;
+    Updates the content of a message in the collection.
+
+    Parameters:
+        message_id (int): The id of the message to edit.
+        new_content (str): The new content for the message.
+        tag_open (str): The new opening tag for the message.
+        tag_close (str): The new closing tag for the message.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    self.messages[message_id].edit(new_content, tag_open, tag_close)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.get_last_message"><code class="name flex">
+<span>def <span class="ident">get_last_message</span></span>(<span>self) ‑> <a title="glai.back_end.messages.AIMessage" href="messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the last message in the collection.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="glai.back_end.AIMessage" href="#glai.back_end.AIMessage">AIMessage</a></code></dt>
+<dd>The last message in the collection.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_last_message(self) -&gt; AIMessage:
+    &#34;&#34;&#34;
+    Returns the last message in the collection.
+
+    Returns:
+        AIMessage: The last message in the collection.
+    &#34;&#34;&#34;
+    return self.messages[self._message_id_generator]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.load_messages"><code class="name flex">
+<span>def <span class="ident">load_messages</span></span>(<span>self, messages: Union[Any, <a title="glai.back_end.messages.AIMessage" href="messages.html#glai.back_end.messages.AIMessage">AIMessage</a>, str, list[Union[dict, <a title="glai.back_end.messages.AIMessage" href="messages.html#glai.back_end.messages.AIMessage">AIMessage</a>]]]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_messages(self, messages:Union[Any, AIMessage, str, list[Union[dict, AIMessage]]]) -&gt; None:
+    if messages is not None:
+        if isinstance(messages, AIMessages):
+            self.messages = messages.messages
+        elif isinstance(messages, AIMessage):
+            self.messages = [messages]
+        elif isinstance(messages, str):
+            self.messages = [AIMessage(messages, self.user_tag_open, self.user_tag_close)]
+        elif isinstance(messages, list):
+            if all([isinstance(message, AIMessage) for message in messages]):
+                self.messages = messages
+            elif all(isinstance(message, str) for message in messages):
+                self.messages = [AIMessage(message, tag_open=self.user_tag_open, tag_close=self.user_tag_close) for message in messages]
+            elif all(isinstance(message, dict) for message in messages):
+                self.messages = [AIMessage.from_dict(message_dict) for message_dict in messages]
+            else:
+                raise TypeError(&#34;If passing list as messages it must be a list of AIMessage or str&#34;)
+        else:
+            raise TypeError(&#34;messages must be a list of AIMessage or str&#34;)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.reset_messages"><code class="name flex">
+<span>def <span class="ident">reset_messages</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reset_messages(self) -&gt; None:
+    self.messages = {}
+    self._message_id_generator = 0</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.save_json"><code class="name flex">
+<span>def <span class="ident">save_json</span></span>(<span>self, file_path: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Saves the messages as a json file.</p>
+<h2 id="parameters">Parameters</h2>
+<p>file_path (str): The path to save the json file to.</p>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_json(self, file_path:str) -&gt; None:
+    &#34;&#34;&#34;
+    Saves the messages as a json file.
+
+    Parameters:
+        file_path (str): The path to save the json file to.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    save_json_file(self.to_dict(), file_path)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.text"><code class="name flex">
+<span>def <span class="ident">text</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def text(self):
+    return self.__str__()</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.to_dict"><code class="name flex">
+<span>def <span class="ident">to_dict</span></span>(<span>self) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the messages as a dictionary.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>The messages as a dictionary.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_dict(self) -&gt; dict:
+    &#34;&#34;&#34;
+    Returns the messages as a dictionary.
+
+    Returns:
+        dict: The messages as a dictionary.
+    &#34;&#34;&#34;
+    return {
+        &#34;user_tag_open&#34;: self.user_tag_open,
+        &#34;user_tag_close&#34;: self.user_tag_close,
+        &#34;ai_tag_open&#34;: self.ai_tag_open,
+        &#34;ai_tag_close&#34;: self.ai_tag_close,
+        &#34;messages&#34;: [message.to_dict() for message in self.messages]
+    }</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.AIMessages.user_tags"><code class="name flex">
+<span>def <span class="ident">user_tags</span></span>(<span>self) ‑> tuple[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the user tags.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple[str]</code></dt>
+<dd>The user tags.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def user_tags(self) -&gt; tuple[str]:
+    &#34;&#34;&#34;
+    Returns the user tags.
+
+    Returns:
+        tuple[str]: The user tags.
+    &#34;&#34;&#34;
+    return (self.user_tag_open, self.user_tag_close)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="glai.back_end.LlamaAI"><code class="flex name class">
+<span>class <span class="ident">LlamaAI</span></span>
+<span>(</span><span>model_path: str, max_tokens: int, max_input_tokens: int)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LlamaAI:
+    def __init__(self, model_path:str, max_tokens:int, max_input_tokens:int) -&gt; None:
+        &#34;&#34;&#34;
+        
+        &#34;&#34;&#34;
+        self.model_path = model_path
+        self.max_tokens = max_tokens
+        self.max_input_tokens = max_input_tokens
+        self.llm = None
+        self.tokenizer = None
+        self._loaded = False
+        self.load()
+        
+    @staticmethod
+    def from_dict(settings_dict: dict) -&gt; None:
+        &#34;&#34;&#34;
+        Create a LlamaAI object from a dictionary containing:
+        - model: The path to the model to be used.
+        - tokens: The maximum number of tokens to be used.
+        - input_tokens: The maximum number of input tokens to be used.
+
+        &#34;&#34;&#34;
+
+        model_path = settings_dict[&#34;model&#34;]
+        max_tokens = settings_dict[&#34;tokens&#34;]
+        max_input_tokens = settings_dict[&#34;input_tokens&#34;]
+        lai = LlamaAI(model_path, max_tokens, max_input_tokens)
+        lai.load()
+        return lai
+    
+    def load(self) -&gt; None:
+        &#34;&#34;&#34;
+        Load the model and tokenizer using the model_path, max_tokens, and max_input_tokens attributes.
+        &#34;&#34;&#34;
+        print(f&#34;Loading model from {self.model_path}...&#34;)
+        self.llm = Llama(model_path=self.model_path, verbose=False, n_ctx=self.max_tokens)
+        self.tokenizer = LlamaTokenizer(self.llm)
+        self._loaded = True
+
+    def try_fixing_format(self, text: str, only_letters: bool = False, rem_list_formatting: bool = False) -&gt; str:
+        &#34;&#34;&#34;
+        Fixes the format of the given text by removing extra newlines and non-letter characters if specified.
+
+        Args:
+            text (str): The text to be fixed.
+            only_letters (bool, optional): If True, only letters will be kept. Defaults to False.
+
+        Returns:
+            str: The fixed text.
+        &#34;&#34;&#34;
+        print(&#34;Trying to fix formatting... this might have some undersired effects&#34;)
+        changes = False
+        if &#34;\n\n&#34; in text:
+            #split text in that place
+            core_info = text.split(&#34;\n\n&#34;)[1:]
+            text = &#34; &#34;.join(core_info)
+            changes = True
+        if &#34;\n&#34; in text:
+            text = text.replace(&#34;\n&#34;, &#34; &#34;)
+            changes = True
+        if only_letters:
+            text = remove_non_letters(text)
+            changes = True
+        if rem_list_formatting:
+            text = remove_list_formatting(text)
+        if changes:
+            print(&#34;The text has been sucessfully modified.&#34;)
+        return text
+
+    def _check_loaded(self)-&gt;None:
+        if not self._loaded:
+            try:
+                self.load()
+                raise Warning(&#34;Model not loaded, trying a default reload...&#34;)
+            except:
+                raise Exception(&#34;Model not loaded! Please provide model settings when creating the class or use load_model method after creation.&#34;)
+        
+    def _adjust_max_tokens(self, new_max_tokens:int) -&gt; None:
+        self.max_tokens = new_max_tokens
+        self._loaded = False
+   
+    def _adjust_max_input_tokens(self, new_max_input_tokens:int) -&gt; None:
+        if new_max_input_tokens &lt; self.max_tokens:
+            raise Exception(&#34;The new maximum input tokens must be greater than the current maximum tokens.&#34;)
+        self.max_input_tokens = new_max_input_tokens
+
+    def adjust_tokens(self, new_max_tokens:int, new_max_input_tokens:int) -&gt; None:
+        &#34;&#34;&#34;
+        Adjust the maximum number of tokens for the current llm.
+
+        Args:
+            new_max_tokens (int): The new maximum number of tokens.
+            new_max_input_tokens (int): The new maximum number of input tokens.
+
+        Returns:
+            None
+        &#34;&#34;&#34;
+        self._adjust_max_tokens(new_max_tokens)
+        self._adjust_max_input_tokens(new_max_input_tokens)
+        self.load()
+
+    def tokenize(self, text: str) -&gt; list:
+        &#34;&#34;&#34;
+        Create and return tokens for the given text.
+
+        Parameters:
+            text (str): The input text.
+
+        Returns:
+            list: A list of tokens.
+        &#34;&#34;&#34;
+        ts = self.tokenizer.encode(text)
+        return ts
+    
+    def untokenize(self, tokens: list) -&gt; str:
+        &#34;&#34;&#34;
+        Decode tokens into a string.
+
+        Args:
+            tokens (list): The list of tokens to decode.
+
+        Returns:
+            str: The decoded string.
+        &#34;&#34;&#34;
+        return self.tokenizer.decode(tokens)
+    
+    def count_tokens(self, text: str) -&gt; int:
+        &#34;&#34;&#34;
+        Converts string and counts and returns the number of tokens.
+
+        Parameters:
+            text (str): The text to count tokens in.
+
+        Returns:
+            int: The number of tokens in the text.
+        &#34;&#34;&#34;
+        return len(self.tokenize(text))    
+    
+    def is_within_input_limit(self, text: str) -&gt; bool:
+        &#34;&#34;&#34;
+        Check if the length of the given text is within the maximum allowed input tokens for the current llm.
+
+        Args:
+            text (str): The text to be checked.
+
+        Returns:
+            bool: True if the length of the text is within the maximum allowed input tokens, False otherwise.
+        &#34;&#34;&#34;
+        return self.count_tokens(text) &lt;= self.max_input_tokens
+    
+    def infer(self,text:str, only_string: bool = False, max_tokens_if_needed=-1, stop_at_str=None, include_stop_str=True) -&gt; str:
+        &#34;&#34;&#34;
+        Infer the completion for the given text.
+
+        Args:
+            text (str): The input text to generate completion for.
+            only_string (bool, optional): Whether to return the completion as a string only. 
+                If True, the completion will be returned as a single string. 
+                If False, the completion will be returned as a list of OpenAI compatible completion dictionary objects.
+                Defaults to False.
+            max_tokens_if_needed (int, optional): The maximum number of tokens to use if the text is too long, allows for adaptive memory allocation. Defaults to -1.
+            stop_at_str (str, optional): The string to stop at. Defaults to None. If None but model has defined EOS token, EOS token will be used. 
+            include_stop_str (bool): Whether to include the stop string in the output. Defaults to True. 
+        Returns:
+            str OR list: The completion.
+        &#34;&#34;&#34;
+        text = str(text) 
+        self._check_loaded()
+        adjusted = False
+        if not self.is_within_input_limit(text):
+            if not max_tokens_if_needed:
+                raise Exception(&#34;Text is too long!&#34;)
+            else:
+                print(&#34;Text is too long. Adjusting model...&#34;)
+                current_max_tokens = self.max_tokens
+                current_max_input_tokens = self.max_input_tokens
+                input_to_total_ratio = current_max_input_tokens / current_max_tokens
+
+                desired_prompt_len = self.count_tokens(text)
+                if not any([max_tokens_if_needed &gt; 0, desired_prompt_len - current_max_input_tokens &lt;= max_tokens_if_needed]):
+                    raise Exception(&#34;Text is too long and the model cannot be adjusted to fit it!&#34;)
+                desired_input_len = int(desired_prompt_len * input_to_total_ratio)
+                print(f&#34;Adjusting model to {desired_input_len} input tokens and {desired_prompt_len} tokens.&#34;&#34;&#34;)
+                self.adjust_tokens(desired_input_len, desired_prompt_len)
+                adjusted = True
+                
+        stop_at = None if any([stop_at_str is None, stop_at_str == &#34;&#34;]) else stop_at_str
+        output = self.llm(text, max_tokens=self.max_tokens, stop=stop_at)
+        if only_string:
+            output = self._text_from_inference_obj(output)
+            if include_stop_str:
+                output += stop_at_str if stop_at_str is not None else &#34;&#34;
+        if adjusted:
+            print(f&#34;Adjusting model back to {current_max_tokens} tokens and {current_max_input_tokens} input tokens.&#34;)
+            self.adjust_tokens(current_max_tokens, current_max_input_tokens)
+        return output
+    
+    def _text_from_inference_obj(self, answer_dict: dict) -&gt; str:
+        #print(f&#34;Checking answer: {ans}&#34;)
+        if &#39;choices&#39; in answer_dict and &#39;text&#39; in answer_dict[&#39;choices&#39;][0]:
+            #print(f&#34;Detected answer: {ans[&#39;choices&#39;][0][&#39;text&#39;]}&#34;)
+            extracted_answ = answer_dict[&#39;choices&#39;][0][&#39;text&#39;]
+        return extracted_answ</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="glai.back_end.LlamaAI.from_dict"><code class="name flex">
+<span>def <span class="ident">from_dict</span></span>(<span>settings_dict: dict) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a LlamaAI object from a dictionary containing:
+- model: The path to the model to be used.
+- tokens: The maximum number of tokens to be used.
+- input_tokens: The maximum number of input tokens to be used.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def from_dict(settings_dict: dict) -&gt; None:
+    &#34;&#34;&#34;
+    Create a LlamaAI object from a dictionary containing:
+    - model: The path to the model to be used.
+    - tokens: The maximum number of tokens to be used.
+    - input_tokens: The maximum number of input tokens to be used.
+
+    &#34;&#34;&#34;
+
+    model_path = settings_dict[&#34;model&#34;]
+    max_tokens = settings_dict[&#34;tokens&#34;]
+    max_input_tokens = settings_dict[&#34;input_tokens&#34;]
+    lai = LlamaAI(model_path, max_tokens, max_input_tokens)
+    lai.load()
+    return lai</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="glai.back_end.LlamaAI.adjust_tokens"><code class="name flex">
+<span>def <span class="ident">adjust_tokens</span></span>(<span>self, new_max_tokens: int, new_max_input_tokens: int) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adjust the maximum number of tokens for the current llm.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>new_max_tokens</code></strong> :&ensp;<code>int</code></dt>
+<dd>The new maximum number of tokens.</dd>
+<dt><strong><code>new_max_input_tokens</code></strong> :&ensp;<code>int</code></dt>
+<dd>The new maximum number of input tokens.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def adjust_tokens(self, new_max_tokens:int, new_max_input_tokens:int) -&gt; None:
+    &#34;&#34;&#34;
+    Adjust the maximum number of tokens for the current llm.
+
+    Args:
+        new_max_tokens (int): The new maximum number of tokens.
+        new_max_input_tokens (int): The new maximum number of input tokens.
+
+    Returns:
+        None
+    &#34;&#34;&#34;
+    self._adjust_max_tokens(new_max_tokens)
+    self._adjust_max_input_tokens(new_max_input_tokens)
+    self.load()</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.LlamaAI.count_tokens"><code class="name flex">
+<span>def <span class="ident">count_tokens</span></span>(<span>self, text: str) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts string and counts and returns the number of tokens.</p>
+<h2 id="parameters">Parameters</h2>
+<p>text (str): The text to count tokens in.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>The number of tokens in the text.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def count_tokens(self, text: str) -&gt; int:
+    &#34;&#34;&#34;
+    Converts string and counts and returns the number of tokens.
+
+    Parameters:
+        text (str): The text to count tokens in.
+
+    Returns:
+        int: The number of tokens in the text.
+    &#34;&#34;&#34;
+    return len(self.tokenize(text))    </code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.LlamaAI.infer"><code class="name flex">
+<span>def <span class="ident">infer</span></span>(<span>self, text: str, only_string: bool = False, max_tokens_if_needed=-1, stop_at_str=None, include_stop_str=True) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Infer the completion for the given text.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input text to generate completion for.</dd>
+<dt><strong><code>only_string</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to return the completion as a string only.
+If True, the completion will be returned as a single string.
+If False, the completion will be returned as a list of OpenAI compatible completion dictionary objects.
+Defaults to False.</dd>
+<dt><strong><code>max_tokens_if_needed</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of tokens to use if the text is too long, allows for adaptive memory allocation. Defaults to -1.</dd>
+<dt><strong><code>stop_at_str</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The string to stop at. Defaults to None. If None but model has defined EOS token, EOS token will be used. </dd>
+<dt><strong><code>include_stop_str</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to include the stop string in the output. Defaults to True. </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str OR list</code></dt>
+<dd>The completion.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def infer(self,text:str, only_string: bool = False, max_tokens_if_needed=-1, stop_at_str=None, include_stop_str=True) -&gt; str:
+    &#34;&#34;&#34;
+    Infer the completion for the given text.
+
+    Args:
+        text (str): The input text to generate completion for.
+        only_string (bool, optional): Whether to return the completion as a string only. 
+            If True, the completion will be returned as a single string. 
+            If False, the completion will be returned as a list of OpenAI compatible completion dictionary objects.
+            Defaults to False.
+        max_tokens_if_needed (int, optional): The maximum number of tokens to use if the text is too long, allows for adaptive memory allocation. Defaults to -1.
+        stop_at_str (str, optional): The string to stop at. Defaults to None. If None but model has defined EOS token, EOS token will be used. 
+        include_stop_str (bool): Whether to include the stop string in the output. Defaults to True. 
+    Returns:
+        str OR list: The completion.
+    &#34;&#34;&#34;
+    text = str(text) 
+    self._check_loaded()
+    adjusted = False
+    if not self.is_within_input_limit(text):
+        if not max_tokens_if_needed:
+            raise Exception(&#34;Text is too long!&#34;)
+        else:
+            print(&#34;Text is too long. Adjusting model...&#34;)
+            current_max_tokens = self.max_tokens
+            current_max_input_tokens = self.max_input_tokens
+            input_to_total_ratio = current_max_input_tokens / current_max_tokens
+
+            desired_prompt_len = self.count_tokens(text)
+            if not any([max_tokens_if_needed &gt; 0, desired_prompt_len - current_max_input_tokens &lt;= max_tokens_if_needed]):
+                raise Exception(&#34;Text is too long and the model cannot be adjusted to fit it!&#34;)
+            desired_input_len = int(desired_prompt_len * input_to_total_ratio)
+            print(f&#34;Adjusting model to {desired_input_len} input tokens and {desired_prompt_len} tokens.&#34;&#34;&#34;)
+            self.adjust_tokens(desired_input_len, desired_prompt_len)
+            adjusted = True
+            
+    stop_at = None if any([stop_at_str is None, stop_at_str == &#34;&#34;]) else stop_at_str
+    output = self.llm(text, max_tokens=self.max_tokens, stop=stop_at)
+    if only_string:
+        output = self._text_from_inference_obj(output)
+        if include_stop_str:
+            output += stop_at_str if stop_at_str is not None else &#34;&#34;
+    if adjusted:
+        print(f&#34;Adjusting model back to {current_max_tokens} tokens and {current_max_input_tokens} input tokens.&#34;)
+        self.adjust_tokens(current_max_tokens, current_max_input_tokens)
+    return output</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.LlamaAI.is_within_input_limit"><code class="name flex">
+<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, text: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if the length of the given text is within the maximum allowed input tokens for the current llm.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>The text to be checked.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the length of the text is within the maximum allowed input tokens, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_within_input_limit(self, text: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Check if the length of the given text is within the maximum allowed input tokens for the current llm.
+
+    Args:
+        text (str): The text to be checked.
+
+    Returns:
+        bool: True if the length of the text is within the maximum allowed input tokens, False otherwise.
+    &#34;&#34;&#34;
+    return self.count_tokens(text) &lt;= self.max_input_tokens</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.LlamaAI.load"><code class="name flex">
+<span>def <span class="ident">load</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load the model and tokenizer using the model_path, max_tokens, and max_input_tokens attributes.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load(self) -&gt; None:
+    &#34;&#34;&#34;
+    Load the model and tokenizer using the model_path, max_tokens, and max_input_tokens attributes.
+    &#34;&#34;&#34;
+    print(f&#34;Loading model from {self.model_path}...&#34;)
+    self.llm = Llama(model_path=self.model_path, verbose=False, n_ctx=self.max_tokens)
+    self.tokenizer = LlamaTokenizer(self.llm)
+    self._loaded = True</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.LlamaAI.tokenize"><code class="name flex">
+<span>def <span class="ident">tokenize</span></span>(<span>self, text: str) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create and return tokens for the given text.</p>
+<h2 id="parameters">Parameters</h2>
+<p>text (str): The input text.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>A list of tokens.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tokenize(self, text: str) -&gt; list:
+    &#34;&#34;&#34;
+    Create and return tokens for the given text.
+
+    Parameters:
+        text (str): The input text.
+
+    Returns:
+        list: A list of tokens.
+    &#34;&#34;&#34;
+    ts = self.tokenizer.encode(text)
+    return ts</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.LlamaAI.try_fixing_format"><code class="name flex">
+<span>def <span class="ident">try_fixing_format</span></span>(<span>self, text: str, only_letters: bool = False, rem_list_formatting: bool = False) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fixes the format of the given text by removing extra newlines and non-letter characters if specified.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>The text to be fixed.</dd>
+<dt><strong><code>only_letters</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, only letters will be kept. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The fixed text.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def try_fixing_format(self, text: str, only_letters: bool = False, rem_list_formatting: bool = False) -&gt; str:
+    &#34;&#34;&#34;
+    Fixes the format of the given text by removing extra newlines and non-letter characters if specified.
+
+    Args:
+        text (str): The text to be fixed.
+        only_letters (bool, optional): If True, only letters will be kept. Defaults to False.
+
+    Returns:
+        str: The fixed text.
+    &#34;&#34;&#34;
+    print(&#34;Trying to fix formatting... this might have some undersired effects&#34;)
+    changes = False
+    if &#34;\n\n&#34; in text:
+        #split text in that place
+        core_info = text.split(&#34;\n\n&#34;)[1:]
+        text = &#34; &#34;.join(core_info)
+        changes = True
+    if &#34;\n&#34; in text:
+        text = text.replace(&#34;\n&#34;, &#34; &#34;)
+        changes = True
+    if only_letters:
+        text = remove_non_letters(text)
+        changes = True
+    if rem_list_formatting:
+        text = remove_list_formatting(text)
+    if changes:
+        print(&#34;The text has been sucessfully modified.&#34;)
+    return text</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.LlamaAI.untokenize"><code class="name flex">
+<span>def <span class="ident">untokenize</span></span>(<span>self, tokens: list) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Decode tokens into a string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tokens</code></strong> :&ensp;<code>list</code></dt>
+<dd>The list of tokens to decode.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The decoded string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def untokenize(self, tokens: list) -&gt; str:
+    &#34;&#34;&#34;
+    Decode tokens into a string.
+
+    Args:
+        tokens (list): The list of tokens to decode.
+
+    Returns:
+        str: The decoded string.
+    &#34;&#34;&#34;
+    return self.tokenizer.decode(tokens)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="glai.back_end.ModelDB"><code class="flex name class">
+<span>class <span class="ident">ModelDB</span></span>
+<span>(</span><span>model_db_dir: Optional[str] = None, copy_examples=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ModelDB:
+    def __init__(self, model_db_dir:Optional[str]=None, copy_examples=True):
+        self.gguf_db_dir = None
+        self.models = []
+
+        if model_db_dir is None:
+            model_db_dir = MODEL_EXAMPLES_DB_DIR
+        self.set_model_db_dir(model_db_dir)
+        if model_db_dir != MODEL_EXAMPLES_DB_DIR:
+            print(f&#34;Copying examples to {model_db_dir}...&#34;)
+            if copy_examples:
+                for file in list_files_in_dir(MODEL_EXAMPLES_DB_DIR, show_directories=False, only_with_extensions=[&#34;.json&#34;], absolute=False):
+                    f_mdt = ModelData.from_json(join_paths(MODEL_EXAMPLES_DB_DIR, file))
+                    f_mdt.set_save_dir(model_db_dir)
+                    f_mdt.save_json()
+                    print(f&#34;Saved a copy of {file} to {model_db_dir}.&#34;)
+        else:
+            print(f&#34;Using default model db dir: {model_db_dir}, changes here will be visible and accessible globaly. If you would like to work with a specific db_dir provide it as an argument to the ModelDB constructor.&#34;)
+        self.load_models()
+    
+    def set_model_db_dir(self, model_db_dir:str) -&gt; None:
+        print(f&#34;ModelDB dir set to {model_db_dir}.&#34;)
+        self.gguf_db_dir = create_dir(model_db_dir)
+    
+    def load_models(self) -&gt; None:
+        self.models = []
+        files = list_files_in_dir(self.gguf_db_dir, show_directories=False, show_files=True, only_with_extensions=[&#34;.json&#34;])
+        for file in files:
+            try:
+                file_path = join_paths(self.gguf_db_dir, file)
+                model_data = ModelData.from_json(file_path)
+                self.models.append(model_data)
+            except Exception as e:
+                print(f&#34;Error trying to load from {file_path}: \t\n{e}, \nskipping...&#34;)
+                continue
+        print(f&#34;Loaded {len(self.models)} models from {self.gguf_db_dir}.&#34;)
+
+    def find_models(self, name_query:Optional[str]=None, 
+                   quantization_query:Optional[str]=None, 
+                   keywords_query:Optional[str]=None,
+                   treshold:float=0.5) -&gt; Union[None, list]:
+        if name_query is None and quantization_query is None and keywords_query is None:
+            return None
+        scoring_models_dict = {}
+        for i, model in enumerate(self.models):
+            scoring_models_dict[i] = {&#34;model&#34;:model, &#34;score&#34;:0}
+        for id in scoring_models_dict.keys():
+            model = scoring_models_dict[id][&#34;model&#34;]
+            model:ModelData = model
+            model_name = model.name
+            model_quantization = model.model_quantization
+            model_keywords = model.keywords
+            if name_query is not None:
+                #print(f&#34;Searching for name: {name_query}&#34;)
+                top_name_score = 0
+                for model_subname in model_name.split(&#34;-&#34;):
+                    name_score = compare_two_strings(name_query, model_subname)
+                    if name_score &gt; top_name_score:
+                        top_name_score = name_score
+                if top_name_score &gt; treshold:
+                    scoring_models_dict[id][&#34;score&#34;] += top_name_score
+                #print(f&#34;Model {model_name} {model_quantization} top score: {top_name_score} treshold: {treshold}&#34;)
+            if quantization_query is not None:
+                #print(f&#34;Searching for quantization: {quantization_query}&#34;)
+                quantization_score = compare_two_strings(quantization_query, model_quantization)
+                if quantization_score &gt; treshold:
+                    scoring_models_dict[id][&#34;score&#34;] += quantization_score
+                #print(f&#34;Model {model_name} {model_quantization} score: {quantization_score} treshold: {treshold}&#34;)
+            if keywords_query is not None:
+                #print(f&#34;Searching for keyword: {keywords_query}&#34;)
+                best_keyword_score = 0
+                for keyword in model_keywords:
+                    keyword_score = compare_two_strings(keywords_query, keyword)
+                    if keyword_score &gt; best_keyword_score:
+                        best_keyword_score = keyword_score
+                if best_keyword_score &gt; treshold:
+                    scoring_models_dict[id][&#34;score&#34;] += best_keyword_score
+                #print(f&#34;Model {model_name} {model_quantization} score: {best_keyword_score} treshold: {treshold}&#34;)
+            #print(f&#34;Model {model_name} {model_quantization} score: {scoring_models_dict[id][&#39;score&#39;]}&#34;)
+        sorted_models = sorted(scoring_models_dict.items(), key=lambda x: x[1][&#34;score&#34;], reverse=True)
+        #keep just the list of model data
+        sorted_models = [x[1][&#34;model&#34;] for x in sorted_models]
+        #print(f&#34;Found {len(sorted_models)} models.&#34;)
+        #print(sorted_models)
+        return sorted_models
+    
+    def find_model(self, name_query:Optional[str]=None, 
+                   quantization_query:Optional[str]=None, 
+                   keywords_query:Optional[str]=None,
+                   ) -&gt; Optional[ModelData]:
+        sorted_models = self.find_models(name_query, quantization_query, keywords_query)
+        if sorted_models is None:
+            return None
+        else:
+            #print(f&#34;Found {len(sorted_models)} models.&#34;)
+            #print(sorted_models)
+            return sorted_models[0]
+    def get_model_by_url(self, url:str) -&gt; Optional[ModelData]:
+        for model in self.models:
+            model:ModelData = model
+            if model.gguf_url == url:
+                return model
+        return None    
+    def add_model_data(self, model_data:ModelData, save_model=True) -&gt; None:
+        self.models.append(model_data)
+        if save_model:
+            model_data.save_json()
+    
+    def add_model_by_url(self, url:str, ) -&gt; None:
+        model_data = ModelData(url, db_dir=self.gguf_db_dir)
+        self.add_model_data(model_data)
+
+    def add_model_by_json(self, json_file_path:str) -&gt; None:
+        model_data = ModelData.from_json(json_file_path)
+        self.add_model_data(model_data)
+
+    def save_all_models(self) -&gt; None:
+        for model in self.models:
+            model:ModelData = model
+            model.save_json()
+                
+    @staticmethod
+    def _model_links_from_repo(hf_repo_url:str):
+        #extract models from hf 
+        response = requests.get(hf_repo_url)
+        html = response.text
+        soup = bs4.BeautifulSoup(html, &#39;html.parser&#39;)
+        #find all links that end with .gguf
+        print(f&#34;Looking for {hf_repo_url} gguf files...&#34;)
+        model_links = []
+        for link in soup.find_all(&#39;a&#39;):
+            href = link.get(&#39;href&#39;)
+            if href.endswith(&#34;.gguf&#34;):
+                print(f&#34;Found model: {href}&#34;)
+                model_links.append(href)
+        return model_links
+    def load_models_data_from_repo(self, hf_repo_url:str, 
+                        user_tags:Optional[list[str]]=None,
+                        ai_tags:Optional[list[str]]=None,
+                        keywords:Optional[list[str]]=None, 
+                        description:Optional[str]=None):  
+        #create model data from hf repo
+        model_links = ModelDB._model_links_from_repo(hf_repo_url)
+        model_datas = []
+        for model_link in model_links:
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_datas.append(model_data)
+            model_data.save_json()
+        self.models.extend(model_datas)
+        return model_datas
+
+    def import_models_from_repo(self, hf_repo_url:str,
+                        user_tags:Optional[list[str]]=None,
+                        ai_tags:Optional[list[str]]=None,
+                        keywords:Optional[list[str]]=None, 
+                        description:Optional[str]=None,
+                        replace_existing:bool=False,
+                        ):  
+        #create model data from hf repo
+        model_links = ModelDB._model_links_from_repo(hf_repo_url)
+        for model_link in model_links:
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data.save_json(replace_existing=replace_existing)
+        self.load_models()
+    
+    def list_available_models(self) -&gt; list[str]:
+        print(f&#34;Available models in {self.gguf_db_dir}:&#34;)
+        models = []
+        for model in self.models:
+            model:ModelData = model
+            if model.name not in models:
+                models.append(model.name)
+        return models
+    
+    def list_models_quantizations(self, model_name:str) -&gt; list[str]:
+        quantizations = []
+        for model in self.models:
+            model:ModelData = model
+            if model.name == model_name:
+                quantizations.append(model.model_quantization)
+        return quantizations
+
+    def show_db_info(self) -&gt; None:
+        print(f&#34;ModelDB summary:&#34;)
+        print(f&#34;ModelDB dir: {self.gguf_db_dir}&#34;)
+        print(f&#34;Number of models: {len(self.models)}&#34;)
+        print(f&#34;Available models:&#34;)
+        models_info = {}
+        for model in self.models:
+            model:ModelData = model
+            if model.name not in models_info.keys():
+                models_info[model.name] = {}
+                models_info[model.name][&#34;quantizations&#34;] = []
+                models_info[model.name][&#34;description&#34;] = model.description
+                models_info[model.name][&#34;keywords&#34;] = model.keywords
+            if model.model_quantization not in models_info[model.name][&#34;quantizations&#34;]:
+                models_info[model.name][&#34;quantizations&#34;].append(model.model_quantization)
+        
+        for model_name, models_info in models_info.items():
+            print(f&#34;\t{model_name}:&#34;)
+            print(f&#34;\t\tQuantizations: {models_info[&#39;quantizations&#39;]}&#34;)
+            print(f&#34;\t\tKeywords: {models_info[&#39;keywords&#39;]}&#34;)
+            print(f&#34;\t\tDescription: {models_info[&#39;description&#39;]}&#34;)
+            print(f&#34;\t-------------------------------&#34;)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="glai.back_end.ModelDB.add_model_by_json"><code class="name flex">
+<span>def <span class="ident">add_model_by_json</span></span>(<span>self, json_file_path: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_model_by_json(self, json_file_path:str) -&gt; None:
+    model_data = ModelData.from_json(json_file_path)
+    self.add_model_data(model_data)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.add_model_by_url"><code class="name flex">
+<span>def <span class="ident">add_model_by_url</span></span>(<span>self, url: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_model_by_url(self, url:str, ) -&gt; None:
+    model_data = ModelData(url, db_dir=self.gguf_db_dir)
+    self.add_model_data(model_data)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.add_model_data"><code class="name flex">
+<span>def <span class="ident">add_model_data</span></span>(<span>self, model_data: <a title="glai.back_end.model_db.model_data.ModelData" href="model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a>, save_model=True) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_model_data(self, model_data:ModelData, save_model=True) -&gt; None:
+    self.models.append(model_data)
+    if save_model:
+        model_data.save_json()</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.find_model"><code class="name flex">
+<span>def <span class="ident">find_model</span></span>(<span>self, name_query: Optional[str] = None, quantization_query: Optional[str] = None, keywords_query: Optional[str] = None) ‑> Optional[<a title="glai.back_end.model_db.model_data.ModelData" href="model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_model(self, name_query:Optional[str]=None, 
+               quantization_query:Optional[str]=None, 
+               keywords_query:Optional[str]=None,
+               ) -&gt; Optional[ModelData]:
+    sorted_models = self.find_models(name_query, quantization_query, keywords_query)
+    if sorted_models is None:
+        return None
+    else:
+        #print(f&#34;Found {len(sorted_models)} models.&#34;)
+        #print(sorted_models)
+        return sorted_models[0]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.find_models"><code class="name flex">
+<span>def <span class="ident">find_models</span></span>(<span>self, name_query: Optional[str] = None, quantization_query: Optional[str] = None, keywords_query: Optional[str] = None, treshold: float = 0.5) ‑> Optional[None]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_models(self, name_query:Optional[str]=None, 
+               quantization_query:Optional[str]=None, 
+               keywords_query:Optional[str]=None,
+               treshold:float=0.5) -&gt; Union[None, list]:
+    if name_query is None and quantization_query is None and keywords_query is None:
+        return None
+    scoring_models_dict = {}
+    for i, model in enumerate(self.models):
+        scoring_models_dict[i] = {&#34;model&#34;:model, &#34;score&#34;:0}
+    for id in scoring_models_dict.keys():
+        model = scoring_models_dict[id][&#34;model&#34;]
+        model:ModelData = model
+        model_name = model.name
+        model_quantization = model.model_quantization
+        model_keywords = model.keywords
+        if name_query is not None:
+            #print(f&#34;Searching for name: {name_query}&#34;)
+            top_name_score = 0
+            for model_subname in model_name.split(&#34;-&#34;):
+                name_score = compare_two_strings(name_query, model_subname)
+                if name_score &gt; top_name_score:
+                    top_name_score = name_score
+            if top_name_score &gt; treshold:
+                scoring_models_dict[id][&#34;score&#34;] += top_name_score
+            #print(f&#34;Model {model_name} {model_quantization} top score: {top_name_score} treshold: {treshold}&#34;)
+        if quantization_query is not None:
+            #print(f&#34;Searching for quantization: {quantization_query}&#34;)
+            quantization_score = compare_two_strings(quantization_query, model_quantization)
+            if quantization_score &gt; treshold:
+                scoring_models_dict[id][&#34;score&#34;] += quantization_score
+            #print(f&#34;Model {model_name} {model_quantization} score: {quantization_score} treshold: {treshold}&#34;)
+        if keywords_query is not None:
+            #print(f&#34;Searching for keyword: {keywords_query}&#34;)
+            best_keyword_score = 0
+            for keyword in model_keywords:
+                keyword_score = compare_two_strings(keywords_query, keyword)
+                if keyword_score &gt; best_keyword_score:
+                    best_keyword_score = keyword_score
+            if best_keyword_score &gt; treshold:
+                scoring_models_dict[id][&#34;score&#34;] += best_keyword_score
+            #print(f&#34;Model {model_name} {model_quantization} score: {best_keyword_score} treshold: {treshold}&#34;)
+        #print(f&#34;Model {model_name} {model_quantization} score: {scoring_models_dict[id][&#39;score&#39;]}&#34;)
+    sorted_models = sorted(scoring_models_dict.items(), key=lambda x: x[1][&#34;score&#34;], reverse=True)
+    #keep just the list of model data
+    sorted_models = [x[1][&#34;model&#34;] for x in sorted_models]
+    #print(f&#34;Found {len(sorted_models)} models.&#34;)
+    #print(sorted_models)
+    return sorted_models</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.get_model_by_url"><code class="name flex">
+<span>def <span class="ident">get_model_by_url</span></span>(<span>self, url: str) ‑> Optional[<a title="glai.back_end.model_db.model_data.ModelData" href="model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_model_by_url(self, url:str) -&gt; Optional[ModelData]:
+    for model in self.models:
+        model:ModelData = model
+        if model.gguf_url == url:
+            return model
+    return None    </code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.import_models_from_repo"><code class="name flex">
+<span>def <span class="ident">import_models_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None, replace_existing: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_models_from_repo(self, hf_repo_url:str,
+                    user_tags:Optional[list[str]]=None,
+                    ai_tags:Optional[list[str]]=None,
+                    keywords:Optional[list[str]]=None, 
+                    description:Optional[str]=None,
+                    replace_existing:bool=False,
+                    ):  
+    #create model data from hf repo
+    model_links = ModelDB._model_links_from_repo(hf_repo_url)
+    for model_link in model_links:
+        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+        model_data.save_json(replace_existing=replace_existing)
+    self.load_models()</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.list_available_models"><code class="name flex">
+<span>def <span class="ident">list_available_models</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_available_models(self) -&gt; list[str]:
+    print(f&#34;Available models in {self.gguf_db_dir}:&#34;)
+    models = []
+    for model in self.models:
+        model:ModelData = model
+        if model.name not in models:
+            models.append(model.name)
+    return models</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.list_models_quantizations"><code class="name flex">
+<span>def <span class="ident">list_models_quantizations</span></span>(<span>self, model_name: str) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_models_quantizations(self, model_name:str) -&gt; list[str]:
+    quantizations = []
+    for model in self.models:
+        model:ModelData = model
+        if model.name == model_name:
+            quantizations.append(model.model_quantization)
+    return quantizations</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.load_models"><code class="name flex">
+<span>def <span class="ident">load_models</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_models(self) -&gt; None:
+    self.models = []
+    files = list_files_in_dir(self.gguf_db_dir, show_directories=False, show_files=True, only_with_extensions=[&#34;.json&#34;])
+    for file in files:
+        try:
+            file_path = join_paths(self.gguf_db_dir, file)
+            model_data = ModelData.from_json(file_path)
+            self.models.append(model_data)
+        except Exception as e:
+            print(f&#34;Error trying to load from {file_path}: \t\n{e}, \nskipping...&#34;)
+            continue
+    print(f&#34;Loaded {len(self.models)} models from {self.gguf_db_dir}.&#34;)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.load_models_data_from_repo"><code class="name flex">
+<span>def <span class="ident">load_models_data_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_models_data_from_repo(self, hf_repo_url:str, 
+                    user_tags:Optional[list[str]]=None,
+                    ai_tags:Optional[list[str]]=None,
+                    keywords:Optional[list[str]]=None, 
+                    description:Optional[str]=None):  
+    #create model data from hf repo
+    model_links = ModelDB._model_links_from_repo(hf_repo_url)
+    model_datas = []
+    for model_link in model_links:
+        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+        model_datas.append(model_data)
+        model_data.save_json()
+    self.models.extend(model_datas)
+    return model_datas</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.save_all_models"><code class="name flex">
+<span>def <span class="ident">save_all_models</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_all_models(self) -&gt; None:
+    for model in self.models:
+        model:ModelData = model
+        model.save_json()</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.set_model_db_dir"><code class="name flex">
+<span>def <span class="ident">set_model_db_dir</span></span>(<span>self, model_db_dir: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_model_db_dir(self, model_db_dir:str) -&gt; None:
+    print(f&#34;ModelDB dir set to {model_db_dir}.&#34;)
+    self.gguf_db_dir = create_dir(model_db_dir)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelDB.show_db_info"><code class="name flex">
+<span>def <span class="ident">show_db_info</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show_db_info(self) -&gt; None:
+    print(f&#34;ModelDB summary:&#34;)
+    print(f&#34;ModelDB dir: {self.gguf_db_dir}&#34;)
+    print(f&#34;Number of models: {len(self.models)}&#34;)
+    print(f&#34;Available models:&#34;)
+    models_info = {}
+    for model in self.models:
+        model:ModelData = model
+        if model.name not in models_info.keys():
+            models_info[model.name] = {}
+            models_info[model.name][&#34;quantizations&#34;] = []
+            models_info[model.name][&#34;description&#34;] = model.description
+            models_info[model.name][&#34;keywords&#34;] = model.keywords
+        if model.model_quantization not in models_info[model.name][&#34;quantizations&#34;]:
+            models_info[model.name][&#34;quantizations&#34;].append(model.model_quantization)
+    
+    for model_name, models_info in models_info.items():
+        print(f&#34;\t{model_name}:&#34;)
+        print(f&#34;\t\tQuantizations: {models_info[&#39;quantizations&#39;]}&#34;)
+        print(f&#34;\t\tKeywords: {models_info[&#39;keywords&#39;]}&#34;)
+        print(f&#34;\t\tDescription: {models_info[&#39;description&#39;]}&#34;)
+        print(f&#34;\t-------------------------------&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="glai.back_end.ModelData"><code class="flex name class">
+<span>class <span class="ident">ModelData</span></span>
+<span>(</span><span>gguf_url: str, db_dir: str, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ModelData:
+    def __init__(self, 
+        gguf_url:str,
+        db_dir:str,
+        user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), 
+        ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+        description:Optional[str] = None, 
+        keywords:Optional[list] = None,
+        ):
+
+        #init all as None
+        self.gguf_url = None
+        self.gguf_file_path = None
+        self.name = None
+        self.model_quantization = None
+        self.description = None
+        self.keywords = None
+        self.user_tags = None
+        self.ai_tags = None
+        self.save_dir = None
+
+        #set values
+        self.gguf_url = gguf_url
+        self.set_save_dir(db_dir)
+        self.gguf_file_path = self._url_to_file_path(db_dir, gguf_url) 
+        self.name = self._url_extract_model_name(gguf_url)
+        self.model_quantization = self._url_extract_quantization(gguf_url)
+        self.description = description if description is not None else &#34;&#34;
+        self.keywords = keywords if keywords is not None else []
+        self.set_tags(ai_tags, user_tags)
+
+    def __str__(self) -&gt; str:
+        t = f&#34;&#34;&#34;ModelData(
+            ---required---
+            gguf_url: {self.gguf_url},
+            ---required with defaults--- 
+            save_dir: {self.save_dir},
+            user_tags: {self.user_tags},
+            ai_tags: {self.ai_tags},
+            ---optionally provided, no defaults---
+            description: {self.description},
+            keywords: {self.keywords},
+            ---automatically generated---
+            gguf_file_path: {self.gguf_file_path},
+            model_name: {self.name},
+            model_quantization: {self.model_quantization}
+        )&#34;&#34;&#34;
+        return t
+    
+    def __repr__(self) -&gt; str:
+        return self.__str__()
+    
+    def __dict__(self) -&gt; dict:
+        return self.to_dict()
+    
+    @staticmethod
+    def _hf_url_to_download_url(url) -&gt; str:
+        #to download replace blob with resolve and add download=true
+        if not &#34;huggingface.co&#34; in url:
+            raise ValueError(f&#34;Invalid url: {url}, must be a huggingface.co url, other sources aren&#39;t implemented yet.&#34;)
+        url = url.replace(&#34;blob&#34;, &#34;resolve&#34;)
+        if url.endswith(&#34;/&#34;):
+            url = url[:-1]
+        if not url.endswith(&#34;?download=true&#34;):
+            url = url + &#34;?download=true&#34;
+        return url
+    
+    @staticmethod    
+    def _url_to_file_path(save_dir:str, url:str)-&gt;str:
+        #create_dirs_for(save_dir)
+        file_path = join_paths(save_dir, ModelData._url_extract_file_name(url))
+        return file_path 
+    
+    @staticmethod
+    def _url_extract_file_name(url:str) -&gt; str:
+        f_name =  url.split(&#34;/&#34;)[-1]
+        if is_file_format(f_name, &#34;.gguf&#34;):
+            return f_name
+        else:
+            raise ValueError(f&#34;File {f_name} is not a gguf file.&#34;)
+    
+    @staticmethod
+    def _url_extract_quantization(url:str) -&gt; str:
+        quantization = ModelData._url_extract_file_name(url).split(&#34;.&#34;)[-2]
+        return quantization
+    
+    @staticmethod
+    def _url_extract_model_name(url:str) -&gt; str:
+        model_name = ModelData._url_extract_file_name(url).split(&#34;.&#34;)[0:-2]
+        return &#34;.&#34;.join(model_name)
+
+    def set_ai_tags(self, ai_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
+        if isinstance(ai_tags, dict):
+            if &#34;open&#34; in ai_tags and &#34;close&#34; in ai_tags:
+                self.ai_tags = ai_tags
+            else:
+                raise ValueError(f&#34;Invalid user tags: {ai_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+        elif isinstance(ai_tags, set) or isinstance(ai_tags, list) or isinstance(ai_tags, tuple):
+            self.ai_tags = {
+                &#34;open&#34;: ai_tags[0],
+                &#34;close&#34;: ai_tags[1]
+            }
+        else:
+            raise TypeError(f&#34;Invalid type for user tags: {type(ai_tags)}, must be dict, set or list.&#34;)
+        
+    def set_user_tags(self, user_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
+        if isinstance(user_tags, dict):
+            if &#34;open&#34; in user_tags and &#34;close&#34; in user_tags:
+                self.user_tags = user_tags
+            else:
+                raise ValueError(f&#34;Invalid user tags: {user_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+        elif isinstance(user_tags, set) or isinstance(user_tags, list) or isinstance(user_tags, tuple):
+            self.user_tags = {
+                &#34;open&#34;: user_tags[0],
+                &#34;close&#34;: user_tags[1]
+            }
+        else:
+            raise TypeError(f&#34;Invalid type for user tags: {type(user_tags)}, must be dict, set or list.&#34;)
+
+    def set_tags(self, 
+                 ai_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+                 user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]]) -&gt; None:
+        if ai_tags is not None:
+            self.set_ai_tags(ai_tags)
+        if user_tags is not None:
+            self.set_user_tags(user_tags)
+
+    def set_save_dir(self, save_dir:str) -&gt; None:
+        self.save_dir = save_dir
+        self.gguf_file_path = self._url_to_file_path(save_dir, self.gguf_url)
+
+    def to_dict(self):
+        model_data = {
+            &#34;url&#34;: self.gguf_url,
+            &#34;gguf_file_path&#34;: self.gguf_file_path,
+            &#34;model_name&#34;: self.name,
+            &#34;model_quantization&#34;: self.model_quantization, 
+            &#34;description&#34;: self.description,
+            &#34;keywords&#34;: self.keywords,
+            &#34;user_tags&#34;: self.user_tags,
+            &#34;ai_tags&#34;: self.ai_tags,
+            &#34;save_dir&#34;: self.save_dir,
+        }
+        return model_data
+    @staticmethod
+    def from_dict(model_data:dict) -&gt; &#34;ModelData&#34;:
+        url = model_data[&#34;url&#34;]
+        save_dir = model_data[&#34;save_dir&#34;]
+        description = model_data[&#34;description&#34;] if &#34;description&#34; in model_data else None
+        keywords = model_data[&#34;keywords&#34;] if &#34;keywords&#34; in model_data else None
+        user_tags = model_data[&#34;user_tags&#34;]
+        ai_tags = model_data[&#34;ai_tags&#34;]
+        new_model_data = ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+        return new_model_data
+
+    def is_downloaded(self) -&gt; bool:
+        &#34;&#34;&#34;Checks if the model file is downloaded.&#34;&#34;&#34;
+        return does_file_exist(self.gguf_file_path)
+    
+    def has_json(self) -&gt; bool:
+        &#34;&#34;&#34;Checks if the model is in the db.&#34;&#34;&#34;
+        return does_file_exist(self.json_path())
+    
+    def download_gguf(self, force_redownload:bool=False) -&gt; str:
+        print(f&#34;Preparing {self.gguf_file_path}\n for {self.name} : {self.model_quantization}...&#34;)
+        if not does_file_exist(self.gguf_file_path) or force_redownload:
+            print(f&#34;Downloading {self.name} : {self.model_quantization}...&#34;)
+            gguf_download_url = self._hf_url_to_download_url(self.gguf_url)
+            response = requests.get(gguf_download_url, stream=True)
+            total_size = int(response.headers.get(&#39;content-length&#39;, 0))
+            block_size = 1024000  # 100 KB
+            progress_bar = f&#34;Please wait, downloading {self.name} : {self.model_quantization}: {{0:0.2f}}% | {{1:0.3f}}/{{2:0.3f}} GB) | {{3:0.3f}} MB/s&#34;
+            unfinished_save_path = self.gguf_file_path + &#34;.unfinished&#34;
+            with open(unfinished_save_path, &#34;wb&#34;) as f:
+                downloaded_size = 0
+                start_time = time.time()
+                elapsed_time = 0
+                downloaded_since_last = 0
+                for data in response.iter_content(block_size):
+                    downloaded_size += len(data)
+                    downloaded_since_last += len(data)
+                    f.write(data)
+                    elapsed_time = time.time() - start_time
+                    download_speed = (downloaded_since_last*10/(1024**3)) / elapsed_time if elapsed_time &gt; 0 else 0
+                    progress = downloaded_size / total_size * 100
+                    gb_downloaded = downloaded_size/(1024**3)
+                    gb_total = total_size/(1024**3)
+                    if elapsed_time &gt;= 1:
+                        print(progress_bar.format(progress, gb_downloaded, gb_total, download_speed), end=&#39;\r&#39;)
+                        downloaded_since_last = 0
+                        start_time = time.time()
+            print(progress_bar.format(100, gb_downloaded, gb_total, download_speed))
+            rename_file(unfinished_save_path, self.gguf_file_path)
+        else:
+            print(f&#34;File {self.gguf_file_path} already exists. Skipping download.&#34;)
+        return self.gguf_file_path
+    
+    def json_path(self) -&gt; str:
+        return change_extension(self.gguf_file_path, &#34;.json&#34;)
+    
+    def save_json(self, replace_existing:bool=True) -&gt; str:
+        if replace_existing or not self.has_json():
+            save_json_file(self.json_path(), self.to_dict())
+        else:
+            print(f&#34;File {self.json_path()} already exists and replace_existing={replace_existing}. Skipping save.&#34;)
+        return self.json_path()
+    
+    @staticmethod
+    def from_json(json_file_path:str) -&gt; &#34;ModelData&#34;:
+        model_data = load_json_file(json_file_path)
+        return ModelData.from_dict(model_data)
+
+    @staticmethod
+    def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+        return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+
+    def model_path(self) -&gt; str:
+        return self.gguf_file_path
+
+    @staticmethod
+    def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+        #creates a model where url is also the file path
+        save_dir = get_directory(gguf_file_path) if save_dir is None else save_dir
+        url = gguf_file_path
+        return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+
+    def get_ai_tag_open(self) -&gt; str:
+        return self.ai_tags[&#34;open&#34;]
+    
+    def get_ai_tag_close(self) -&gt; str:
+        return self.ai_tags[&#34;close&#34;]
+    
+    def get_user_tag_open(self) -&gt; str:
+        return self.user_tags[&#34;open&#34;]
+    
+    def get_user_tag_close(self) -&gt; str:
+        return self.user_tags[&#34;close&#34;]
+    
+    def get_ai_tags(self) -&gt; list[str]:
+        return [self.get_ai_tag_open(), self.get_ai_tag_close()]
+    
+    def get_user_tags(self) -&gt; list[str]:
+        return [self.get_user_tag_open(), self.get_user_tag_close()]</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="glai.back_end.ModelData.from_dict"><code class="name flex">
+<span>def <span class="ident">from_dict</span></span>(<span>model_data: dict) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def from_dict(model_data:dict) -&gt; &#34;ModelData&#34;:
+    url = model_data[&#34;url&#34;]
+    save_dir = model_data[&#34;save_dir&#34;]
+    description = model_data[&#34;description&#34;] if &#34;description&#34; in model_data else None
+    keywords = model_data[&#34;keywords&#34;] if &#34;keywords&#34; in model_data else None
+    user_tags = model_data[&#34;user_tags&#34;]
+    ai_tags = model_data[&#34;ai_tags&#34;]
+    new_model_data = ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+    return new_model_data</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.from_file"><code class="name flex">
+<span>def <span class="ident">from_file</span></span>(<span>gguf_file_path: str, save_dir: Optional[str] = None, user_tags: Union[dict, list, set] = ('[INST]', '[/INST]'), ai_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+    #creates a model where url is also the file path
+    save_dir = get_directory(gguf_file_path) if save_dir is None else save_dir
+    url = gguf_file_path
+    return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.from_json"><code class="name flex">
+<span>def <span class="ident">from_json</span></span>(<span>json_file_path: str) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def from_json(json_file_path:str) -&gt; &#34;ModelData&#34;:
+    model_data = load_json_file(json_file_path)
+    return ModelData.from_dict(model_data)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.from_url"><code class="name flex">
+<span>def <span class="ident">from_url</span></span>(<span>url: str, save_dir: str, user_tags: Union[dict, list, set] = ('[INST]', '[/INST]'), ai_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+    return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="glai.back_end.ModelData.download_gguf"><code class="name flex">
+<span>def <span class="ident">download_gguf</span></span>(<span>self, force_redownload: bool = False) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def download_gguf(self, force_redownload:bool=False) -&gt; str:
+    print(f&#34;Preparing {self.gguf_file_path}\n for {self.name} : {self.model_quantization}...&#34;)
+    if not does_file_exist(self.gguf_file_path) or force_redownload:
+        print(f&#34;Downloading {self.name} : {self.model_quantization}...&#34;)
+        gguf_download_url = self._hf_url_to_download_url(self.gguf_url)
+        response = requests.get(gguf_download_url, stream=True)
+        total_size = int(response.headers.get(&#39;content-length&#39;, 0))
+        block_size = 1024000  # 100 KB
+        progress_bar = f&#34;Please wait, downloading {self.name} : {self.model_quantization}: {{0:0.2f}}% | {{1:0.3f}}/{{2:0.3f}} GB) | {{3:0.3f}} MB/s&#34;
+        unfinished_save_path = self.gguf_file_path + &#34;.unfinished&#34;
+        with open(unfinished_save_path, &#34;wb&#34;) as f:
+            downloaded_size = 0
+            start_time = time.time()
+            elapsed_time = 0
+            downloaded_since_last = 0
+            for data in response.iter_content(block_size):
+                downloaded_size += len(data)
+                downloaded_since_last += len(data)
+                f.write(data)
+                elapsed_time = time.time() - start_time
+                download_speed = (downloaded_since_last*10/(1024**3)) / elapsed_time if elapsed_time &gt; 0 else 0
+                progress = downloaded_size / total_size * 100
+                gb_downloaded = downloaded_size/(1024**3)
+                gb_total = total_size/(1024**3)
+                if elapsed_time &gt;= 1:
+                    print(progress_bar.format(progress, gb_downloaded, gb_total, download_speed), end=&#39;\r&#39;)
+                    downloaded_since_last = 0
+                    start_time = time.time()
+        print(progress_bar.format(100, gb_downloaded, gb_total, download_speed))
+        rename_file(unfinished_save_path, self.gguf_file_path)
+    else:
+        print(f&#34;File {self.gguf_file_path} already exists. Skipping download.&#34;)
+    return self.gguf_file_path</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.get_ai_tag_close"><code class="name flex">
+<span>def <span class="ident">get_ai_tag_close</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_ai_tag_close(self) -&gt; str:
+    return self.ai_tags[&#34;close&#34;]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.get_ai_tag_open"><code class="name flex">
+<span>def <span class="ident">get_ai_tag_open</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_ai_tag_open(self) -&gt; str:
+    return self.ai_tags[&#34;open&#34;]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.get_ai_tags"><code class="name flex">
+<span>def <span class="ident">get_ai_tags</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_ai_tags(self) -&gt; list[str]:
+    return [self.get_ai_tag_open(), self.get_ai_tag_close()]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.get_user_tag_close"><code class="name flex">
+<span>def <span class="ident">get_user_tag_close</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_user_tag_close(self) -&gt; str:
+    return self.user_tags[&#34;close&#34;]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.get_user_tag_open"><code class="name flex">
+<span>def <span class="ident">get_user_tag_open</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_user_tag_open(self) -&gt; str:
+    return self.user_tags[&#34;open&#34;]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.get_user_tags"><code class="name flex">
+<span>def <span class="ident">get_user_tags</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_user_tags(self) -&gt; list[str]:
+    return [self.get_user_tag_open(), self.get_user_tag_close()]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.has_json"><code class="name flex">
+<span>def <span class="ident">has_json</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Checks if the model is in the db.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_json(self) -&gt; bool:
+    &#34;&#34;&#34;Checks if the model is in the db.&#34;&#34;&#34;
+    return does_file_exist(self.json_path())</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.is_downloaded"><code class="name flex">
+<span>def <span class="ident">is_downloaded</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Checks if the model file is downloaded.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_downloaded(self) -&gt; bool:
+    &#34;&#34;&#34;Checks if the model file is downloaded.&#34;&#34;&#34;
+    return does_file_exist(self.gguf_file_path)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.json_path"><code class="name flex">
+<span>def <span class="ident">json_path</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def json_path(self) -&gt; str:
+    return change_extension(self.gguf_file_path, &#34;.json&#34;)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.model_path"><code class="name flex">
+<span>def <span class="ident">model_path</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def model_path(self) -&gt; str:
+    return self.gguf_file_path</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.save_json"><code class="name flex">
+<span>def <span class="ident">save_json</span></span>(<span>self, replace_existing: bool = True) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_json(self, replace_existing:bool=True) -&gt; str:
+    if replace_existing or not self.has_json():
+        save_json_file(self.json_path(), self.to_dict())
+    else:
+        print(f&#34;File {self.json_path()} already exists and replace_existing={replace_existing}. Skipping save.&#34;)
+    return self.json_path()</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.set_ai_tags"><code class="name flex">
+<span>def <span class="ident">set_ai_tags</span></span>(<span>self, ai_tags: Union[dict, set[str], list[str], tuple[str]]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_ai_tags(self, ai_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
+    if isinstance(ai_tags, dict):
+        if &#34;open&#34; in ai_tags and &#34;close&#34; in ai_tags:
+            self.ai_tags = ai_tags
+        else:
+            raise ValueError(f&#34;Invalid user tags: {ai_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+    elif isinstance(ai_tags, set) or isinstance(ai_tags, list) or isinstance(ai_tags, tuple):
+        self.ai_tags = {
+            &#34;open&#34;: ai_tags[0],
+            &#34;close&#34;: ai_tags[1]
+        }
+    else:
+        raise TypeError(f&#34;Invalid type for user tags: {type(ai_tags)}, must be dict, set or list.&#34;)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.set_save_dir"><code class="name flex">
+<span>def <span class="ident">set_save_dir</span></span>(<span>self, save_dir: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_save_dir(self, save_dir:str) -&gt; None:
+    self.save_dir = save_dir
+    self.gguf_file_path = self._url_to_file_path(save_dir, self.gguf_url)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.set_tags"><code class="name flex">
+<span>def <span class="ident">set_tags</span></span>(<span>self, ai_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)], user_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_tags(self, 
+             ai_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+             user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]]) -&gt; None:
+    if ai_tags is not None:
+        self.set_ai_tags(ai_tags)
+    if user_tags is not None:
+        self.set_user_tags(user_tags)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.set_user_tags"><code class="name flex">
+<span>def <span class="ident">set_user_tags</span></span>(<span>self, user_tags: Union[dict, set[str], list[str], tuple[str]]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_user_tags(self, user_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
+    if isinstance(user_tags, dict):
+        if &#34;open&#34; in user_tags and &#34;close&#34; in user_tags:
+            self.user_tags = user_tags
+        else:
+            raise ValueError(f&#34;Invalid user tags: {user_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+    elif isinstance(user_tags, set) or isinstance(user_tags, list) or isinstance(user_tags, tuple):
+        self.user_tags = {
+            &#34;open&#34;: user_tags[0],
+            &#34;close&#34;: user_tags[1]
+        }
+    else:
+        raise TypeError(f&#34;Invalid type for user tags: {type(user_tags)}, must be dict, set or list.&#34;)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.ModelData.to_dict"><code class="name flex">
+<span>def <span class="ident">to_dict</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_dict(self):
+    model_data = {
+        &#34;url&#34;: self.gguf_url,
+        &#34;gguf_file_path&#34;: self.gguf_file_path,
+        &#34;model_name&#34;: self.name,
+        &#34;model_quantization&#34;: self.model_quantization, 
+        &#34;description&#34;: self.description,
+        &#34;keywords&#34;: self.keywords,
+        &#34;user_tags&#34;: self.user_tags,
+        &#34;ai_tags&#34;: self.ai_tags,
+        &#34;save_dir&#34;: self.save_dir,
+    }
+    return model_data</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="glai" href="../index.html">glai</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="glai.back_end.llama_ai" href="llama_ai.html">glai.back_end.llama_ai</a></code></li>
+<li><code><a title="glai.back_end.messages" href="messages.html">glai.back_end.messages</a></code></li>
+<li><code><a title="glai.back_end.model_db" href="model_db/index.html">glai.back_end.model_db</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="glai.back_end.AIMessage" href="#glai.back_end.AIMessage">AIMessage</a></code></h4>
+<ul class="">
+<li><code><a title="glai.back_end.AIMessage.edit" href="#glai.back_end.AIMessage.edit">edit</a></code></li>
+<li><code><a title="glai.back_end.AIMessage.from_dict" href="#glai.back_end.AIMessage.from_dict">from_dict</a></code></li>
+<li><code><a title="glai.back_end.AIMessage.get_tags" href="#glai.back_end.AIMessage.get_tags">get_tags</a></code></li>
+<li><code><a title="glai.back_end.AIMessage.text" href="#glai.back_end.AIMessage.text">text</a></code></li>
+<li><code><a title="glai.back_end.AIMessage.to_dict" href="#glai.back_end.AIMessage.to_dict">to_dict</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="glai.back_end.AIMessages" href="#glai.back_end.AIMessages">AIMessages</a></code></h4>
+<ul class="two-column">
+<li><code><a title="glai.back_end.AIMessages.add_ai_message" href="#glai.back_end.AIMessages.add_ai_message">add_ai_message</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.add_message" href="#glai.back_end.AIMessages.add_message">add_message</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.add_user_message" href="#glai.back_end.AIMessages.add_user_message">add_user_message</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.ai_tags" href="#glai.back_end.AIMessages.ai_tags">ai_tags</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.edit_last_message" href="#glai.back_end.AIMessages.edit_last_message">edit_last_message</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.edit_message" href="#glai.back_end.AIMessages.edit_message">edit_message</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.from_dict" href="#glai.back_end.AIMessages.from_dict">from_dict</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.from_json" href="#glai.back_end.AIMessages.from_json">from_json</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.get_last_message" href="#glai.back_end.AIMessages.get_last_message">get_last_message</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.load_messages" href="#glai.back_end.AIMessages.load_messages">load_messages</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.reset_messages" href="#glai.back_end.AIMessages.reset_messages">reset_messages</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.save_json" href="#glai.back_end.AIMessages.save_json">save_json</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.text" href="#glai.back_end.AIMessages.text">text</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.to_dict" href="#glai.back_end.AIMessages.to_dict">to_dict</a></code></li>
+<li><code><a title="glai.back_end.AIMessages.user_tags" href="#glai.back_end.AIMessages.user_tags">user_tags</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="glai.back_end.LlamaAI" href="#glai.back_end.LlamaAI">LlamaAI</a></code></h4>
+<ul class="">
+<li><code><a title="glai.back_end.LlamaAI.adjust_tokens" href="#glai.back_end.LlamaAI.adjust_tokens">adjust_tokens</a></code></li>
+<li><code><a title="glai.back_end.LlamaAI.count_tokens" href="#glai.back_end.LlamaAI.count_tokens">count_tokens</a></code></li>
+<li><code><a title="glai.back_end.LlamaAI.from_dict" href="#glai.back_end.LlamaAI.from_dict">from_dict</a></code></li>
+<li><code><a title="glai.back_end.LlamaAI.infer" href="#glai.back_end.LlamaAI.infer">infer</a></code></li>
+<li><code><a title="glai.back_end.LlamaAI.is_within_input_limit" href="#glai.back_end.LlamaAI.is_within_input_limit">is_within_input_limit</a></code></li>
+<li><code><a title="glai.back_end.LlamaAI.load" href="#glai.back_end.LlamaAI.load">load</a></code></li>
+<li><code><a title="glai.back_end.LlamaAI.tokenize" href="#glai.back_end.LlamaAI.tokenize">tokenize</a></code></li>
+<li><code><a title="glai.back_end.LlamaAI.try_fixing_format" href="#glai.back_end.LlamaAI.try_fixing_format">try_fixing_format</a></code></li>
+<li><code><a title="glai.back_end.LlamaAI.untokenize" href="#glai.back_end.LlamaAI.untokenize">untokenize</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="glai.back_end.ModelDB" href="#glai.back_end.ModelDB">ModelDB</a></code></h4>
+<ul class="">
+<li><code><a title="glai.back_end.ModelDB.add_model_by_json" href="#glai.back_end.ModelDB.add_model_by_json">add_model_by_json</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.add_model_by_url" href="#glai.back_end.ModelDB.add_model_by_url">add_model_by_url</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.add_model_data" href="#glai.back_end.ModelDB.add_model_data">add_model_data</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.find_model" href="#glai.back_end.ModelDB.find_model">find_model</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.find_models" href="#glai.back_end.ModelDB.find_models">find_models</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.get_model_by_url" href="#glai.back_end.ModelDB.get_model_by_url">get_model_by_url</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.import_models_from_repo" href="#glai.back_end.ModelDB.import_models_from_repo">import_models_from_repo</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.list_available_models" href="#glai.back_end.ModelDB.list_available_models">list_available_models</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.list_models_quantizations" href="#glai.back_end.ModelDB.list_models_quantizations">list_models_quantizations</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.load_models" href="#glai.back_end.ModelDB.load_models">load_models</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.load_models_data_from_repo" href="#glai.back_end.ModelDB.load_models_data_from_repo">load_models_data_from_repo</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.save_all_models" href="#glai.back_end.ModelDB.save_all_models">save_all_models</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.set_model_db_dir" href="#glai.back_end.ModelDB.set_model_db_dir">set_model_db_dir</a></code></li>
+<li><code><a title="glai.back_end.ModelDB.show_db_info" href="#glai.back_end.ModelDB.show_db_info">show_db_info</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="glai.back_end.ModelData" href="#glai.back_end.ModelData">ModelData</a></code></h4>
+<ul class="two-column">
+<li><code><a title="glai.back_end.ModelData.download_gguf" href="#glai.back_end.ModelData.download_gguf">download_gguf</a></code></li>
+<li><code><a title="glai.back_end.ModelData.from_dict" href="#glai.back_end.ModelData.from_dict">from_dict</a></code></li>
+<li><code><a title="glai.back_end.ModelData.from_file" href="#glai.back_end.ModelData.from_file">from_file</a></code></li>
+<li><code><a title="glai.back_end.ModelData.from_json" href="#glai.back_end.ModelData.from_json">from_json</a></code></li>
+<li><code><a title="glai.back_end.ModelData.from_url" href="#glai.back_end.ModelData.from_url">from_url</a></code></li>
+<li><code><a title="glai.back_end.ModelData.get_ai_tag_close" href="#glai.back_end.ModelData.get_ai_tag_close">get_ai_tag_close</a></code></li>
+<li><code><a title="glai.back_end.ModelData.get_ai_tag_open" href="#glai.back_end.ModelData.get_ai_tag_open">get_ai_tag_open</a></code></li>
+<li><code><a title="glai.back_end.ModelData.get_ai_tags" href="#glai.back_end.ModelData.get_ai_tags">get_ai_tags</a></code></li>
+<li><code><a title="glai.back_end.ModelData.get_user_tag_close" href="#glai.back_end.ModelData.get_user_tag_close">get_user_tag_close</a></code></li>
+<li><code><a title="glai.back_end.ModelData.get_user_tag_open" href="#glai.back_end.ModelData.get_user_tag_open">get_user_tag_open</a></code></li>
+<li><code><a title="glai.back_end.ModelData.get_user_tags" href="#glai.back_end.ModelData.get_user_tags">get_user_tags</a></code></li>
+<li><code><a title="glai.back_end.ModelData.has_json" href="#glai.back_end.ModelData.has_json">has_json</a></code></li>
+<li><code><a title="glai.back_end.ModelData.is_downloaded" href="#glai.back_end.ModelData.is_downloaded">is_downloaded</a></code></li>
+<li><code><a title="glai.back_end.ModelData.json_path" href="#glai.back_end.ModelData.json_path">json_path</a></code></li>
+<li><code><a title="glai.back_end.ModelData.model_path" href="#glai.back_end.ModelData.model_path">model_path</a></code></li>
+<li><code><a title="glai.back_end.ModelData.save_json" href="#glai.back_end.ModelData.save_json">save_json</a></code></li>
+<li><code><a title="glai.back_end.ModelData.set_ai_tags" href="#glai.back_end.ModelData.set_ai_tags">set_ai_tags</a></code></li>
+<li><code><a title="glai.back_end.ModelData.set_save_dir" href="#glai.back_end.ModelData.set_save_dir">set_save_dir</a></code></li>
+<li><code><a title="glai.back_end.ModelData.set_tags" href="#glai.back_end.ModelData.set_tags">set_tags</a></code></li>
+<li><code><a title="glai.back_end.ModelData.set_user_tags" href="#glai.back_end.ModelData.set_user_tags">set_user_tags</a></code></li>
+<li><code><a title="glai.back_end.ModelData.to_dict" href="#glai.back_end.ModelData.to_dict">to_dict</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
