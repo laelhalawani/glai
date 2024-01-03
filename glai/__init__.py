@@ -31,29 +31,6 @@ ModelData (used by ModelDB):
 - Can be initialized from URL, file, or ModelDB search.
 - Used by ModelDB to download model gguf file 
 
-Usage:
-
-# Import package
->>> from glai import AutoAI, EasyAI, ModelDB, ModelData
-
-# AutoAI - automatic model loading
->>> ai = AutoAI(name_search="Mistral")
->>> ai.generate("Hello") 
-
-# EasyAI - manual model configuration  
->>> easy = EasyAI()
->>> easy.load_model_db()
->>> easy.find_model_data(name_search="Mistral")
->>> easy.load_ai()
->>> easy.generate("Hello")
-
-# ModelDB - search models and show db info
->>> from llgg import ModelDB
->>> db = ModelDB()
->>> model = db.find_model(name_search="Mistral")
->>> print(model.name)
->>> db.show_db_info()
-      
 For more information, see check the repo for the README.md file, 
 and the examples.py file for more examples of usage.
 """)

@@ -14,7 +14,7 @@ EasyAI:
 - Handles downloading model data, loading it to memory, and configuring message formatting.
 - Use generate() method to get completions by providing a user message.
 
-ModelDB (used by AutoAI and EasyAI)):
+ModelDB (used by AutoAI and EasyAI):
 - Manages database of model data files. via ModelData class objects.
 - Useful for searching for models and retrieving model metadata.
 - Can import models from HuggingFace repo URLs or import and download models from .gguf urls on huggingface.
