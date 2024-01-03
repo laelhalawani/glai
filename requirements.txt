@@ -1,3 +1,4 @@
 llama-cpp-python,
 requests>=2.31.0,
 beautifulsoup4>=4.9.3
+pdoc3>=0.10.0
