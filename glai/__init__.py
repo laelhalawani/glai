@@ -1,6 +1,6 @@
 from .ai import AutoAI, EasyAI
 from .back_end import LlamaAI, AIMessages, ModelDB, ModelData
-__version__ = "0.0.13"
+__version__ = "0.0.14"
 
 __all__ = ['AutoAI', 'EasyAI', 'LlamaAI', 'ModelDB', 'AIMessages', 'ModelData']
 print(f"""
