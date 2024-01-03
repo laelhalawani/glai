@@ -4,7 +4,7 @@ with open("./README.md", "r") as fh:
     long_description = fh.read()
 setup(
     name="glai",
-    version="0.0.1",
+    version="0.0.11",
     packages=find_packages(),
     install_requires=[
         'llama-cpp-python>=0.2.26',
@@ -15,9 +15,9 @@ setup(
     include_package_data=True,
     author="Łael Al-Halawani",
     author_email="laelhalawani@gmail.com",
-    description="A for easy deployment of quantized llama models on cpu",
+    description="Easy deployment of quantized llama models on cpu",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: Education",
         "Intended Audience :: Information Technology",
