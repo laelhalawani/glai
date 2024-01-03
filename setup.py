@@ -5,7 +5,7 @@ setup(
     version="0.0.1",
     packages=find_packages(),
     install_requires=[
-        'llama-cpp-python',
+        'llama-cpp-python>=0.2.26',
         'requests>=2.31.0',
         'beautifulsoup4>=4.9.3',
     ],
@@ -13,4 +13,21 @@ setup(
     include_package_data=True,
     author="Łael Al-Halawani",
     author_email="laelhalawani@gmail.com",
+    description="A for easy deployment of quantized llama models on cpu",
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "Intended Audience :: Information Technology",
+        "License :: Free for non-commercial use",
+        "Natural Language :: English",
+        "Operating System :: OS Independent",
+        "Programming Language :: C++",
+        "Programming Language :: Python :: 3.1",
+        "Topic :: Text Processing",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    ],
+    long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
+
 )

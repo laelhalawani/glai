@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+    name="glai"
+    version="0.0.1"
+authors = [
+  { name="Łael Al-Halawani", email="laelhalawani@gmail.com" },
+]
+description = "Easy deployment of quantized llama models on cpu with built in model db and download functionality."
+readme = "README.md"
+requires-python = ">=3.11.5"
+classifiers=[
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Information Technology",
+    "License :: Free for non-commercial use",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3.1",
+    "Topic :: Text Processing",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    ]
+
+[project.urls]
+Homepage = "https://github.com/laelhalawani/glai"
+Issues = "https://github.com/laelhalawani/glai/issues"
+
+
+    
