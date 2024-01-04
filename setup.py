@@ -4,12 +4,12 @@ with open("./README.md", "r") as fh:
     long_description = fh.read()
 setup(
     name="glai",
-    version="0.0.15",
+    version="0.0.16",
     packages=find_packages(),
     install_requires=[
-        'llama-cpp-python>=0.2.26',
         'requests>=2.31.0',
         'beautifulsoup4>=4.9.3',
+        'gguf_llama>=0.0.13',
     ],
     package_data={'glai': ['back_end/model_db/gguf_models/*.json']},
     include_package_data=True,
