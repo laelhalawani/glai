@@ -1,5 +1,6 @@
 from typing import Optional, Tuple
-from ..back_end import AIMessages, AIMessage, LlamaAI, ModelData, ModelDB, DEFAULT_LOCAL_GGUF_DIR
+from ..back_end import AIMessages, AIMessage, ModelData, ModelDB, DEFAULT_LOCAL_GGUF_DIR
+from gguf_llama import LlamaAI
 
 __all__ = ['EasyAI']
 

@@ -2,8 +2,8 @@ import bs4
 import requests
 from typing import Union, Optional
 
-from ...helpers.file_handler import create_dir, list_files_in_dir, join_paths
-from ...helpers.compare_strings import compare_two_strings
+from util_helper.file_handler import create_dir, list_files_in_dir, join_paths
+from util_helper.compare_strings import compare_two_strings
 from ..model_db import ModelData
 from ..model_db.db_settings import MODEL_EXAMPLES_DB_DIR
 

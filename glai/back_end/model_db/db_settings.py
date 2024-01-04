@@ -1,4 +1,4 @@
-from ...helpers.file_handler import join_paths, get_directory
+from util_helper.file_handler import join_paths, get_directory
 import os
 
 PACKAGE_DIR = get_directory(__file__)

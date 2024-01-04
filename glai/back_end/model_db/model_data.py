@@ -2,7 +2,7 @@ import time
 import requests
 from typing import Union, Optional
 
-from ...helpers.file_handler import *
+from util_helper.file_handler import *
 
 __all__ = ['ModelData']
 """
