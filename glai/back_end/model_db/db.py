@@ -2,7 +2,7 @@ import bs4
 import requests
 from typing import Union, Optional
 
-from util_helper.file_handler import create_dir, list_files_in_dir, join_paths
+from util_helper.file_handler import create_dir, list_files_in_dir
 from util_helper.compare_strings import compare_two_strings
 from ..model_db import ModelData
 from ..model_db.db_settings import MODEL_EXAMPLES_DB_DIR
@@ -16,10 +16,10 @@ class ModelDB:
             model_db_dir = MODEL_EXAMPLES_DB_DIR
         self.set_model_db_dir(model_db_dir)
         if model_db_dir != MODEL_EXAMPLES_DB_DIR:
-            print(f"Copying examples to {model_db_dir}...")
             if copy_examples:
-                for file in list_files_in_dir(MODEL_EXAMPLES_DB_DIR, show_directories=False, only_with_extensions=[".json"], absolute=False):
-                    f_mdt = ModelData.from_json(join_paths(MODEL_EXAMPLES_DB_DIR, file))
+                print(f"Copying examples to {model_db_dir}...")
+                for file in list_files_in_dir(MODEL_EXAMPLES_DB_DIR, include_directories=False, only_with_extensions=[".json"], just_names=False):
+                    f_mdt = ModelData.from_json(file)
                     f_mdt.set_save_dir(model_db_dir)
                     f_mdt.save_json()
                     print(f"Saved a copy of {file} to {model_db_dir}.")
@@ -33,14 +33,13 @@ class ModelDB:
     
     def load_models(self) -> None:
         self.models = []
-        files = list_files_in_dir(self.gguf_db_dir, show_directories=False, show_files=True, only_with_extensions=[".json"])
+        files = list_files_in_dir(self.gguf_db_dir, include_directories=False, include_files=True, only_with_extensions=[".json"])
         for file in files:
             try:
-                file_path = join_paths(self.gguf_db_dir, file)
-                model_data = ModelData.from_json(file_path)
+                model_data = ModelData.from_json(file)
                 self.models.append(model_data)
             except Exception as e:
-                print(f"Error trying to load from {file_path}: \t\n{e}, \nskipping...")
+                print(f"Error trying to load from {file}: \t\n{e}, \nskipping...")
                 continue
         print(f"Loaded {len(self.models)} models from {self.gguf_db_dir}.")
 

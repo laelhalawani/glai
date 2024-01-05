@@ -61,8 +61,7 @@ class AutoAI:
                  name_search: Optional[str] = None,
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
-                 new_tokens: int = 1500,
-                 max_input_tokens: int = 900,
+                 max_total_tokens: int = 1500,
                  model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR) -&gt; None:
 
         self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
@@ -71,7 +70,7 @@ class AutoAI:
         )
         self.model_data.download_gguf()
         self.ai = LlamaAI(
-            self.model_data.gguf_file_path, new_tokens, max_input_tokens
+            self.model_data.gguf_file_path, max_tokens=max_total_tokens
         )
         print(f&#34;Using model: {self.model_data}&#34;)
         self.msgs: AIMessages = AIMessages(
@@ -202,7 +201,7 @@ class AutoAI:
 <dl>
 <dt id="glai.ai.auto_ai.AutoAI"><code class="flex name class">
 <span>class <span class="ident">AutoAI</span></span>
-<span>(</span><span>name_search: Optional[str] = None, quantization_search: Optional[str] = None, keyword_search: Optional[str] = None, new_tokens: int = 1500, max_input_tokens: int = 900, model_db_dir: str = './gguf_db')</span>
+<span>(</span><span>name_search: Optional[str] = None, quantization_search: Optional[str] = None, keyword_search: Optional[str] = None, max_total_tokens: int = 1500, model_db_dir: str = './gguf_db')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialize the AutoAI class for super easy LLM AI generation.</p>
@@ -264,8 +263,7 @@ Downloads model and sets up LlamaAI.</p>
                  name_search: Optional[str] = None,
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
-                 new_tokens: int = 1500,
-                 max_input_tokens: int = 900,
+                 max_total_tokens: int = 1500,
                  model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR) -&gt; None:
 
         self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
@@ -274,7 +272,7 @@ Downloads model and sets up LlamaAI.</p>
         )
         self.model_data.download_gguf()
         self.ai = LlamaAI(
-            self.model_data.gguf_file_path, new_tokens, max_input_tokens
+            self.model_data.gguf_file_path, max_tokens=max_total_tokens
         )
         print(f&#34;Using model: {self.model_data}&#34;)
         self.msgs: AIMessages = AIMessages(
