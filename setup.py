@@ -4,7 +4,7 @@ with open("./README.md", "r") as fh:
     long_description = fh.read()
 setup(
     name="glai",
-    version="0.0.16",
+    version="0.0.17",
     packages=find_packages(),
     install_requires=[
         'requests>=2.31.0',
