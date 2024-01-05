@@ -9,7 +9,7 @@ setup(
     install_requires=[
         'requests>=2.31.0',
         'beautifulsoup4>=4.9.3',
-        'gguf_llama>=0.0.13',
+        'gguf_llama>=0.0.14',
     ],
     package_data={'glai': ['back_end/model_db/gguf_models/*.json']},
     include_package_data=True,
