@@ -1008,10 +1008,10 @@ tag_close (str): The new closing tag for the message.</p>
             model_db_dir = MODEL_EXAMPLES_DB_DIR
         self.set_model_db_dir(model_db_dir)
         if model_db_dir != MODEL_EXAMPLES_DB_DIR:
-            print(f&#34;Copying examples to {model_db_dir}...&#34;)
             if copy_examples:
-                for file in list_files_in_dir(MODEL_EXAMPLES_DB_DIR, show_directories=False, only_with_extensions=[&#34;.json&#34;], absolute=False):
-                    f_mdt = ModelData.from_json(join_paths(MODEL_EXAMPLES_DB_DIR, file))
+                print(f&#34;Copying examples to {model_db_dir}...&#34;)
+                for file in list_files_in_dir(MODEL_EXAMPLES_DB_DIR, include_directories=False, only_with_extensions=[&#34;.json&#34;], just_names=False):
+                    f_mdt = ModelData.from_json(file)
                     f_mdt.set_save_dir(model_db_dir)
                     f_mdt.save_json()
                     print(f&#34;Saved a copy of {file} to {model_db_dir}.&#34;)
@@ -1025,14 +1025,13 @@ tag_close (str): The new closing tag for the message.</p>
     
     def load_models(self) -&gt; None:
         self.models = []
-        files = list_files_in_dir(self.gguf_db_dir, show_directories=False, show_files=True, only_with_extensions=[&#34;.json&#34;])
+        files = list_files_in_dir(self.gguf_db_dir, include_directories=False, include_files=True, only_with_extensions=[&#34;.json&#34;])
         for file in files:
             try:
-                file_path = join_paths(self.gguf_db_dir, file)
-                model_data = ModelData.from_json(file_path)
+                model_data = ModelData.from_json(file)
                 self.models.append(model_data)
             except Exception as e:
-                print(f&#34;Error trying to load from {file_path}: \t\n{e}, \nskipping...&#34;)
+                print(f&#34;Error trying to load from {file}: \t\n{e}, \nskipping...&#34;)
                 continue
         print(f&#34;Loaded {len(self.models)} models from {self.gguf_db_dir}.&#34;)
 
@@ -1419,14 +1418,13 @@ tag_close (str): The new closing tag for the message.</p>
 </summary>
 <pre><code class="python">def load_models(self) -&gt; None:
     self.models = []
-    files = list_files_in_dir(self.gguf_db_dir, show_directories=False, show_files=True, only_with_extensions=[&#34;.json&#34;])
+    files = list_files_in_dir(self.gguf_db_dir, include_directories=False, include_files=True, only_with_extensions=[&#34;.json&#34;])
     for file in files:
         try:
-            file_path = join_paths(self.gguf_db_dir, file)
-            model_data = ModelData.from_json(file_path)
+            model_data = ModelData.from_json(file)
             self.models.append(model_data)
         except Exception as e:
-            print(f&#34;Error trying to load from {file_path}: \t\n{e}, \nskipping...&#34;)
+            print(f&#34;Error trying to load from {file}: \t\n{e}, \nskipping...&#34;)
             continue
     print(f&#34;Loaded {len(self.models)} models from {self.gguf_db_dir}.&#34;)</code></pre>
 </details>

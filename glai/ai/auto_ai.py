@@ -33,8 +33,7 @@ class AutoAI:
                  name_search: Optional[str] = None,
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
-                 new_tokens: int = 1500,
-                 max_input_tokens: int = 900,
+                 max_total_tokens: int = 1500,
                  model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR) -> None:
 
         self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
@@ -43,7 +42,7 @@ class AutoAI:
         )
         self.model_data.download_gguf()
         self.ai = LlamaAI(
-            self.model_data.gguf_file_path, new_tokens, max_input_tokens
+            self.model_data.gguf_file_path, max_tokens=max_total_tokens
         )
         print(f"Using model: {self.model_data}")
         self.msgs: AIMessages = AIMessages(

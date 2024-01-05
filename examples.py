@@ -21,7 +21,7 @@ def import_repo_example():
 def auto_ai_quick_example():
     print(f"----> EXAMPLE: AutoAI quick example...")
     #input()
-    auto_ai = AutoAI("zephyr", "q2_k", new_tokens=50, max_input_tokens=100)
+    auto_ai = AutoAI("zephyr", "q2_k", max_total_tokens=50, max_input_tokens=100)
     auto_ai.generate(
         user_message_text="Output just 'hi' in single quotes with no other prose. Do not include any additional information nor comments.",
         ai_message_to_be_continued= "'", 
