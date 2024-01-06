@@ -198,20 +198,21 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
         model_links = []
         for link in soup.find_all(&#39;a&#39;):
             href = link.get(&#39;href&#39;)
-            if href.endswith(&#34;.gguf&#34;):
+            if href is not None and href.endswith(&#34;.gguf&#34;):
                 print(f&#34;Found model: {href}&#34;)
                 model_links.append(href)
         return model_links
     def load_models_data_from_repo(self, hf_repo_url:str, 
                         user_tags:Optional[list[str]]=None,
                         ai_tags:Optional[list[str]]=None,
+                        system_tags:Optional[list[str]]=None,
                         keywords:Optional[list[str]]=None, 
                         description:Optional[str]=None):  
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
         model_datas = []
         for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_datas.append(model_data)
             model_data.save_json()
         self.models.extend(model_datas)
@@ -220,14 +221,16 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
     def import_models_from_repo(self, hf_repo_url:str,
                         user_tags:Optional[list[str]]=None,
                         ai_tags:Optional[list[str]]=None,
+                        system_tags:Optional[list[str]]=None,
                         keywords:Optional[list[str]]=None, 
                         description:Optional[str]=None,
                         replace_existing:bool=False,
                         ):  
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
+        print(f&#34;Loaded {len(model_links)} models from {hf_repo_url}.&#34;)
         for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_data.save_json(replace_existing=replace_existing)
         self.load_models()
     
@@ -415,7 +418,7 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
 </details>
 </dd>
 <dt id="glai.back_end.model_db.ModelDB.import_models_from_repo"><code class="name flex">
-<span>def <span class="ident">import_models_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None, replace_existing: bool = False)</span>
+<span>def <span class="ident">import_models_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, system_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None, replace_existing: bool = False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -426,14 +429,16 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
 <pre><code class="python">def import_models_from_repo(self, hf_repo_url:str,
                     user_tags:Optional[list[str]]=None,
                     ai_tags:Optional[list[str]]=None,
+                    system_tags:Optional[list[str]]=None,
                     keywords:Optional[list[str]]=None, 
                     description:Optional[str]=None,
                     replace_existing:bool=False,
                     ):  
     #create model data from hf repo
     model_links = ModelDB._model_links_from_repo(hf_repo_url)
+    print(f&#34;Loaded {len(model_links)} models from {hf_repo_url}.&#34;)
     for model_link in model_links:
-        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
         model_data.save_json(replace_existing=replace_existing)
     self.load_models()</code></pre>
 </details>
@@ -498,7 +503,7 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
 </details>
 </dd>
 <dt id="glai.back_end.model_db.ModelDB.load_models_data_from_repo"><code class="name flex">
-<span>def <span class="ident">load_models_data_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None)</span>
+<span>def <span class="ident">load_models_data_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, system_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -509,13 +514,14 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
 <pre><code class="python">def load_models_data_from_repo(self, hf_repo_url:str, 
                     user_tags:Optional[list[str]]=None,
                     ai_tags:Optional[list[str]]=None,
+                    system_tags:Optional[list[str]]=None,
                     keywords:Optional[list[str]]=None, 
                     description:Optional[str]=None):  
     #create model data from hf repo
     model_links = ModelDB._model_links_from_repo(hf_repo_url)
     model_datas = []
     for model_link in model_links:
-        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
         model_datas.append(model_data)
         model_data.save_json()
     self.models.extend(model_datas)
@@ -588,7 +594,7 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
 </dd>
 <dt id="glai.back_end.model_db.ModelData"><code class="flex name class">
 <span>class <span class="ident">ModelData</span></span>
-<span>(</span><span>gguf_url: str, db_dir: str, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None)</span>
+<span>(</span><span>gguf_url: str, db_dir: str, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), system_tags: Union[dict, list, set, ForwardRef(None)] = None, description: Optional[str] = None, keywords: Optional[None] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -602,6 +608,7 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
         db_dir:str,
         user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), 
         ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+        system_tags:Optional[Union[dict, list, set]] = None,
         description:Optional[str] = None, 
         keywords:Optional[list] = None,
         ):
@@ -615,6 +622,7 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
         self.keywords = None
         self.user_tags = None
         self.ai_tags = None
+        self.system_tags = None
         self.save_dir = None
 
         #set values
@@ -625,7 +633,7 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
         self.model_quantization = self._url_extract_quantization(gguf_url)
         self.description = description if description is not None else &#34;&#34;
         self.keywords = keywords if keywords is not None else []
-        self.set_tags(ai_tags, user_tags)
+        self.set_tags(ai_tags, user_tags, system_tags)
 
     def __str__(self) -&gt; str:
         t = f&#34;&#34;&#34;ModelData(
@@ -636,6 +644,7 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
             user_tags: {self.user_tags},
             ai_tags: {self.ai_tags},
             ---optionally provided, no defaults---
+            system_tags: {self.system_tags},
             description: {self.description},
             keywords: {self.keywords},
             ---automatically generated---
@@ -715,13 +724,30 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
         else:
             raise TypeError(f&#34;Invalid type for user tags: {type(user_tags)}, must be dict, set or list.&#34;)
 
+    def set_system_tags(self, system_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
+        if isinstance(system_tags, dict):
+            if &#34;open&#34; in system_tags and &#34;close&#34; in system_tags:
+                self.system_tags = system_tags
+            else:
+                raise ValueError(f&#34;Invalid system tags: {system_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+        elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
+            self.system_tags = {
+                &#34;open&#34;: system_tags[0],
+                &#34;close&#34;: system_tags[1]
+            }
+        else:
+            raise TypeError(f&#34;Invalid type for system tags: {type(system_tags)}, must be dict, set or list.&#34;)
     def set_tags(self, 
                  ai_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-                 user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]]) -&gt; None:
+                 user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+                 system_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+                 ) -&gt; None:
         if ai_tags is not None:
             self.set_ai_tags(ai_tags)
         if user_tags is not None:
             self.set_user_tags(user_tags)
+        if system_tags is not None:
+            self.set_system_tags(system_tags)
 
     def set_save_dir(self, save_dir:str) -&gt; None:
         self.save_dir = save_dir
@@ -737,6 +763,7 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
             &#34;keywords&#34;: self.keywords,
             &#34;user_tags&#34;: self.user_tags,
             &#34;ai_tags&#34;: self.ai_tags,
+            &#34;system_tags&#34;: self.system_tags,
             &#34;save_dir&#34;: self.save_dir,
         }
         return model_data
@@ -748,7 +775,8 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
         keywords = model_data[&#34;keywords&#34;] if &#34;keywords&#34; in model_data else None
         user_tags = model_data[&#34;user_tags&#34;]
         ai_tags = model_data[&#34;ai_tags&#34;]
-        new_model_data = ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+        system_tags = model_data[&#34;system_tags&#34;] if &#34;system_tags&#34; in model_data else None
+        new_model_data = ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
         return new_model_data
 
     def is_downloaded(self) -&gt; bool:
@@ -809,18 +837,20 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
         return ModelData.from_dict(model_data)
 
     @staticmethod
-    def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
-        return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+    def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+                  description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+        return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
 
     def model_path(self) -&gt; str:
         return self.gguf_file_path
 
     @staticmethod
-    def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+    def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+                  description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
         #creates a model where url is also the file path
         save_dir = get_directory(gguf_file_path) if save_dir is None else save_dir
         url = gguf_file_path
-        return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+        return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
 
     def get_ai_tag_open(self) -&gt; str:
         return self.ai_tags[&#34;open&#34;]
@@ -834,11 +864,23 @@ __all__ = [&#39;ModelData&#39;,&#39;ModelDB&#39;]</code></pre>
     def get_user_tag_close(self) -&gt; str:
         return self.user_tags[&#34;close&#34;]
     
+    def get_system_tag_open(self) -&gt; str:
+        return self.system_tags[&#34;open&#34;]
+    
+    def get_system_tag_close(self) -&gt; str:
+        return self.system_tags[&#34;close&#34;]
+    
     def get_ai_tags(self) -&gt; list[str]:
         return [self.get_ai_tag_open(), self.get_ai_tag_close()]
     
     def get_user_tags(self) -&gt; list[str]:
-        return [self.get_user_tag_open(), self.get_user_tag_close()]</code></pre>
+        return [self.get_user_tag_open(), self.get_user_tag_close()]
+    
+    def get_system_tags(self) -&gt; list[str]:
+        return [self.get_system_tag_open(), self.get_system_tag_close()]
+    
+    def has_system_tags(self) -&gt; bool:
+        return self.system_tags is not None</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -859,12 +901,13 @@ def from_dict(model_data:dict) -&gt; &#34;ModelData&#34;:
     keywords = model_data[&#34;keywords&#34;] if &#34;keywords&#34; in model_data else None
     user_tags = model_data[&#34;user_tags&#34;]
     ai_tags = model_data[&#34;ai_tags&#34;]
-    new_model_data = ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+    system_tags = model_data[&#34;system_tags&#34;] if &#34;system_tags&#34; in model_data else None
+    new_model_data = ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
     return new_model_data</code></pre>
 </details>
 </dd>
 <dt id="glai.back_end.model_db.ModelData.from_file"><code class="name flex">
-<span>def <span class="ident">from_file</span></span>(<span>gguf_file_path: str, save_dir: Optional[str] = None, user_tags: Union[dict, list, set] = ('[INST]', '[/INST]'), ai_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
+<span>def <span class="ident">from_file</span></span>(<span>gguf_file_path: str, save_dir: Optional[str] = None, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), system_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -873,11 +916,12 @@ def from_dict(model_data:dict) -&gt; &#34;ModelData&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+              description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
     #creates a model where url is also the file path
     save_dir = get_directory(gguf_file_path) if save_dir is None else save_dir
     url = gguf_file_path
-    return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)</code></pre>
+    return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)</code></pre>
 </details>
 </dd>
 <dt id="glai.back_end.model_db.ModelData.from_json"><code class="name flex">
@@ -896,7 +940,7 @@ def from_json(json_file_path:str) -&gt; &#34;ModelData&#34;:
 </details>
 </dd>
 <dt id="glai.back_end.model_db.ModelData.from_url"><code class="name flex">
-<span>def <span class="ident">from_url</span></span>(<span>url: str, save_dir: str, user_tags: Union[dict, list, set] = ('[INST]', '[/INST]'), ai_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
+<span>def <span class="ident">from_url</span></span>(<span>url: str, save_dir: str, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), system_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -905,8 +949,9 @@ def from_json(json_file_path:str) -&gt; &#34;ModelData&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
-    return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)</code></pre>
+def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+              description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+    return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)</code></pre>
 </details>
 </dd>
 </dl>
@@ -995,6 +1040,45 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
     return [self.get_ai_tag_open(), self.get_ai_tag_close()]</code></pre>
 </details>
 </dd>
+<dt id="glai.back_end.model_db.ModelData.get_system_tag_close"><code class="name flex">
+<span>def <span class="ident">get_system_tag_close</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_system_tag_close(self) -&gt; str:
+    return self.system_tags[&#34;close&#34;]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.model_db.ModelData.get_system_tag_open"><code class="name flex">
+<span>def <span class="ident">get_system_tag_open</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_system_tag_open(self) -&gt; str:
+    return self.system_tags[&#34;open&#34;]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.model_db.ModelData.get_system_tags"><code class="name flex">
+<span>def <span class="ident">get_system_tags</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_system_tags(self) -&gt; list[str]:
+    return [self.get_system_tag_open(), self.get_system_tag_close()]</code></pre>
+</details>
+</dd>
 <dt id="glai.back_end.model_db.ModelData.get_user_tag_close"><code class="name flex">
 <span>def <span class="ident">get_user_tag_close</span></span>(<span>self) ‑> str</span>
 </code></dt>
@@ -1046,6 +1130,19 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
 <pre><code class="python">def has_json(self) -&gt; bool:
     &#34;&#34;&#34;Checks if the model is in the db.&#34;&#34;&#34;
     return does_file_exist(self.json_path())</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.model_db.ModelData.has_system_tags"><code class="name flex">
+<span>def <span class="ident">has_system_tags</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_system_tags(self) -&gt; bool:
+    return self.system_tags is not None</code></pre>
 </details>
 </dd>
 <dt id="glai.back_end.model_db.ModelData.is_downloaded"><code class="name flex">
@@ -1143,8 +1240,32 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
     self.gguf_file_path = self._url_to_file_path(save_dir, self.gguf_url)</code></pre>
 </details>
 </dd>
+<dt id="glai.back_end.model_db.ModelData.set_system_tags"><code class="name flex">
+<span>def <span class="ident">set_system_tags</span></span>(<span>self, system_tags: Union[dict, set[str], list[str], tuple[str]]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_system_tags(self, system_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
+    if isinstance(system_tags, dict):
+        if &#34;open&#34; in system_tags and &#34;close&#34; in system_tags:
+            self.system_tags = system_tags
+        else:
+            raise ValueError(f&#34;Invalid system tags: {system_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+    elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
+        self.system_tags = {
+            &#34;open&#34;: system_tags[0],
+            &#34;close&#34;: system_tags[1]
+        }
+    else:
+        raise TypeError(f&#34;Invalid type for system tags: {type(system_tags)}, must be dict, set or list.&#34;)</code></pre>
+</details>
+</dd>
 <dt id="glai.back_end.model_db.ModelData.set_tags"><code class="name flex">
-<span>def <span class="ident">set_tags</span></span>(<span>self, ai_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)], user_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)]) ‑> None</span>
+<span>def <span class="ident">set_tags</span></span>(<span>self, ai_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)], user_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)], system_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)]) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1154,11 +1275,15 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
 </summary>
 <pre><code class="python">def set_tags(self, 
              ai_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-             user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]]) -&gt; None:
+             user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+             system_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+             ) -&gt; None:
     if ai_tags is not None:
         self.set_ai_tags(ai_tags)
     if user_tags is not None:
-        self.set_user_tags(user_tags)</code></pre>
+        self.set_user_tags(user_tags)
+    if system_tags is not None:
+        self.set_system_tags(system_tags)</code></pre>
 </details>
 </dd>
 <dt id="glai.back_end.model_db.ModelData.set_user_tags"><code class="name flex">
@@ -1204,6 +1329,7 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
         &#34;keywords&#34;: self.keywords,
         &#34;user_tags&#34;: self.user_tags,
         &#34;ai_tags&#34;: self.ai_tags,
+        &#34;system_tags&#34;: self.system_tags,
         &#34;save_dir&#34;: self.save_dir,
     }
     return model_data</code></pre>
@@ -1255,7 +1381,7 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
 </li>
 <li>
 <h4><code><a title="glai.back_end.model_db.ModelData" href="#glai.back_end.model_db.ModelData">ModelData</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="glai.back_end.model_db.ModelData.download_gguf" href="#glai.back_end.model_db.ModelData.download_gguf">download_gguf</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.from_dict" href="#glai.back_end.model_db.ModelData.from_dict">from_dict</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.from_file" href="#glai.back_end.model_db.ModelData.from_file">from_file</a></code></li>
@@ -1264,16 +1390,21 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
 <li><code><a title="glai.back_end.model_db.ModelData.get_ai_tag_close" href="#glai.back_end.model_db.ModelData.get_ai_tag_close">get_ai_tag_close</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.get_ai_tag_open" href="#glai.back_end.model_db.ModelData.get_ai_tag_open">get_ai_tag_open</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.get_ai_tags" href="#glai.back_end.model_db.ModelData.get_ai_tags">get_ai_tags</a></code></li>
+<li><code><a title="glai.back_end.model_db.ModelData.get_system_tag_close" href="#glai.back_end.model_db.ModelData.get_system_tag_close">get_system_tag_close</a></code></li>
+<li><code><a title="glai.back_end.model_db.ModelData.get_system_tag_open" href="#glai.back_end.model_db.ModelData.get_system_tag_open">get_system_tag_open</a></code></li>
+<li><code><a title="glai.back_end.model_db.ModelData.get_system_tags" href="#glai.back_end.model_db.ModelData.get_system_tags">get_system_tags</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.get_user_tag_close" href="#glai.back_end.model_db.ModelData.get_user_tag_close">get_user_tag_close</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.get_user_tag_open" href="#glai.back_end.model_db.ModelData.get_user_tag_open">get_user_tag_open</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.get_user_tags" href="#glai.back_end.model_db.ModelData.get_user_tags">get_user_tags</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.has_json" href="#glai.back_end.model_db.ModelData.has_json">has_json</a></code></li>
+<li><code><a title="glai.back_end.model_db.ModelData.has_system_tags" href="#glai.back_end.model_db.ModelData.has_system_tags">has_system_tags</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.is_downloaded" href="#glai.back_end.model_db.ModelData.is_downloaded">is_downloaded</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.json_path" href="#glai.back_end.model_db.ModelData.json_path">json_path</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.model_path" href="#glai.back_end.model_db.ModelData.model_path">model_path</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.save_json" href="#glai.back_end.model_db.ModelData.save_json">save_json</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.set_ai_tags" href="#glai.back_end.model_db.ModelData.set_ai_tags">set_ai_tags</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.set_save_dir" href="#glai.back_end.model_db.ModelData.set_save_dir">set_save_dir</a></code></li>
+<li><code><a title="glai.back_end.model_db.ModelData.set_system_tags" href="#glai.back_end.model_db.ModelData.set_system_tags">set_system_tags</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.set_tags" href="#glai.back_end.model_db.ModelData.set_tags">set_tags</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.set_user_tags" href="#glai.back_end.model_db.ModelData.set_user_tags">set_user_tags</a></code></li>
 <li><code><a title="glai.back_end.model_db.ModelData.to_dict" href="#glai.back_end.model_db.ModelData.to_dict">to_dict</a></code></li>

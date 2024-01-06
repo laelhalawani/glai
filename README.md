@@ -81,7 +81,7 @@ Quickly generate using AutoAI:
 ```python
 from glai.ai import AutoAI
 
-auto_ai = AutoAI("zephyr", "q2_k", new_tokens=50, max_input_tokens=100)
+auto_ai = AutoAI("zephyr", "q2_k", max_total_tokens=100)
 auto_ai.generate(
     user_message_text="Output just 'hi' in single quotes with no other prose. Do not include any additional information nor comments.",
     ai_message_to_be_continued= "'",
@@ -116,8 +116,7 @@ easy_ai.configure(
     model_db_dir="./gguf_db",
     name_search="zephyr",
     quantization_search="q2_k",
-    new_tokens=50,
-    max_input_tokens=100
+    max_total_tokens=100
 )
 easy_ai.generate(
     "Output a python list of 3 unique cat names.", 
@@ -135,8 +134,7 @@ conf = {
   "name_search": "zephyr",
   "quantization_search": "q2_k",
   "keyword_search": None,
-  "new_tokens": 50,
-  "max_input_tokens": 100  
+  "max_total_tokens": 300 
 }
 
 AutoAI(**conf).generate(
@@ -157,8 +155,7 @@ conf = {
   "name_search": "zephyr",
   "quantization_search": "q2_k",
   "keyword_search": None,
-  "new_tokens": 50,
-  "max_input_tokens": 100
+  "max_total_tokens": 300,
 }
 
 EasyAI(**conf).generate(
@@ -188,7 +185,7 @@ eai.model_data_from_url(
     keywords=["mixtral", "8x7b", "instruct", "v0.1", "MoE"],
     save=True,
 )
-eai.load_ai()
+eai.load_ai(max_total_tokens=300)
 eai.generate(
     user_message="Write a short joke that's actually super funny hilarious best joke.",
     ai_response_content_tbc="",
