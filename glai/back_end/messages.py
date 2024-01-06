@@ -228,8 +228,8 @@ class AIMessages:
         ai_msgs.user_tag_close = messages_dict["user_tag_close"]
         ai_msgs.ai_tag_open = messages_dict["ai_tag_open"]
         ai_msgs.ai_tag_close = messages_dict["ai_tag_close"]
-        ai_msgs.system_tag_open = messages_dict["system_tag_open"]
-        ai_msgs.system_tag_close = messages_dict["system_tag_close"]
+        ai_msgs.system_tag_open = messages_dict["system_tag_open"] if "system_tag_open" in messages_dict else None
+        ai_msgs.system_tag_close = messages_dict["system_tag_close"] if "system_tag_close" in messages_dict else None
         ai_msgs.load_messages(messages_dict["messages"])
         return ai_msgs
     
