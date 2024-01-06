@@ -48,26 +48,30 @@ class AutoAI:
         self.msgs: AIMessages = AIMessages(
             self.model_data.user_tags, self.model_data.ai_tags
         )
-
+    
+    def generate_from_messages(self, stop_at:str = None, include_stop_str:bool = True) -> AIMessage:
+        prompt = self.msgs.text()
+        ai_message = self.generate_from_prompt(prompt, stop_at=stop_at, include_stop_str=include_stop_str)
+        self.msgs.add_ai_message(ai_message)
+        return ai_message
+    
     def generate_from_prompt(
         self, 
         prompt: str,
-        max_tokens_if_needed: int = 2000,
         stop_at:str = None,
         include_stop_str:bool = True
-    ) -> str:
+    ) -> AIMessage:
         """
         Generate text from a prompt using the LlamaAI model.
 
         Args:
             prompt: Prompt text to generate from.
-            max_tokens_if_needed: Max tokens to allow.
 
         Returns:
             Generated text string.
         """
         return self.ai.infer(
-            prompt, only_string=True, max_tokens_if_needed=max_tokens_if_needed, stop_at_str=stop_at, include_stop_str=include_stop_str
+            prompt, only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str
         )
 
     def generate(

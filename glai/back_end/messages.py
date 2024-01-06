@@ -210,7 +210,7 @@ class AIMessages:
         id = self._message_id_generator
         return id
     
-    def add_message(self, message:str, tag_open:str, tag_close:str) -> AIMessage:
+    def add_message(self, message:Union[str, AIMessage], tag_open:str, tag_close:str) -> AIMessage:
         """
         Adds a new message to the messages dictionary.
         Iters the message ID generator.
@@ -223,10 +223,12 @@ class AIMessages:
         Returns:
         AIMessage
         """
-        self.messages[self._generate_message_id()] = AIMessage(message, tag_open, tag_close)
+        if isinstance(message, str):
+            message = AIMessage(message, tag_open, tag_close)
+        self.messages[self._generate_message_id()] = message
         return self.messages[self._message_id_generator]
 
-    def add_user_message(self, message: str) -> AIMessage:
+    def add_user_message(self, message: Union[str, AIMessage]) -> AIMessage:
         """
         Adds a user message to the message list.
         Uses add_message() with the user tags.
@@ -240,7 +242,7 @@ class AIMessages:
         """
         return self.add_message(message, self.user_tag_open, self.user_tag_close)
 
-    def add_ai_message(self, message:str) -> AIMessage:
+    def add_ai_message(self, message:Union[str, AIMessage]) -> AIMessage:
         """
         Adds a ai message to the message list.
         Uses add_message() with the ai tags.
