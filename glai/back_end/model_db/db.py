@@ -138,7 +138,7 @@ class ModelDB:
         model_links = []
         for link in soup.find_all('a'):
             href = link.get('href')
-            if href.endswith(".gguf"):
+            if href is not None and href.endswith(".gguf"):
                 print(f"Found model: {href}")
                 model_links.append(href)
         return model_links
@@ -168,6 +168,7 @@ class ModelDB:
                         ):  
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
+        print(f"Loaded {len(model_links)} models from {hf_repo_url}.")
         for model_link in model_links:
             model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_data.save_json(replace_existing=replace_existing)
