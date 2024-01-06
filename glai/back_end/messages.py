@@ -216,9 +216,9 @@ class AIMessages:
         Iters the message ID generator.
 
         Parameters:
-        - message (str): The content of the message.
-        - tag_open (str): The opening tag for the message.
-        - tag_close (str): The closing tag for the message.
+        - message (str|AIMessage): The content of the message or the message object
+        - tag_open (str): The opening tag for the message, set to None if message is AIMessage
+        - tag_close (str): The closing tag for the message, set to None if message is AIMessage
 
         Returns:
         AIMessage
