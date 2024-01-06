@@ -21,7 +21,7 @@ def import_repo_example():
 def auto_ai_quick_example():
     print(f"----> EXAMPLE: AutoAI quick example...")
     #input()
-    auto_ai = AutoAI("zephyr", "q2_k", max_total_tokens=50, max_input_tokens=100)
+    auto_ai = AutoAI("zephyr", "q2_k", max_total_tokens=50)
     auto_ai.generate(
         user_message_text="Output just 'hi' in single quotes with no other prose. Do not include any additional information nor comments.",
         ai_message_to_be_continued= "'", 
@@ -52,8 +52,7 @@ def easy_ai_all_in_one_example():
         model_db_dir="./gguf_db",
         name_search="zephyr",
         quantization_search="q2_k",
-        new_tokens=50,
-        max_input_tokens=100
+        max_total_tokens=50
     )
     easy_ai.generate("Output a python list of 3 unique cat names.", "['", "']")
 
@@ -66,8 +65,7 @@ conf = {
     "name_search": "zephyr",
     "quantization_search": "q2_k",
     "keyword_search": None,
-    "new_tokens": 50,
-    "max_input_tokens": 100
+    "max_total_tokens": 50
 }
 #AUTO AI FROM DICT ONE LINE EXAMPLE
 def auto_ai_from_dict_one_line_example():
