@@ -299,6 +299,7 @@ class EasyAI:
             self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), "")
         if stop_at is None:
             stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == "", self.messages.ai_tag_close != " "]) else None
+            include_stop_str = False
         generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
         if ai_message_tbc is not None:
             self.messages.edit_last_message(generated,
