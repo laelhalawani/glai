@@ -61,7 +61,7 @@ __all__ = [&#39;AutoAI&#39;, &#39;EasyAI&#39;, &#39;ModelDB&#39;, &#39;AIMessage
 <dl>
 <dt id="glai.AIMessages"><code class="flex name class">
 <span>class <span class="ident">AIMessages</span></span>
-<span>(</span><span>user_tags: Union[tuple[str], list[str], dict] = ('[INST]', '[/INST]'), ai_tags: Union[tuple[str], list[str], dict] = ('', ''))</span>
+<span>(</span><span>user_tags: Union[tuple[str], list[str], dict] = ('[INST]', '[/INST]'), ai_tags: Union[tuple[str], list[str], dict] = ('', ''), system_tags: Union[tuple[str], list[str], dict, ForwardRef(None)] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a collection of messages in an AI system.</p>
@@ -70,6 +70,8 @@ __all__ = [&#39;AutoAI&#39;, &#39;EasyAI&#39;, &#39;ModelDB&#39;, &#39;AIMessage
 user_tag_close (str): The closing tag for user messages.
 ai_tag_open (str): The opening tag for AI messages.
 ai_tag_close (str): The closing tag for AI messages.
+system_tag_open (str): The opening tag for system messages.
+system_tag_close (str): The closing tag for system messages.
 messages (dict): The messages in the collection: {id: AIMessage}.
 _message_id_generator (int): The id generator for the messages.</p>
 <h2 id="args">Args</h2>
@@ -80,6 +82,8 @@ _message_id_generator (int): The id generator for the messages.</p>
 <dd>The tags to use for user messages.</dd>
 <dt><strong><code>ai_tags</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The tags to use for AI messages.</dd>
+<dt><strong><code>system_tags</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>The tags to use for system messages.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -93,6 +97,8 @@ _message_id_generator (int): The id generator for the messages.</p>
         user_tag_close (str): The closing tag for user messages.
         ai_tag_open (str): The opening tag for AI messages.
         ai_tag_close (str): The closing tag for AI messages.
+        system_tag_open (str): The opening tag for system messages.
+        system_tag_close (str): The closing tag for system messages.
         messages (dict): The messages in the collection: {id: AIMessage}.
         _message_id_generator (int): The id generator for the messages.
 
@@ -100,9 +106,10 @@ _message_id_generator (int): The id generator for the messages.</p>
         messages (Union[AIMessages, AIMessage, str, list]): The messages to add to the collection.
         user_tags (tuple): The tags to use for user messages.
         ai_tags (tuple): The tags to use for AI messages.
+        system_tags (tuple): The tags to use for system messages.
     &#34;&#34;&#34;
 
-    def __init__(self,user_tags:Union[tuple[str], list[str], dict]=(&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[tuple[str], list[str], dict]=(&#34;&#34;, &#34;&#34;)):
+    def __init__(self,user_tags:Union[tuple[str], list[str], dict]=(&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[tuple[str], list[str], dict]=(&#34;&#34;, &#34;&#34;), system_tags:Optional[Union[tuple[str], list[str], dict]]=None):
         if isinstance(user_tags, dict):
             if &#34;open&#34; in user_tags and &#34;close&#34; in user_tags:
                 self.user_tag_open = user_tags[&#34;open&#34;]
@@ -126,6 +133,22 @@ _message_id_generator (int): The id generator for the messages.</p>
             self.ai_tag_close = ai_tags[1]
         else:
             raise TypeError(f&#34;Invalid type for user tags: {type(ai_tags)}, must be dict, set or list.&#34;)
+        
+        if system_tags is not None:
+            if isinstance(system_tags, dict):
+                if &#34;open&#34; in system_tags and &#34;close&#34; in system_tags:
+                    self.system_tag_open = system_tags[&#34;open&#34;]
+                    self.system_tag_close = system_tags[&#34;close&#34;]
+                else:
+                    raise ValueError(f&#34;Invalid system tags: {system_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+            elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
+                self.system_tag_open = system_tags[0]
+                self.system_tag_close = system_tags[1]
+            else:
+                raise TypeError(f&#34;Invalid type for system tags: {type(system_tags)}, must be dict, set or list.&#34;)
+        else:
+            self.system_tag_open = None
+            self.system_tag_close = None
         self.messages = {}
         self._message_id_generator = 0
     
@@ -145,7 +168,19 @@ _message_id_generator (int): The id generator for the messages.</p>
         Returns:
             tuple[str]: The AI tags.
         &#34;&#34;&#34;
-        return (self.ai_tag_open, self.ai_tag_close)    
+        return (self.ai_tag_open, self.ai_tag_close)
+
+    def system_tags(self) -&gt; Union[tuple[str], None]:
+        &#34;&#34;&#34;
+        Returns the system tags.
+
+        Returns:
+            tuple[str]: The system tags.
+        &#34;&#34;&#34;
+        if self.system_tag_open is not None and self.system_tag_close is not None:
+            return (self.system_tag_open, self.system_tag_close)
+        else:
+            return None
     
     def load_messages(self, messages:Union[Any, AIMessage, str, list[Union[dict, AIMessage]]]) -&gt; None:
         if messages is not None:
@@ -179,6 +214,8 @@ _message_id_generator (int): The id generator for the messages.</p>
             &#34;user_tag_close&#34;: self.user_tag_close,
             &#34;ai_tag_open&#34;: self.ai_tag_open,
             &#34;ai_tag_close&#34;: self.ai_tag_close,
+            &#34;system_tag_open&#34;: self.system_tag_open,
+            &#34;system_tag_close&#34;: self.system_tag_close,
             &#34;messages&#34;: [message.to_dict() for message in self.messages]
         }
     
@@ -198,6 +235,8 @@ _message_id_generator (int): The id generator for the messages.</p>
         ai_msgs.user_tag_close = messages_dict[&#34;user_tag_close&#34;]
         ai_msgs.ai_tag_open = messages_dict[&#34;ai_tag_open&#34;]
         ai_msgs.ai_tag_close = messages_dict[&#34;ai_tag_close&#34;]
+        ai_msgs.system_tag_open = messages_dict[&#34;system_tag_open&#34;] if &#34;system_tag_open&#34; in messages_dict else None
+        ai_msgs.system_tag_close = messages_dict[&#34;system_tag_close&#34;] if &#34;system_tag_close&#34; in messages_dict else None
         ai_msgs.load_messages(messages_dict[&#34;messages&#34;])
         return ai_msgs
     
@@ -213,23 +252,47 @@ _message_id_generator (int): The id generator for the messages.</p>
         id = self._message_id_generator
         return id
     
-    def add_message(self, message:str, tag_open:str, tag_close:str) -&gt; AIMessage:
+    def add_message(self, message:Union[str, AIMessage], tag_open:str, tag_close:str) -&gt; AIMessage:
         &#34;&#34;&#34;
         Adds a new message to the messages dictionary.
         Iters the message ID generator.
 
         Parameters:
-        - message (str): The content of the message.
-        - tag_open (str): The opening tag for the message.
-        - tag_close (str): The closing tag for the message.
+        - message (str|AIMessage): The content of the message or the message object
+        - tag_open (str): The opening tag for the message, set to None if message is AIMessage
+        - tag_close (str): The closing tag for the message, set to None if message is AIMessage
 
         Returns:
         AIMessage
         &#34;&#34;&#34;
-        self.messages[self._generate_message_id()] = AIMessage(message, tag_open, tag_close)
+        if isinstance(message, str):
+            message = AIMessage(message, tag_open, tag_close)
+        self.messages[self._generate_message_id()] = message
         return self.messages[self._message_id_generator]
 
-    def add_user_message(self, message: str) -&gt; AIMessage:
+    def _insert_message(self, message:AIMessage, message_id:int) -&gt; AIMessage:
+        &#34;&#34;&#34;
+        Inserts a new message to the messages dictionary.
+        Iters the message ID generator.
+
+        Parameters:
+        - message (AIMessage): The message object
+        - message_id (int): The id to insert the message at
+
+        Returns:
+        AIMessage
+        &#34;&#34;&#34;
+        self._message_id_generator += 1 if len(self.messages) &gt; 0 else 0
+        updated_messages = {}
+        for id, msg in self.messages.items():
+            if id &lt; message_id:
+                updated_messages[id] = msg
+            else:
+                updated_messages[id+1] = msg
+        updated_messages[message_id] = message
+        self.messages = updated_messages
+
+    def add_user_message(self, message: Union[str, AIMessage]) -&gt; AIMessage:
         &#34;&#34;&#34;
         Adds a user message to the message list.
         Uses add_message() with the user tags.
@@ -243,7 +306,7 @@ _message_id_generator (int): The id generator for the messages.</p>
         &#34;&#34;&#34;
         return self.add_message(message, self.user_tag_open, self.user_tag_close)
 
-    def add_ai_message(self, message:str) -&gt; AIMessage:
+    def add_ai_message(self, message:Union[str, AIMessage]) -&gt; AIMessage:
         &#34;&#34;&#34;
         Adds a ai message to the message list.
         Uses add_message() with the ai tags.
@@ -256,6 +319,25 @@ _message_id_generator (int): The id generator for the messages.</p>
             AIMessage
         &#34;&#34;&#34;
         return self.add_message(message, self.ai_tag_open, self.ai_tag_close)
+    
+    def set_system_message(self, message:Union[str, AIMessage]) -&gt; AIMessage:
+        &#34;&#34;&#34;
+        Adds a system message to the message list.
+        Uses add_message() with the system tags.
+        Automatically iters the message ID generator.
+
+        Parameters:
+            message (str): The message to be added.
+
+        Returns:
+            AIMessage
+        &#34;&#34;&#34;
+        if not self.has_system_tags():
+            print(&#34;System tags are not set, this model does not support system messages.&#34;)
+        else:
+            if isinstance(message, str):
+                message = AIMessage(message, self.system_tag_open, self.system_tag_close)    
+            return self._insert_message(message, 0)
 
     def reset_messages(self) -&gt; None:
         self.messages = {}
@@ -307,6 +389,25 @@ _message_id_generator (int): The id generator for the messages.</p>
             None
         &#34;&#34;&#34;
         self.messages[message_id].edit(new_content, tag_open, tag_close)
+
+    def edit_system_message(self, new_content:str) -&gt; None:
+        if self.system_tags() is None:
+            raise ValueError(&#34;System tags are not set, this model does not support system messages.&#34;)
+        else:
+            if self.messages[0].tag_open == self.system_tag_open and self.messages[0].tag_close == self.system_tag_close:
+                self.edit_message(0, new_content)
+            else:
+                print(&#34;Warning: System message not found, adding system message to the start of the message list.&#34;)
+                self.set_system_message(new_content)
+
+    def has_system_tags(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Returns whether the model supports system messages.
+
+        Returns:
+            bool: Whether the model supports system messages.
+        &#34;&#34;&#34;
+        return self.system_tags() is not None
     
     def save_json(self, file_path:str) -&gt; None:
         &#34;&#34;&#34;
@@ -331,10 +432,64 @@ _message_id_generator (int): The id generator for the messages.</p>
         Returns:
             AIMessages: The created AIMessages.
         &#34;&#34;&#34;
-        return AIMessages.from_dict(load_json_file(file_path))</code></pre>
+        return AIMessages.from_dict(load_json_file(file_path))
+    
+    @staticmethod
+    def create_single_message(message:str, tag_open:str=&#34;&#34;, tag_close:str=&#34;&#34;) -&gt;AIMessage:
+        &#34;&#34;&#34;
+        Creates a single AIMessage.
+
+        Args:
+            message (str): The content of the message.
+            tag_open (str): The opening tag for the message.
+            tag_close (str): The closing tag for the message.
+
+        Returns:
+            AIMessage: The created AIMessage.
+        &#34;&#34;&#34;
+        return AIMessage(message, tag_open, tag_close)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
+<dt id="glai.AIMessages.create_single_message"><code class="name flex">
+<span>def <span class="ident">create_single_message</span></span>(<span>message: str, tag_open: str = '', tag_close: str = '') ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a single AIMessage.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
+<dd>The content of the message.</dd>
+<dt><strong><code>tag_open</code></strong> :&ensp;<code>str</code></dt>
+<dd>The opening tag for the message.</dd>
+<dt><strong><code>tag_close</code></strong> :&ensp;<code>str</code></dt>
+<dd>The closing tag for the message.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>AIMessage</code></dt>
+<dd>The created AIMessage.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def create_single_message(message:str, tag_open:str=&#34;&#34;, tag_close:str=&#34;&#34;) -&gt;AIMessage:
+    &#34;&#34;&#34;
+    Creates a single AIMessage.
+
+    Args:
+        message (str): The content of the message.
+        tag_open (str): The opening tag for the message.
+        tag_close (str): The closing tag for the message.
+
+    Returns:
+        AIMessage: The created AIMessage.
+    &#34;&#34;&#34;
+    return AIMessage(message, tag_open, tag_close)</code></pre>
+</details>
+</dd>
 <dt id="glai.AIMessages.from_dict"><code class="name flex">
 <span>def <span class="ident">from_dict</span></span>(<span>messages_dict: dict) ‑> <a title="glai.back_end.messages.AIMessages" href="back_end/messages.html#glai.back_end.messages.AIMessages">AIMessages</a></span>
 </code></dt>
@@ -370,6 +525,8 @@ def from_dict(messages_dict:dict) -&gt; &#34;AIMessages&#34;:
     ai_msgs.user_tag_close = messages_dict[&#34;user_tag_close&#34;]
     ai_msgs.ai_tag_open = messages_dict[&#34;ai_tag_open&#34;]
     ai_msgs.ai_tag_close = messages_dict[&#34;ai_tag_close&#34;]
+    ai_msgs.system_tag_open = messages_dict[&#34;system_tag_open&#34;] if &#34;system_tag_open&#34; in messages_dict else None
+    ai_msgs.system_tag_close = messages_dict[&#34;system_tag_close&#34;] if &#34;system_tag_close&#34; in messages_dict else None
     ai_msgs.load_messages(messages_dict[&#34;messages&#34;])
     return ai_msgs</code></pre>
 </details>
@@ -411,7 +568,7 @@ def from_json(file_path:str) -&gt; &#34;AIMessages&#34;:
 <h3>Methods</h3>
 <dl>
 <dt id="glai.AIMessages.add_ai_message"><code class="name flex">
-<span>def <span class="ident">add_ai_message</span></span>(<span>self, message: str) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">add_ai_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a ai message to the message list.
@@ -425,7 +582,7 @@ Automatically iters the message ID generator.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_ai_message(self, message:str) -&gt; AIMessage:
+<pre><code class="python">def add_ai_message(self, message:Union[str, AIMessage]) -&gt; AIMessage:
     &#34;&#34;&#34;
     Adds a ai message to the message list.
     Uses add_message() with the ai tags.
@@ -441,40 +598,42 @@ Automatically iters the message ID generator.</p>
 </details>
 </dd>
 <dt id="glai.AIMessages.add_message"><code class="name flex">
-<span>def <span class="ident">add_message</span></span>(<span>self, message: str, tag_open: str, tag_close: str) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">add_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a>], tag_open: str, tag_close: str) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a new message to the messages dictionary.
 Iters the message ID generator.</p>
 <p>Parameters:
-- message (str): The content of the message.
-- tag_open (str): The opening tag for the message.
-- tag_close (str): The closing tag for the message.</p>
+- message (str|AIMessage): The content of the message or the message object
+- tag_open (str): The opening tag for the message, set to None if message is AIMessage
+- tag_close (str): The closing tag for the message, set to None if message is AIMessage</p>
 <p>Returns:
 AIMessage</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_message(self, message:str, tag_open:str, tag_close:str) -&gt; AIMessage:
+<pre><code class="python">def add_message(self, message:Union[str, AIMessage], tag_open:str, tag_close:str) -&gt; AIMessage:
     &#34;&#34;&#34;
     Adds a new message to the messages dictionary.
     Iters the message ID generator.
 
     Parameters:
-    - message (str): The content of the message.
-    - tag_open (str): The opening tag for the message.
-    - tag_close (str): The closing tag for the message.
+    - message (str|AIMessage): The content of the message or the message object
+    - tag_open (str): The opening tag for the message, set to None if message is AIMessage
+    - tag_close (str): The closing tag for the message, set to None if message is AIMessage
 
     Returns:
     AIMessage
     &#34;&#34;&#34;
-    self.messages[self._generate_message_id()] = AIMessage(message, tag_open, tag_close)
+    if isinstance(message, str):
+        message = AIMessage(message, tag_open, tag_close)
+    self.messages[self._generate_message_id()] = message
     return self.messages[self._message_id_generator]</code></pre>
 </details>
 </dd>
 <dt id="glai.AIMessages.add_user_message"><code class="name flex">
-<span>def <span class="ident">add_user_message</span></span>(<span>self, message: str) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">add_user_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a user message to the message list.
@@ -488,7 +647,7 @@ Automatically iters the message ID generator.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_user_message(self, message: str) -&gt; AIMessage:
+<pre><code class="python">def add_user_message(self, message: Union[str, AIMessage]) -&gt; AIMessage:
     &#34;&#34;&#34;
     Adds a user message to the message list.
     Uses add_message() with the user tags.
@@ -524,7 +683,7 @@ Automatically iters the message ID generator.</p>
     Returns:
         tuple[str]: The AI tags.
     &#34;&#34;&#34;
-    return (self.ai_tag_open, self.ai_tag_close)    </code></pre>
+    return (self.ai_tag_open, self.ai_tag_close)</code></pre>
 </details>
 </dd>
 <dt id="glai.AIMessages.edit_last_message"><code class="name flex">
@@ -589,6 +748,26 @@ tag_close (str): The new closing tag for the message.</p>
     self.messages[message_id].edit(new_content, tag_open, tag_close)</code></pre>
 </details>
 </dd>
+<dt id="glai.AIMessages.edit_system_message"><code class="name flex">
+<span>def <span class="ident">edit_system_message</span></span>(<span>self, new_content: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def edit_system_message(self, new_content:str) -&gt; None:
+    if self.system_tags() is None:
+        raise ValueError(&#34;System tags are not set, this model does not support system messages.&#34;)
+    else:
+        if self.messages[0].tag_open == self.system_tag_open and self.messages[0].tag_close == self.system_tag_close:
+            self.edit_message(0, new_content)
+        else:
+            print(&#34;Warning: System message not found, adding system message to the start of the message list.&#34;)
+            self.set_system_message(new_content)</code></pre>
+</details>
+</dd>
 <dt id="glai.AIMessages.get_last_message"><code class="name flex">
 <span>def <span class="ident">get_last_message</span></span>(<span>self) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
@@ -611,6 +790,30 @@ tag_close (str): The new closing tag for the message.</p>
         AIMessage: The last message in the collection.
     &#34;&#34;&#34;
     return self.messages[self._message_id_generator]</code></pre>
+</details>
+</dd>
+<dt id="glai.AIMessages.has_system_tags"><code class="name flex">
+<span>def <span class="ident">has_system_tags</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns whether the model supports system messages.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>Whether the model supports system messages.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_system_tags(self) -&gt; bool:
+    &#34;&#34;&#34;
+    Returns whether the model supports system messages.
+
+    Returns:
+        bool: Whether the model supports system messages.
+    &#34;&#34;&#34;
+    return self.system_tags() is not None</code></pre>
 </details>
 </dd>
 <dt id="glai.AIMessages.load_messages"><code class="name flex">
@@ -683,6 +886,68 @@ tag_close (str): The new closing tag for the message.</p>
     save_json_file(self.to_dict(), file_path)</code></pre>
 </details>
 </dd>
+<dt id="glai.AIMessages.set_system_message"><code class="name flex">
+<span>def <span class="ident">set_system_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds a system message to the message list.
+Uses add_message() with the system tags.
+Automatically iters the message ID generator.</p>
+<h2 id="parameters">Parameters</h2>
+<p>message (str): The message to be added.</p>
+<h2 id="returns">Returns</h2>
+<p>AIMessage</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_system_message(self, message:Union[str, AIMessage]) -&gt; AIMessage:
+    &#34;&#34;&#34;
+    Adds a system message to the message list.
+    Uses add_message() with the system tags.
+    Automatically iters the message ID generator.
+
+    Parameters:
+        message (str): The message to be added.
+
+    Returns:
+        AIMessage
+    &#34;&#34;&#34;
+    if not self.has_system_tags():
+        print(&#34;System tags are not set, this model does not support system messages.&#34;)
+    else:
+        if isinstance(message, str):
+            message = AIMessage(message, self.system_tag_open, self.system_tag_close)    
+        return self._insert_message(message, 0)</code></pre>
+</details>
+</dd>
+<dt id="glai.AIMessages.system_tags"><code class="name flex">
+<span>def <span class="ident">system_tags</span></span>(<span>self) ‑> Optional[tuple[str]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the system tags.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple[str]</code></dt>
+<dd>The system tags.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def system_tags(self) -&gt; Union[tuple[str], None]:
+    &#34;&#34;&#34;
+    Returns the system tags.
+
+    Returns:
+        tuple[str]: The system tags.
+    &#34;&#34;&#34;
+    if self.system_tag_open is not None and self.system_tag_close is not None:
+        return (self.system_tag_open, self.system_tag_close)
+    else:
+        return None</code></pre>
+</details>
+</dd>
 <dt id="glai.AIMessages.text"><code class="name flex">
 <span>def <span class="ident">text</span></span>(<span>self)</span>
 </code></dt>
@@ -722,6 +987,8 @@ tag_close (str): The new closing tag for the message.</p>
         &#34;user_tag_close&#34;: self.user_tag_close,
         &#34;ai_tag_open&#34;: self.ai_tag_open,
         &#34;ai_tag_close&#34;: self.ai_tag_close,
+        &#34;system_tag_open&#34;: self.system_tag_open,
+        &#34;system_tag_close&#34;: self.system_tag_close,
         &#34;messages&#34;: [message.to_dict() for message in self.messages]
     }</code></pre>
 </details>
@@ -817,7 +1084,8 @@ Downloads model and sets up LlamaAI.</p>
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
                  max_total_tokens: int = 1500,
-                 model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR) -&gt; None:
+                 model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR,
+                 ) -&gt; None:
 
         self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
         self.model_data: ModelData = self.ai_db.find_model(
@@ -829,67 +1097,79 @@ Downloads model and sets up LlamaAI.</p>
         )
         print(f&#34;Using model: {self.model_data}&#34;)
         self.msgs: AIMessages = AIMessages(
-            self.model_data.user_tags, self.model_data.ai_tags
+            self.model_data.user_tags, self.model_data.ai_tags, self.model_data.system_tags
         )
-
-    def generate_from_prompt(
+    
+    def generate_from_messages(self, stop_at:str = None, include_stop_str:bool = True) -&gt; AIMessage:
+        prompt = self.msgs.text()
+        ai_message = self.generate_from_literal_string(prompt, stop_at=stop_at, include_stop_str=include_stop_str)
+        self.msgs.add_ai_message(ai_message)
+        return ai_message
+    
+    def generate_from_literal_string(
         self, 
         prompt: str,
-        max_tokens_if_needed: int = 2000,
         stop_at:str = None,
         include_stop_str:bool = True
-    ) -&gt; str:
+    ) -&gt; AIMessage:
         &#34;&#34;&#34;
         Generate text from a prompt using the LlamaAI model.
 
         Args:
             prompt: Prompt text to generate from.
-            max_tokens_if_needed: Max tokens to allow.
 
         Returns:
             Generated text string.
         &#34;&#34;&#34;
         return self.ai.infer(
-            prompt, only_string=True, max_tokens_if_needed=max_tokens_if_needed, stop_at_str=stop_at, include_stop_str=include_stop_str
+            prompt, only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str
         )
 
     def generate(
         self,
-        user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None,
+        user_message: str,
+        ai_message_tbc: Optional[str] = None,
         stop_at:Optional[str] = None,
-        include_stop_str:bool = True
+        include_stop_str:bool = True,
+        system_message: Optional[str] = None
     ) -&gt; AIMessage:
         &#34;&#34;&#34;
         Generate an AI response to a user message.
 
         Args:
-            user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            user_message: User message text.
+            ai_message_tbc: Optional text to prepend.
             stop_at: Optional string to stop generation at.
             include_stop_str: Whether to include the stop string in the generated message.
-
+            system_message: Optional system message to include at the start, not all models support this.
+            If you provide system message to a model that doesn&#39;t support it, it will be ignored.
+            You can check if a model supports system messages by checking the model_data.has_system_tags() method.
         Returns:
             Generated AIMessage object.
         &#34;&#34;&#34;
-        generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags)
+        generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags, system_tags=self.model_data.system_tags)
         generation_messages.reset_messages()
-        generation_messages.add_user_message(user_message_text)
+        if self.model_data.has_system_tags():
+            if system_message is not None:
+                generation_messages.set_system_message(system_message)
+            else:
+                print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
+        generation_messages.add_user_message(user_message)
 
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.add_message(
-                ai_message_to_be_continued, 
+                ai_message_tbc, 
                 self.msgs.ai_tag_open, 
                 &#34;&#34;
             )
         print(f&#34;Promt: {generation_messages.text()}&#34;)
         
-        generated = self.generate_from_prompt(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
+        generated = self.generate_from_literal_string(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.edit_last_message(
-                ai_message_to_be_continued + generated,
+                ai_message_tbc + generated,
                 self.msgs.ai_tag_open,
                 self.msgs.ai_tag_close
             )
@@ -902,26 +1182,26 @@ Downloads model and sets up LlamaAI.</p>
 
     def count_tokens(
         self,
-        user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        user_message: str,
+        ai_message_tbc: Optional[str] = None
     ) -&gt; int:
         &#34;&#34;&#34;
         Count the number of tokens in a generated message.
 
         Args:
-            user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            user_message: User message text.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             Number of tokens in generated message.
         &#34;&#34;&#34;
         generation_messages = AIMessages()
         generation_messages.reset_messages()
-        generation_messages.add_user_message(user_message_text)
+        generation_messages.add_user_message(user_message)
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.add_message(
-                ai_message_to_be_continued, 
+                ai_message_tbc, 
                 self.msgs.ai_tag_open, 
                 &#34;&#34;
             )
@@ -929,33 +1209,33 @@ Downloads model and sets up LlamaAI.</p>
     
     def is_within_input_limit(
         self,
-        user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        user_message: str,
+        ai_message_tbc: Optional[str] = None
         ) -&gt; bool:
         &#34;&#34;&#34;
         Check if the generated message is within the input limit.
 
         Args:
-            user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            user_message: User message text.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             True if within input limit, False otherwise.
         &#34;&#34;&#34;
-        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_to_be_continued))</code></pre>
+        return self.ai.is_within_input_limit(self.count_tokens(user_message, ai_message_tbc))</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="glai.AutoAI.count_tokens"><code class="name flex">
-<span>def <span class="ident">count_tokens</span></span>(<span>self, user_message_text: str, ai_message_to_be_continued: Optional[str] = None) ‑> int</span>
+<span>def <span class="ident">count_tokens</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None) ‑> int</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Count the number of tokens in a generated message.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>user_message_text</code></strong></dt>
+<dt><strong><code>user_message</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_message_to_be_continued</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -966,26 +1246,26 @@ Downloads model and sets up LlamaAI.</p>
 </summary>
 <pre><code class="python">def count_tokens(
     self,
-    user_message_text: str,
-    ai_message_to_be_continued: Optional[str] = None
+    user_message: str,
+    ai_message_tbc: Optional[str] = None
 ) -&gt; int:
     &#34;&#34;&#34;
     Count the number of tokens in a generated message.
 
     Args:
-        user_message_text: User message text.
-        ai_message_to_be_continued: Optional text to prepend.
+        user_message: User message text.
+        ai_message_tbc: Optional text to prepend.
 
     Returns:
         Number of tokens in generated message.
     &#34;&#34;&#34;
     generation_messages = AIMessages()
     generation_messages.reset_messages()
-    generation_messages.add_user_message(user_message_text)
+    generation_messages.add_user_message(user_message)
 
-    if ai_message_to_be_continued is not None:
+    if ai_message_tbc is not None:
         generation_messages.add_message(
-            ai_message_to_be_continued, 
+            ai_message_tbc, 
             self.msgs.ai_tag_open, 
             &#34;&#34;
         )
@@ -993,21 +1273,25 @@ Downloads model and sets up LlamaAI.</p>
 </details>
 </dd>
 <dt id="glai.AutoAI.generate"><code class="name flex">
-<span>def <span class="ident">generate</span></span>(<span>self, user_message_text: str, ai_message_to_be_continued: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate an AI response to a user message.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>user_message_text</code></strong></dt>
+<dt><strong><code>user_message</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_message_to_be_continued</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend.</dd>
 <dt><strong><code>stop_at</code></strong></dt>
 <dd>Optional string to stop generation at.</dd>
 <dt><strong><code>include_stop_str</code></strong></dt>
 <dd>Whether to include the stop string in the generated message.</dd>
+<dt><strong><code>system_message</code></strong></dt>
+<dd>Optional system message to include at the start, not all models support this.</dd>
 </dl>
+<p>If you provide system message to a model that doesn't support it, it will be ignored.
+You can check if a model supports system messages by checking the model_data.has_system_tags() method.</p>
 <h2 id="returns">Returns</h2>
 <p>Generated AIMessage object.</p></div>
 <details class="source">
@@ -1016,41 +1300,49 @@ Downloads model and sets up LlamaAI.</p>
 </summary>
 <pre><code class="python">def generate(
     self,
-    user_message_text: str,
-    ai_message_to_be_continued: Optional[str] = None,
+    user_message: str,
+    ai_message_tbc: Optional[str] = None,
     stop_at:Optional[str] = None,
-    include_stop_str:bool = True
+    include_stop_str:bool = True,
+    system_message: Optional[str] = None
 ) -&gt; AIMessage:
     &#34;&#34;&#34;
     Generate an AI response to a user message.
 
     Args:
-        user_message_text: User message text.
-        ai_message_to_be_continued: Optional text to prepend.
+        user_message: User message text.
+        ai_message_tbc: Optional text to prepend.
         stop_at: Optional string to stop generation at.
         include_stop_str: Whether to include the stop string in the generated message.
-
+        system_message: Optional system message to include at the start, not all models support this.
+        If you provide system message to a model that doesn&#39;t support it, it will be ignored.
+        You can check if a model supports system messages by checking the model_data.has_system_tags() method.
     Returns:
         Generated AIMessage object.
     &#34;&#34;&#34;
-    generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags)
+    generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags, system_tags=self.model_data.system_tags)
     generation_messages.reset_messages()
-    generation_messages.add_user_message(user_message_text)
+    if self.model_data.has_system_tags():
+        if system_message is not None:
+            generation_messages.set_system_message(system_message)
+        else:
+            print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
+    generation_messages.add_user_message(user_message)
 
 
-    if ai_message_to_be_continued is not None:
+    if ai_message_tbc is not None:
         generation_messages.add_message(
-            ai_message_to_be_continued, 
+            ai_message_tbc, 
             self.msgs.ai_tag_open, 
             &#34;&#34;
         )
     print(f&#34;Promt: {generation_messages.text()}&#34;)
     
-    generated = self.generate_from_prompt(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
+    generated = self.generate_from_literal_string(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
 
-    if ai_message_to_be_continued is not None:
+    if ai_message_tbc is not None:
         generation_messages.edit_last_message(
-            ai_message_to_be_continued + generated,
+            ai_message_tbc + generated,
             self.msgs.ai_tag_open,
             self.msgs.ai_tag_close
         )
@@ -1062,8 +1354,8 @@ Downloads model and sets up LlamaAI.</p>
     return output</code></pre>
 </details>
 </dd>
-<dt id="glai.AutoAI.generate_from_prompt"><code class="name flex">
-<span>def <span class="ident">generate_from_prompt</span></span>(<span>self, prompt: str, max_tokens_if_needed: int = 2000, stop_at: str = None, include_stop_str: bool = True) ‑> str</span>
+<dt id="glai.AutoAI.generate_from_literal_string"><code class="name flex">
+<span>def <span class="ident">generate_from_literal_string</span></span>(<span>self, prompt: str, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate text from a prompt using the LlamaAI model.</p>
@@ -1071,8 +1363,6 @@ Downloads model and sets up LlamaAI.</p>
 <dl>
 <dt><strong><code>prompt</code></strong></dt>
 <dd>Prompt text to generate from.</dd>
-<dt><strong><code>max_tokens_if_needed</code></strong></dt>
-<dd>Max tokens to allow.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>Generated text string.</p></div>
@@ -1080,38 +1370,52 @@ Downloads model and sets up LlamaAI.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def generate_from_prompt(
+<pre><code class="python">def generate_from_literal_string(
     self, 
     prompt: str,
-    max_tokens_if_needed: int = 2000,
     stop_at:str = None,
     include_stop_str:bool = True
-) -&gt; str:
+) -&gt; AIMessage:
     &#34;&#34;&#34;
     Generate text from a prompt using the LlamaAI model.
 
     Args:
         prompt: Prompt text to generate from.
-        max_tokens_if_needed: Max tokens to allow.
 
     Returns:
         Generated text string.
     &#34;&#34;&#34;
     return self.ai.infer(
-        prompt, only_string=True, max_tokens_if_needed=max_tokens_if_needed, stop_at_str=stop_at, include_stop_str=include_stop_str
+        prompt, only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str
     )</code></pre>
 </details>
 </dd>
+<dt id="glai.AutoAI.generate_from_messages"><code class="name flex">
+<span>def <span class="ident">generate_from_messages</span></span>(<span>self, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_from_messages(self, stop_at:str = None, include_stop_str:bool = True) -&gt; AIMessage:
+    prompt = self.msgs.text()
+    ai_message = self.generate_from_literal_string(prompt, stop_at=stop_at, include_stop_str=include_stop_str)
+    self.msgs.add_ai_message(ai_message)
+    return ai_message</code></pre>
+</details>
+</dd>
 <dt id="glai.AutoAI.is_within_input_limit"><code class="name flex">
-<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, user_message_text: str, ai_message_to_be_continued: Optional[str] = None) ‑> bool</span>
+<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Check if the generated message is within the input limit.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>user_message_text</code></strong></dt>
+<dt><strong><code>user_message</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_message_to_be_continued</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -1122,20 +1426,20 @@ Downloads model and sets up LlamaAI.</p>
 </summary>
 <pre><code class="python">def is_within_input_limit(
     self,
-    user_message_text: str,
-    ai_message_to_be_continued: Optional[str] = None
+    user_message: str,
+    ai_message_tbc: Optional[str] = None
     ) -&gt; bool:
     &#34;&#34;&#34;
     Check if the generated message is within the input limit.
 
     Args:
-        user_message_text: User message text.
-        ai_message_to_be_continued: Optional text to prepend.
+        user_message: User message text.
+        ai_message_tbc: Optional text to prepend.
 
     Returns:
         True if within input limit, False otherwise.
     &#34;&#34;&#34;
-    return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_to_be_continued))</code></pre>
+    return self.ai.is_within_input_limit(self.count_tokens(user_message, ai_message_tbc))</code></pre>
 </details>
 </dd>
 </dl>
@@ -1431,7 +1735,7 @@ LLama</p></div>
         &#34;&#34;&#34;
         if self.model_data is None:
             raise Exception(&#34;No model data loaded. Use find_model_data(), get_model_data_from_url(), or get_model_data_from_file() first.&#34;)
-        self.messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags)
+        self.messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags, system_tags=self.model_data.system_tags)
 
     def load_ai(self,
                 max_total_tokens: int = 200,) -&gt; None:
@@ -1456,9 +1760,10 @@ LLama</p></div>
 
     def generate(self,
               user_message: str,
-              ai_response_content_tbc: Optional[str] = None,
+              ai_message_tbc: Optional[str] = None,
               stop_at:Optional[str]=None,
-              include_stop_str:bool=True
+              include_stop_str:bool=True,
+              system_message: Optional[str] = None
               ) -&gt; AIMessage:
         &#34;&#34;&#34;
         Generate AI response to user message.
@@ -1468,9 +1773,12 @@ LLama</p></div>
 
         Args:
             user_message: User message text.
-            ai_response_content_tbc: Optional text to prepend to AI response.
+            ai_message_tbc: Optional text to prepend to AI response.
             stop_at: Optional string to stop generation at.
             include_stop_str: Whether to include stop string in generated message.
+            system_message: Optional system message to include at the start, not all models support this.
+            If you provide system message to a model that doesn&#39;t support it, it will be ignored.
+            You can check if a model supports system messages by checking the model_data.has_system_messages()
 
         Returns:
             Generated AIMessage object.
@@ -1483,16 +1791,21 @@ LLama</p></div>
         if self.messages is None:
             raise Exception(&#34;No messages loaded. Use load_ai() first.&#34;)
         self.messages.reset_messages()
+        if self.model_data.has_system_tags():
+            if system_message is not None:
+                self.messages.set_system_message(system_message)
+            else:
+                print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
         self.messages.add_user_message(user_message)
-        print(f&#34;User message: \n{self.messages.get_last_message()}&#34;)
+        print(f&#34;Input to model: \n{self.messages.text()}&#34;)
         generated: str = &#34;&#34;
-        if not (ai_response_content_tbc == &#34;&#34; or ai_response_content_tbc is None):
-            generated += ai_response_content_tbc
-            self.messages.add_message(ai_response_content_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
+        if ai_message_tbc is not None:
+            generated += ai_message_tbc
+            self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
         if stop_at is None:
             stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == &#34;&#34;, self.messages.ai_tag_close != &#34; &#34;]) else None
         generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
-        if not (ai_response_content_tbc == &#34;&#34; or ai_response_content_tbc is None):
+        if ai_message_tbc is not None:
             self.messages.edit_last_message(generated,
                                             self.model_data.get_ai_tag_open(),
                                             self.model_data.get_ai_tag_close())
@@ -1508,14 +1821,14 @@ LLama</p></div>
     def count_tokens(
         self,
         user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        ai_message_tbc: Optional[str] = None
     ) -&gt; int:
         &#34;&#34;&#34;
         Count the number of tokens in a generated message.
 
         Args:
             user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             Number of tokens in generated message.
@@ -1524,9 +1837,9 @@ LLama</p></div>
         generation_messages.reset_messages()
         generation_messages.add_user_message(user_message_text)
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.add_message(
-                ai_message_to_be_continued, 
+                ai_message_tbc, 
                 self.messages.ai_tag_open, 
                 &#34;&#34;
             )
@@ -1536,19 +1849,19 @@ LLama</p></div>
     def is_within_input_limit(
         self,
         user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        ai_message_tbc: Optional[str] = None
         ) -&gt; bool:
         &#34;&#34;&#34;
         Check if the generated message is within the input limit.
 
         Args:
             user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             True if within input limit, False otherwise.
         &#34;&#34;&#34;
-        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_to_be_continued))</code></pre>
+        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1640,7 +1953,7 @@ Sets model data attribute.</p>
 </details>
 </dd>
 <dt id="glai.EasyAI.count_tokens"><code class="name flex">
-<span>def <span class="ident">count_tokens</span></span>(<span>self, user_message_text: str, ai_message_to_be_continued: Optional[str] = None) ‑> int</span>
+<span>def <span class="ident">count_tokens</span></span>(<span>self, user_message_text: str, ai_message_tbc: Optional[str] = None) ‑> int</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Count the number of tokens in a generated message.</p>
@@ -1648,7 +1961,7 @@ Sets model data attribute.</p>
 <dl>
 <dt><strong><code>user_message_text</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_message_to_be_continued</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -1660,14 +1973,14 @@ Sets model data attribute.</p>
 <pre><code class="python">def count_tokens(
     self,
     user_message_text: str,
-    ai_message_to_be_continued: Optional[str] = None
+    ai_message_tbc: Optional[str] = None
 ) -&gt; int:
     &#34;&#34;&#34;
     Count the number of tokens in a generated message.
 
     Args:
         user_message_text: User message text.
-        ai_message_to_be_continued: Optional text to prepend.
+        ai_message_tbc: Optional text to prepend.
 
     Returns:
         Number of tokens in generated message.
@@ -1676,9 +1989,9 @@ Sets model data attribute.</p>
     generation_messages.reset_messages()
     generation_messages.add_user_message(user_message_text)
 
-    if ai_message_to_be_continued is not None:
+    if ai_message_tbc is not None:
         generation_messages.add_message(
-            ai_message_to_be_continued, 
+            ai_message_tbc, 
             self.messages.ai_tag_open, 
             &#34;&#34;
         )
@@ -1736,7 +2049,7 @@ in the search.</p>
 </details>
 </dd>
 <dt id="glai.EasyAI.generate"><code class="name flex">
-<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_response_content_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate AI response to user message.</p>
@@ -1746,13 +2059,17 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 <dl>
 <dt><strong><code>user_message</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_response_content_tbc</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend to AI response.</dd>
 <dt><strong><code>stop_at</code></strong></dt>
 <dd>Optional string to stop generation at.</dd>
 <dt><strong><code>include_stop_str</code></strong></dt>
 <dd>Whether to include stop string in generated message.</dd>
+<dt><strong><code>system_message</code></strong></dt>
+<dd>Optional system message to include at the start, not all models support this.</dd>
 </dl>
+<p>If you provide system message to a model that doesn't support it, it will be ignored.
+You can check if a model supports system messages by checking the model_data.has_system_messages()</p>
 <h2 id="returns">Returns</h2>
 <p>Generated AIMessage object.</p>
 <h2 id="raises">Raises</h2>
@@ -1766,9 +2083,10 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 </summary>
 <pre><code class="python">def generate(self,
           user_message: str,
-          ai_response_content_tbc: Optional[str] = None,
+          ai_message_tbc: Optional[str] = None,
           stop_at:Optional[str]=None,
-          include_stop_str:bool=True
+          include_stop_str:bool=True,
+          system_message: Optional[str] = None
           ) -&gt; AIMessage:
     &#34;&#34;&#34;
     Generate AI response to user message.
@@ -1778,9 +2096,12 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 
     Args:
         user_message: User message text.
-        ai_response_content_tbc: Optional text to prepend to AI response.
+        ai_message_tbc: Optional text to prepend to AI response.
         stop_at: Optional string to stop generation at.
         include_stop_str: Whether to include stop string in generated message.
+        system_message: Optional system message to include at the start, not all models support this.
+        If you provide system message to a model that doesn&#39;t support it, it will be ignored.
+        You can check if a model supports system messages by checking the model_data.has_system_messages()
 
     Returns:
         Generated AIMessage object.
@@ -1793,16 +2114,21 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
     if self.messages is None:
         raise Exception(&#34;No messages loaded. Use load_ai() first.&#34;)
     self.messages.reset_messages()
+    if self.model_data.has_system_tags():
+        if system_message is not None:
+            self.messages.set_system_message(system_message)
+        else:
+            print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
     self.messages.add_user_message(user_message)
-    print(f&#34;User message: \n{self.messages.get_last_message()}&#34;)
+    print(f&#34;Input to model: \n{self.messages.text()}&#34;)
     generated: str = &#34;&#34;
-    if not (ai_response_content_tbc == &#34;&#34; or ai_response_content_tbc is None):
-        generated += ai_response_content_tbc
-        self.messages.add_message(ai_response_content_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
+    if ai_message_tbc is not None:
+        generated += ai_message_tbc
+        self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
     if stop_at is None:
         stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == &#34;&#34;, self.messages.ai_tag_close != &#34; &#34;]) else None
     generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
-    if not (ai_response_content_tbc == &#34;&#34; or ai_response_content_tbc is None):
+    if ai_message_tbc is not None:
         self.messages.edit_last_message(generated,
                                         self.model_data.get_ai_tag_open(),
                                         self.model_data.get_ai_tag_close())
@@ -1813,7 +2139,7 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 </details>
 </dd>
 <dt id="glai.EasyAI.is_within_input_limit"><code class="name flex">
-<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, user_message_text: str, ai_message_to_be_continued: Optional[str] = None) ‑> bool</span>
+<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, user_message_text: str, ai_message_tbc: Optional[str] = None) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Check if the generated message is within the input limit.</p>
@@ -1821,7 +2147,7 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 <dl>
 <dt><strong><code>user_message_text</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_message_to_be_continued</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -1833,19 +2159,19 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 <pre><code class="python">def is_within_input_limit(
     self,
     user_message_text: str,
-    ai_message_to_be_continued: Optional[str] = None
+    ai_message_tbc: Optional[str] = None
     ) -&gt; bool:
     &#34;&#34;&#34;
     Check if the generated message is within the input limit.
 
     Args:
         user_message_text: User message text.
-        ai_message_to_be_continued: Optional text to prepend.
+        ai_message_tbc: Optional text to prepend.
 
     Returns:
         True if within input limit, False otherwise.
     &#34;&#34;&#34;
-    return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_to_be_continued))</code></pre>
+    return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))</code></pre>
 </details>
 </dd>
 <dt id="glai.EasyAI.load_ai"><code class="name flex">
@@ -2176,20 +2502,21 @@ the model from the URL and creates new model data. Sets model data attribute.</p
         model_links = []
         for link in soup.find_all(&#39;a&#39;):
             href = link.get(&#39;href&#39;)
-            if href.endswith(&#34;.gguf&#34;):
+            if href is not None and href.endswith(&#34;.gguf&#34;):
                 print(f&#34;Found model: {href}&#34;)
                 model_links.append(href)
         return model_links
     def load_models_data_from_repo(self, hf_repo_url:str, 
                         user_tags:Optional[list[str]]=None,
                         ai_tags:Optional[list[str]]=None,
+                        system_tags:Optional[list[str]]=None,
                         keywords:Optional[list[str]]=None, 
                         description:Optional[str]=None):  
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
         model_datas = []
         for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_datas.append(model_data)
             model_data.save_json()
         self.models.extend(model_datas)
@@ -2198,14 +2525,16 @@ the model from the URL and creates new model data. Sets model data attribute.</p
     def import_models_from_repo(self, hf_repo_url:str,
                         user_tags:Optional[list[str]]=None,
                         ai_tags:Optional[list[str]]=None,
+                        system_tags:Optional[list[str]]=None,
                         keywords:Optional[list[str]]=None, 
                         description:Optional[str]=None,
                         replace_existing:bool=False,
                         ):  
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
+        print(f&#34;Loaded {len(model_links)} models from {hf_repo_url}.&#34;)
         for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_data.save_json(replace_existing=replace_existing)
         self.load_models()
     
@@ -2393,7 +2722,7 @@ the model from the URL and creates new model data. Sets model data attribute.</p
 </details>
 </dd>
 <dt id="glai.ModelDB.import_models_from_repo"><code class="name flex">
-<span>def <span class="ident">import_models_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None, replace_existing: bool = False)</span>
+<span>def <span class="ident">import_models_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, system_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None, replace_existing: bool = False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2404,14 +2733,16 @@ the model from the URL and creates new model data. Sets model data attribute.</p
 <pre><code class="python">def import_models_from_repo(self, hf_repo_url:str,
                     user_tags:Optional[list[str]]=None,
                     ai_tags:Optional[list[str]]=None,
+                    system_tags:Optional[list[str]]=None,
                     keywords:Optional[list[str]]=None, 
                     description:Optional[str]=None,
                     replace_existing:bool=False,
                     ):  
     #create model data from hf repo
     model_links = ModelDB._model_links_from_repo(hf_repo_url)
+    print(f&#34;Loaded {len(model_links)} models from {hf_repo_url}.&#34;)
     for model_link in model_links:
-        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
         model_data.save_json(replace_existing=replace_existing)
     self.load_models()</code></pre>
 </details>
@@ -2476,7 +2807,7 @@ the model from the URL and creates new model data. Sets model data attribute.</p
 </details>
 </dd>
 <dt id="glai.ModelDB.load_models_data_from_repo"><code class="name flex">
-<span>def <span class="ident">load_models_data_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None)</span>
+<span>def <span class="ident">load_models_data_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, system_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2487,13 +2818,14 @@ the model from the URL and creates new model data. Sets model data attribute.</p
 <pre><code class="python">def load_models_data_from_repo(self, hf_repo_url:str, 
                     user_tags:Optional[list[str]]=None,
                     ai_tags:Optional[list[str]]=None,
+                    system_tags:Optional[list[str]]=None,
                     keywords:Optional[list[str]]=None, 
                     description:Optional[str]=None):  
     #create model data from hf repo
     model_links = ModelDB._model_links_from_repo(hf_repo_url)
     model_datas = []
     for model_link in model_links:
-        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
         model_datas.append(model_data)
         model_data.save_json()
     self.models.extend(model_datas)
@@ -2566,7 +2898,7 @@ the model from the URL and creates new model data. Sets model data attribute.</p
 </dd>
 <dt id="glai.ModelData"><code class="flex name class">
 <span>class <span class="ident">ModelData</span></span>
-<span>(</span><span>gguf_url: str, db_dir: str, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None)</span>
+<span>(</span><span>gguf_url: str, db_dir: str, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), system_tags: Union[dict, list, set, ForwardRef(None)] = None, description: Optional[str] = None, keywords: Optional[None] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2580,6 +2912,7 @@ the model from the URL and creates new model data. Sets model data attribute.</p
         db_dir:str,
         user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), 
         ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+        system_tags:Optional[Union[dict, list, set]] = None,
         description:Optional[str] = None, 
         keywords:Optional[list] = None,
         ):
@@ -2593,6 +2926,7 @@ the model from the URL and creates new model data. Sets model data attribute.</p
         self.keywords = None
         self.user_tags = None
         self.ai_tags = None
+        self.system_tags = None
         self.save_dir = None
 
         #set values
@@ -2603,7 +2937,7 @@ the model from the URL and creates new model data. Sets model data attribute.</p
         self.model_quantization = self._url_extract_quantization(gguf_url)
         self.description = description if description is not None else &#34;&#34;
         self.keywords = keywords if keywords is not None else []
-        self.set_tags(ai_tags, user_tags)
+        self.set_tags(ai_tags, user_tags, system_tags)
 
     def __str__(self) -&gt; str:
         t = f&#34;&#34;&#34;ModelData(
@@ -2614,6 +2948,7 @@ the model from the URL and creates new model data. Sets model data attribute.</p
             user_tags: {self.user_tags},
             ai_tags: {self.ai_tags},
             ---optionally provided, no defaults---
+            system_tags: {self.system_tags},
             description: {self.description},
             keywords: {self.keywords},
             ---automatically generated---
@@ -2693,13 +3028,30 @@ the model from the URL and creates new model data. Sets model data attribute.</p
         else:
             raise TypeError(f&#34;Invalid type for user tags: {type(user_tags)}, must be dict, set or list.&#34;)
 
+    def set_system_tags(self, system_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
+        if isinstance(system_tags, dict):
+            if &#34;open&#34; in system_tags and &#34;close&#34; in system_tags:
+                self.system_tags = system_tags
+            else:
+                raise ValueError(f&#34;Invalid system tags: {system_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+        elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
+            self.system_tags = {
+                &#34;open&#34;: system_tags[0],
+                &#34;close&#34;: system_tags[1]
+            }
+        else:
+            raise TypeError(f&#34;Invalid type for system tags: {type(system_tags)}, must be dict, set or list.&#34;)
     def set_tags(self, 
                  ai_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-                 user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]]) -&gt; None:
+                 user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+                 system_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+                 ) -&gt; None:
         if ai_tags is not None:
             self.set_ai_tags(ai_tags)
         if user_tags is not None:
             self.set_user_tags(user_tags)
+        if system_tags is not None:
+            self.set_system_tags(system_tags)
 
     def set_save_dir(self, save_dir:str) -&gt; None:
         self.save_dir = save_dir
@@ -2715,6 +3067,7 @@ the model from the URL and creates new model data. Sets model data attribute.</p
             &#34;keywords&#34;: self.keywords,
             &#34;user_tags&#34;: self.user_tags,
             &#34;ai_tags&#34;: self.ai_tags,
+            &#34;system_tags&#34;: self.system_tags,
             &#34;save_dir&#34;: self.save_dir,
         }
         return model_data
@@ -2726,7 +3079,8 @@ the model from the URL and creates new model data. Sets model data attribute.</p
         keywords = model_data[&#34;keywords&#34;] if &#34;keywords&#34; in model_data else None
         user_tags = model_data[&#34;user_tags&#34;]
         ai_tags = model_data[&#34;ai_tags&#34;]
-        new_model_data = ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+        system_tags = model_data[&#34;system_tags&#34;] if &#34;system_tags&#34; in model_data else None
+        new_model_data = ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
         return new_model_data
 
     def is_downloaded(self) -&gt; bool:
@@ -2787,18 +3141,20 @@ the model from the URL and creates new model data. Sets model data attribute.</p
         return ModelData.from_dict(model_data)
 
     @staticmethod
-    def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
-        return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+    def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+                  description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+        return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
 
     def model_path(self) -&gt; str:
         return self.gguf_file_path
 
     @staticmethod
-    def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+    def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+                  description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
         #creates a model where url is also the file path
         save_dir = get_directory(gguf_file_path) if save_dir is None else save_dir
         url = gguf_file_path
-        return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+        return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
 
     def get_ai_tag_open(self) -&gt; str:
         return self.ai_tags[&#34;open&#34;]
@@ -2812,11 +3168,23 @@ the model from the URL and creates new model data. Sets model data attribute.</p
     def get_user_tag_close(self) -&gt; str:
         return self.user_tags[&#34;close&#34;]
     
+    def get_system_tag_open(self) -&gt; str:
+        return self.system_tags[&#34;open&#34;]
+    
+    def get_system_tag_close(self) -&gt; str:
+        return self.system_tags[&#34;close&#34;]
+    
     def get_ai_tags(self) -&gt; list[str]:
         return [self.get_ai_tag_open(), self.get_ai_tag_close()]
     
     def get_user_tags(self) -&gt; list[str]:
-        return [self.get_user_tag_open(), self.get_user_tag_close()]</code></pre>
+        return [self.get_user_tag_open(), self.get_user_tag_close()]
+    
+    def get_system_tags(self) -&gt; list[str]:
+        return [self.get_system_tag_open(), self.get_system_tag_close()]
+    
+    def has_system_tags(self) -&gt; bool:
+        return self.system_tags is not None</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -2837,12 +3205,13 @@ def from_dict(model_data:dict) -&gt; &#34;ModelData&#34;:
     keywords = model_data[&#34;keywords&#34;] if &#34;keywords&#34; in model_data else None
     user_tags = model_data[&#34;user_tags&#34;]
     ai_tags = model_data[&#34;ai_tags&#34;]
-    new_model_data = ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+    system_tags = model_data[&#34;system_tags&#34;] if &#34;system_tags&#34; in model_data else None
+    new_model_data = ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
     return new_model_data</code></pre>
 </details>
 </dd>
 <dt id="glai.ModelData.from_file"><code class="name flex">
-<span>def <span class="ident">from_file</span></span>(<span>gguf_file_path: str, save_dir: Optional[str] = None, user_tags: Union[dict, list, set] = ('[INST]', '[/INST]'), ai_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
+<span>def <span class="ident">from_file</span></span>(<span>gguf_file_path: str, save_dir: Optional[str] = None, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), system_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2851,11 +3220,12 @@ def from_dict(model_data:dict) -&gt; &#34;ModelData&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+              description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
     #creates a model where url is also the file path
     save_dir = get_directory(gguf_file_path) if save_dir is None else save_dir
     url = gguf_file_path
-    return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)</code></pre>
+    return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)</code></pre>
 </details>
 </dd>
 <dt id="glai.ModelData.from_json"><code class="name flex">
@@ -2874,7 +3244,7 @@ def from_json(json_file_path:str) -&gt; &#34;ModelData&#34;:
 </details>
 </dd>
 <dt id="glai.ModelData.from_url"><code class="name flex">
-<span>def <span class="ident">from_url</span></span>(<span>url: str, save_dir: str, user_tags: Union[dict, list, set] = ('[INST]', '[/INST]'), ai_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
+<span>def <span class="ident">from_url</span></span>(<span>url: str, save_dir: str, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), system_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2883,8 +3253,9 @@ def from_json(json_file_path:str) -&gt; &#34;ModelData&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
-    return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)</code></pre>
+def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
+              description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
+    return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)</code></pre>
 </details>
 </dd>
 </dl>
@@ -2973,6 +3344,45 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
     return [self.get_ai_tag_open(), self.get_ai_tag_close()]</code></pre>
 </details>
 </dd>
+<dt id="glai.ModelData.get_system_tag_close"><code class="name flex">
+<span>def <span class="ident">get_system_tag_close</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_system_tag_close(self) -&gt; str:
+    return self.system_tags[&#34;close&#34;]</code></pre>
+</details>
+</dd>
+<dt id="glai.ModelData.get_system_tag_open"><code class="name flex">
+<span>def <span class="ident">get_system_tag_open</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_system_tag_open(self) -&gt; str:
+    return self.system_tags[&#34;open&#34;]</code></pre>
+</details>
+</dd>
+<dt id="glai.ModelData.get_system_tags"><code class="name flex">
+<span>def <span class="ident">get_system_tags</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_system_tags(self) -&gt; list[str]:
+    return [self.get_system_tag_open(), self.get_system_tag_close()]</code></pre>
+</details>
+</dd>
 <dt id="glai.ModelData.get_user_tag_close"><code class="name flex">
 <span>def <span class="ident">get_user_tag_close</span></span>(<span>self) ‑> str</span>
 </code></dt>
@@ -3024,6 +3434,19 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
 <pre><code class="python">def has_json(self) -&gt; bool:
     &#34;&#34;&#34;Checks if the model is in the db.&#34;&#34;&#34;
     return does_file_exist(self.json_path())</code></pre>
+</details>
+</dd>
+<dt id="glai.ModelData.has_system_tags"><code class="name flex">
+<span>def <span class="ident">has_system_tags</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_system_tags(self) -&gt; bool:
+    return self.system_tags is not None</code></pre>
 </details>
 </dd>
 <dt id="glai.ModelData.is_downloaded"><code class="name flex">
@@ -3121,8 +3544,32 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
     self.gguf_file_path = self._url_to_file_path(save_dir, self.gguf_url)</code></pre>
 </details>
 </dd>
+<dt id="glai.ModelData.set_system_tags"><code class="name flex">
+<span>def <span class="ident">set_system_tags</span></span>(<span>self, system_tags: Union[dict, set[str], list[str], tuple[str]]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_system_tags(self, system_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
+    if isinstance(system_tags, dict):
+        if &#34;open&#34; in system_tags and &#34;close&#34; in system_tags:
+            self.system_tags = system_tags
+        else:
+            raise ValueError(f&#34;Invalid system tags: {system_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+    elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
+        self.system_tags = {
+            &#34;open&#34;: system_tags[0],
+            &#34;close&#34;: system_tags[1]
+        }
+    else:
+        raise TypeError(f&#34;Invalid type for system tags: {type(system_tags)}, must be dict, set or list.&#34;)</code></pre>
+</details>
+</dd>
 <dt id="glai.ModelData.set_tags"><code class="name flex">
-<span>def <span class="ident">set_tags</span></span>(<span>self, ai_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)], user_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)]) ‑> None</span>
+<span>def <span class="ident">set_tags</span></span>(<span>self, ai_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)], user_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)], system_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)]) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -3132,11 +3579,15 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
 </summary>
 <pre><code class="python">def set_tags(self, 
              ai_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-             user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]]) -&gt; None:
+             user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+             system_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+             ) -&gt; None:
     if ai_tags is not None:
         self.set_ai_tags(ai_tags)
     if user_tags is not None:
-        self.set_user_tags(user_tags)</code></pre>
+        self.set_user_tags(user_tags)
+    if system_tags is not None:
+        self.set_system_tags(system_tags)</code></pre>
 </details>
 </dd>
 <dt id="glai.ModelData.set_user_tags"><code class="name flex">
@@ -3182,6 +3633,7 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
         &#34;keywords&#34;: self.keywords,
         &#34;user_tags&#34;: self.user_tags,
         &#34;ai_tags&#34;: self.ai_tags,
+        &#34;system_tags&#34;: self.system_tags,
         &#34;save_dir&#34;: self.save_dir,
     }
     return model_data</code></pre>
@@ -3208,19 +3660,24 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
 <ul>
 <li>
 <h4><code><a title="glai.AIMessages" href="#glai.AIMessages">AIMessages</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="glai.AIMessages.add_ai_message" href="#glai.AIMessages.add_ai_message">add_ai_message</a></code></li>
 <li><code><a title="glai.AIMessages.add_message" href="#glai.AIMessages.add_message">add_message</a></code></li>
 <li><code><a title="glai.AIMessages.add_user_message" href="#glai.AIMessages.add_user_message">add_user_message</a></code></li>
 <li><code><a title="glai.AIMessages.ai_tags" href="#glai.AIMessages.ai_tags">ai_tags</a></code></li>
+<li><code><a title="glai.AIMessages.create_single_message" href="#glai.AIMessages.create_single_message">create_single_message</a></code></li>
 <li><code><a title="glai.AIMessages.edit_last_message" href="#glai.AIMessages.edit_last_message">edit_last_message</a></code></li>
 <li><code><a title="glai.AIMessages.edit_message" href="#glai.AIMessages.edit_message">edit_message</a></code></li>
+<li><code><a title="glai.AIMessages.edit_system_message" href="#glai.AIMessages.edit_system_message">edit_system_message</a></code></li>
 <li><code><a title="glai.AIMessages.from_dict" href="#glai.AIMessages.from_dict">from_dict</a></code></li>
 <li><code><a title="glai.AIMessages.from_json" href="#glai.AIMessages.from_json">from_json</a></code></li>
 <li><code><a title="glai.AIMessages.get_last_message" href="#glai.AIMessages.get_last_message">get_last_message</a></code></li>
+<li><code><a title="glai.AIMessages.has_system_tags" href="#glai.AIMessages.has_system_tags">has_system_tags</a></code></li>
 <li><code><a title="glai.AIMessages.load_messages" href="#glai.AIMessages.load_messages">load_messages</a></code></li>
 <li><code><a title="glai.AIMessages.reset_messages" href="#glai.AIMessages.reset_messages">reset_messages</a></code></li>
 <li><code><a title="glai.AIMessages.save_json" href="#glai.AIMessages.save_json">save_json</a></code></li>
+<li><code><a title="glai.AIMessages.set_system_message" href="#glai.AIMessages.set_system_message">set_system_message</a></code></li>
+<li><code><a title="glai.AIMessages.system_tags" href="#glai.AIMessages.system_tags">system_tags</a></code></li>
 <li><code><a title="glai.AIMessages.text" href="#glai.AIMessages.text">text</a></code></li>
 <li><code><a title="glai.AIMessages.to_dict" href="#glai.AIMessages.to_dict">to_dict</a></code></li>
 <li><code><a title="glai.AIMessages.user_tags" href="#glai.AIMessages.user_tags">user_tags</a></code></li>
@@ -3231,7 +3688,8 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
 <ul class="">
 <li><code><a title="glai.AutoAI.count_tokens" href="#glai.AutoAI.count_tokens">count_tokens</a></code></li>
 <li><code><a title="glai.AutoAI.generate" href="#glai.AutoAI.generate">generate</a></code></li>
-<li><code><a title="glai.AutoAI.generate_from_prompt" href="#glai.AutoAI.generate_from_prompt">generate_from_prompt</a></code></li>
+<li><code><a title="glai.AutoAI.generate_from_literal_string" href="#glai.AutoAI.generate_from_literal_string">generate_from_literal_string</a></code></li>
+<li><code><a title="glai.AutoAI.generate_from_messages" href="#glai.AutoAI.generate_from_messages">generate_from_messages</a></code></li>
 <li><code><a title="glai.AutoAI.is_within_input_limit" href="#glai.AutoAI.is_within_input_limit">is_within_input_limit</a></code></li>
 </ul>
 </li>
@@ -3270,7 +3728,7 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
 </li>
 <li>
 <h4><code><a title="glai.ModelData" href="#glai.ModelData">ModelData</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="glai.ModelData.download_gguf" href="#glai.ModelData.download_gguf">download_gguf</a></code></li>
 <li><code><a title="glai.ModelData.from_dict" href="#glai.ModelData.from_dict">from_dict</a></code></li>
 <li><code><a title="glai.ModelData.from_file" href="#glai.ModelData.from_file">from_file</a></code></li>
@@ -3279,16 +3737,21 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;[IN
 <li><code><a title="glai.ModelData.get_ai_tag_close" href="#glai.ModelData.get_ai_tag_close">get_ai_tag_close</a></code></li>
 <li><code><a title="glai.ModelData.get_ai_tag_open" href="#glai.ModelData.get_ai_tag_open">get_ai_tag_open</a></code></li>
 <li><code><a title="glai.ModelData.get_ai_tags" href="#glai.ModelData.get_ai_tags">get_ai_tags</a></code></li>
+<li><code><a title="glai.ModelData.get_system_tag_close" href="#glai.ModelData.get_system_tag_close">get_system_tag_close</a></code></li>
+<li><code><a title="glai.ModelData.get_system_tag_open" href="#glai.ModelData.get_system_tag_open">get_system_tag_open</a></code></li>
+<li><code><a title="glai.ModelData.get_system_tags" href="#glai.ModelData.get_system_tags">get_system_tags</a></code></li>
 <li><code><a title="glai.ModelData.get_user_tag_close" href="#glai.ModelData.get_user_tag_close">get_user_tag_close</a></code></li>
 <li><code><a title="glai.ModelData.get_user_tag_open" href="#glai.ModelData.get_user_tag_open">get_user_tag_open</a></code></li>
 <li><code><a title="glai.ModelData.get_user_tags" href="#glai.ModelData.get_user_tags">get_user_tags</a></code></li>
 <li><code><a title="glai.ModelData.has_json" href="#glai.ModelData.has_json">has_json</a></code></li>
+<li><code><a title="glai.ModelData.has_system_tags" href="#glai.ModelData.has_system_tags">has_system_tags</a></code></li>
 <li><code><a title="glai.ModelData.is_downloaded" href="#glai.ModelData.is_downloaded">is_downloaded</a></code></li>
 <li><code><a title="glai.ModelData.json_path" href="#glai.ModelData.json_path">json_path</a></code></li>
 <li><code><a title="glai.ModelData.model_path" href="#glai.ModelData.model_path">model_path</a></code></li>
 <li><code><a title="glai.ModelData.save_json" href="#glai.ModelData.save_json">save_json</a></code></li>
 <li><code><a title="glai.ModelData.set_ai_tags" href="#glai.ModelData.set_ai_tags">set_ai_tags</a></code></li>
 <li><code><a title="glai.ModelData.set_save_dir" href="#glai.ModelData.set_save_dir">set_save_dir</a></code></li>
+<li><code><a title="glai.ModelData.set_system_tags" href="#glai.ModelData.set_system_tags">set_system_tags</a></code></li>
 <li><code><a title="glai.ModelData.set_tags" href="#glai.ModelData.set_tags">set_tags</a></code></li>
 <li><code><a title="glai.ModelData.set_user_tags" href="#glai.ModelData.set_user_tags">set_user_tags</a></code></li>
 <li><code><a title="glai.ModelData.to_dict" href="#glai.ModelData.to_dict">to_dict</a></code></li>

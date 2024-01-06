@@ -166,20 +166,21 @@ class ModelDB:
         model_links = []
         for link in soup.find_all(&#39;a&#39;):
             href = link.get(&#39;href&#39;)
-            if href.endswith(&#34;.gguf&#34;):
+            if href is not None and href.endswith(&#34;.gguf&#34;):
                 print(f&#34;Found model: {href}&#34;)
                 model_links.append(href)
         return model_links
     def load_models_data_from_repo(self, hf_repo_url:str, 
                         user_tags:Optional[list[str]]=None,
                         ai_tags:Optional[list[str]]=None,
+                        system_tags:Optional[list[str]]=None,
                         keywords:Optional[list[str]]=None, 
                         description:Optional[str]=None):  
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
         model_datas = []
         for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_datas.append(model_data)
             model_data.save_json()
         self.models.extend(model_datas)
@@ -188,14 +189,16 @@ class ModelDB:
     def import_models_from_repo(self, hf_repo_url:str,
                         user_tags:Optional[list[str]]=None,
                         ai_tags:Optional[list[str]]=None,
+                        system_tags:Optional[list[str]]=None,
                         keywords:Optional[list[str]]=None, 
                         description:Optional[str]=None,
                         replace_existing:bool=False,
                         ):  
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
+        print(f&#34;Loaded {len(model_links)} models from {hf_repo_url}.&#34;)
         for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_data.save_json(replace_existing=replace_existing)
         self.load_models()
     
@@ -400,20 +403,21 @@ class ModelDB:
         model_links = []
         for link in soup.find_all(&#39;a&#39;):
             href = link.get(&#39;href&#39;)
-            if href.endswith(&#34;.gguf&#34;):
+            if href is not None and href.endswith(&#34;.gguf&#34;):
                 print(f&#34;Found model: {href}&#34;)
                 model_links.append(href)
         return model_links
     def load_models_data_from_repo(self, hf_repo_url:str, 
                         user_tags:Optional[list[str]]=None,
                         ai_tags:Optional[list[str]]=None,
+                        system_tags:Optional[list[str]]=None,
                         keywords:Optional[list[str]]=None, 
                         description:Optional[str]=None):  
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
         model_datas = []
         for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_datas.append(model_data)
             model_data.save_json()
         self.models.extend(model_datas)
@@ -422,14 +426,16 @@ class ModelDB:
     def import_models_from_repo(self, hf_repo_url:str,
                         user_tags:Optional[list[str]]=None,
                         ai_tags:Optional[list[str]]=None,
+                        system_tags:Optional[list[str]]=None,
                         keywords:Optional[list[str]]=None, 
                         description:Optional[str]=None,
                         replace_existing:bool=False,
                         ):  
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
+        print(f&#34;Loaded {len(model_links)} models from {hf_repo_url}.&#34;)
         for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_data.save_json(replace_existing=replace_existing)
         self.load_models()
     
@@ -617,7 +623,7 @@ class ModelDB:
 </details>
 </dd>
 <dt id="glai.back_end.model_db.db.ModelDB.import_models_from_repo"><code class="name flex">
-<span>def <span class="ident">import_models_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None, replace_existing: bool = False)</span>
+<span>def <span class="ident">import_models_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, system_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None, replace_existing: bool = False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -628,14 +634,16 @@ class ModelDB:
 <pre><code class="python">def import_models_from_repo(self, hf_repo_url:str,
                     user_tags:Optional[list[str]]=None,
                     ai_tags:Optional[list[str]]=None,
+                    system_tags:Optional[list[str]]=None,
                     keywords:Optional[list[str]]=None, 
                     description:Optional[str]=None,
                     replace_existing:bool=False,
                     ):  
     #create model data from hf repo
     model_links = ModelDB._model_links_from_repo(hf_repo_url)
+    print(f&#34;Loaded {len(model_links)} models from {hf_repo_url}.&#34;)
     for model_link in model_links:
-        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
         model_data.save_json(replace_existing=replace_existing)
     self.load_models()</code></pre>
 </details>
@@ -700,7 +708,7 @@ class ModelDB:
 </details>
 </dd>
 <dt id="glai.back_end.model_db.db.ModelDB.load_models_data_from_repo"><code class="name flex">
-<span>def <span class="ident">load_models_data_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None)</span>
+<span>def <span class="ident">load_models_data_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, system_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -711,13 +719,14 @@ class ModelDB:
 <pre><code class="python">def load_models_data_from_repo(self, hf_repo_url:str, 
                     user_tags:Optional[list[str]]=None,
                     ai_tags:Optional[list[str]]=None,
+                    system_tags:Optional[list[str]]=None,
                     keywords:Optional[list[str]]=None, 
                     description:Optional[str]=None):  
     #create model data from hf repo
     model_links = ModelDB._model_links_from_repo(hf_repo_url)
     model_datas = []
     for model_link in model_links:
-        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
         model_datas.append(model_data)
         model_data.save_json()
     self.models.extend(model_datas)

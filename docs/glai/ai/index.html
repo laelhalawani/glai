@@ -120,7 +120,8 @@ Downloads model and sets up LlamaAI.</p>
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
                  max_total_tokens: int = 1500,
-                 model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR) -&gt; None:
+                 model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR,
+                 ) -&gt; None:
 
         self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
         self.model_data: ModelData = self.ai_db.find_model(
@@ -132,67 +133,79 @@ Downloads model and sets up LlamaAI.</p>
         )
         print(f&#34;Using model: {self.model_data}&#34;)
         self.msgs: AIMessages = AIMessages(
-            self.model_data.user_tags, self.model_data.ai_tags
+            self.model_data.user_tags, self.model_data.ai_tags, self.model_data.system_tags
         )
-
-    def generate_from_prompt(
+    
+    def generate_from_messages(self, stop_at:str = None, include_stop_str:bool = True) -&gt; AIMessage:
+        prompt = self.msgs.text()
+        ai_message = self.generate_from_literal_string(prompt, stop_at=stop_at, include_stop_str=include_stop_str)
+        self.msgs.add_ai_message(ai_message)
+        return ai_message
+    
+    def generate_from_literal_string(
         self, 
         prompt: str,
-        max_tokens_if_needed: int = 2000,
         stop_at:str = None,
         include_stop_str:bool = True
-    ) -&gt; str:
+    ) -&gt; AIMessage:
         &#34;&#34;&#34;
         Generate text from a prompt using the LlamaAI model.
 
         Args:
             prompt: Prompt text to generate from.
-            max_tokens_if_needed: Max tokens to allow.
 
         Returns:
             Generated text string.
         &#34;&#34;&#34;
         return self.ai.infer(
-            prompt, only_string=True, max_tokens_if_needed=max_tokens_if_needed, stop_at_str=stop_at, include_stop_str=include_stop_str
+            prompt, only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str
         )
 
     def generate(
         self,
-        user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None,
+        user_message: str,
+        ai_message_tbc: Optional[str] = None,
         stop_at:Optional[str] = None,
-        include_stop_str:bool = True
+        include_stop_str:bool = True,
+        system_message: Optional[str] = None
     ) -&gt; AIMessage:
         &#34;&#34;&#34;
         Generate an AI response to a user message.
 
         Args:
-            user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            user_message: User message text.
+            ai_message_tbc: Optional text to prepend.
             stop_at: Optional string to stop generation at.
             include_stop_str: Whether to include the stop string in the generated message.
-
+            system_message: Optional system message to include at the start, not all models support this.
+            If you provide system message to a model that doesn&#39;t support it, it will be ignored.
+            You can check if a model supports system messages by checking the model_data.has_system_tags() method.
         Returns:
             Generated AIMessage object.
         &#34;&#34;&#34;
-        generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags)
+        generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags, system_tags=self.model_data.system_tags)
         generation_messages.reset_messages()
-        generation_messages.add_user_message(user_message_text)
+        if self.model_data.has_system_tags():
+            if system_message is not None:
+                generation_messages.set_system_message(system_message)
+            else:
+                print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
+        generation_messages.add_user_message(user_message)
 
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.add_message(
-                ai_message_to_be_continued, 
+                ai_message_tbc, 
                 self.msgs.ai_tag_open, 
                 &#34;&#34;
             )
         print(f&#34;Promt: {generation_messages.text()}&#34;)
         
-        generated = self.generate_from_prompt(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
+        generated = self.generate_from_literal_string(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.edit_last_message(
-                ai_message_to_be_continued + generated,
+                ai_message_tbc + generated,
                 self.msgs.ai_tag_open,
                 self.msgs.ai_tag_close
             )
@@ -205,26 +218,26 @@ Downloads model and sets up LlamaAI.</p>
 
     def count_tokens(
         self,
-        user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        user_message: str,
+        ai_message_tbc: Optional[str] = None
     ) -&gt; int:
         &#34;&#34;&#34;
         Count the number of tokens in a generated message.
 
         Args:
-            user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            user_message: User message text.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             Number of tokens in generated message.
         &#34;&#34;&#34;
         generation_messages = AIMessages()
         generation_messages.reset_messages()
-        generation_messages.add_user_message(user_message_text)
+        generation_messages.add_user_message(user_message)
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.add_message(
-                ai_message_to_be_continued, 
+                ai_message_tbc, 
                 self.msgs.ai_tag_open, 
                 &#34;&#34;
             )
@@ -232,33 +245,33 @@ Downloads model and sets up LlamaAI.</p>
     
     def is_within_input_limit(
         self,
-        user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        user_message: str,
+        ai_message_tbc: Optional[str] = None
         ) -&gt; bool:
         &#34;&#34;&#34;
         Check if the generated message is within the input limit.
 
         Args:
-            user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            user_message: User message text.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             True if within input limit, False otherwise.
         &#34;&#34;&#34;
-        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_to_be_continued))</code></pre>
+        return self.ai.is_within_input_limit(self.count_tokens(user_message, ai_message_tbc))</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="glai.ai.AutoAI.count_tokens"><code class="name flex">
-<span>def <span class="ident">count_tokens</span></span>(<span>self, user_message_text: str, ai_message_to_be_continued: Optional[str] = None) ‑> int</span>
+<span>def <span class="ident">count_tokens</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None) ‑> int</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Count the number of tokens in a generated message.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>user_message_text</code></strong></dt>
+<dt><strong><code>user_message</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_message_to_be_continued</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -269,26 +282,26 @@ Downloads model and sets up LlamaAI.</p>
 </summary>
 <pre><code class="python">def count_tokens(
     self,
-    user_message_text: str,
-    ai_message_to_be_continued: Optional[str] = None
+    user_message: str,
+    ai_message_tbc: Optional[str] = None
 ) -&gt; int:
     &#34;&#34;&#34;
     Count the number of tokens in a generated message.
 
     Args:
-        user_message_text: User message text.
-        ai_message_to_be_continued: Optional text to prepend.
+        user_message: User message text.
+        ai_message_tbc: Optional text to prepend.
 
     Returns:
         Number of tokens in generated message.
     &#34;&#34;&#34;
     generation_messages = AIMessages()
     generation_messages.reset_messages()
-    generation_messages.add_user_message(user_message_text)
+    generation_messages.add_user_message(user_message)
 
-    if ai_message_to_be_continued is not None:
+    if ai_message_tbc is not None:
         generation_messages.add_message(
-            ai_message_to_be_continued, 
+            ai_message_tbc, 
             self.msgs.ai_tag_open, 
             &#34;&#34;
         )
@@ -296,21 +309,25 @@ Downloads model and sets up LlamaAI.</p>
 </details>
 </dd>
 <dt id="glai.ai.AutoAI.generate"><code class="name flex">
-<span>def <span class="ident">generate</span></span>(<span>self, user_message_text: str, ai_message_to_be_continued: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="../back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.back_end.messages.AIMessage" href="../back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate an AI response to a user message.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>user_message_text</code></strong></dt>
+<dt><strong><code>user_message</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_message_to_be_continued</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend.</dd>
 <dt><strong><code>stop_at</code></strong></dt>
 <dd>Optional string to stop generation at.</dd>
 <dt><strong><code>include_stop_str</code></strong></dt>
 <dd>Whether to include the stop string in the generated message.</dd>
+<dt><strong><code>system_message</code></strong></dt>
+<dd>Optional system message to include at the start, not all models support this.</dd>
 </dl>
+<p>If you provide system message to a model that doesn't support it, it will be ignored.
+You can check if a model supports system messages by checking the model_data.has_system_tags() method.</p>
 <h2 id="returns">Returns</h2>
 <p>Generated AIMessage object.</p></div>
 <details class="source">
@@ -319,41 +336,49 @@ Downloads model and sets up LlamaAI.</p>
 </summary>
 <pre><code class="python">def generate(
     self,
-    user_message_text: str,
-    ai_message_to_be_continued: Optional[str] = None,
+    user_message: str,
+    ai_message_tbc: Optional[str] = None,
     stop_at:Optional[str] = None,
-    include_stop_str:bool = True
+    include_stop_str:bool = True,
+    system_message: Optional[str] = None
 ) -&gt; AIMessage:
     &#34;&#34;&#34;
     Generate an AI response to a user message.
 
     Args:
-        user_message_text: User message text.
-        ai_message_to_be_continued: Optional text to prepend.
+        user_message: User message text.
+        ai_message_tbc: Optional text to prepend.
         stop_at: Optional string to stop generation at.
         include_stop_str: Whether to include the stop string in the generated message.
-
+        system_message: Optional system message to include at the start, not all models support this.
+        If you provide system message to a model that doesn&#39;t support it, it will be ignored.
+        You can check if a model supports system messages by checking the model_data.has_system_tags() method.
     Returns:
         Generated AIMessage object.
     &#34;&#34;&#34;
-    generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags)
+    generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags, system_tags=self.model_data.system_tags)
     generation_messages.reset_messages()
-    generation_messages.add_user_message(user_message_text)
+    if self.model_data.has_system_tags():
+        if system_message is not None:
+            generation_messages.set_system_message(system_message)
+        else:
+            print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
+    generation_messages.add_user_message(user_message)
 
 
-    if ai_message_to_be_continued is not None:
+    if ai_message_tbc is not None:
         generation_messages.add_message(
-            ai_message_to_be_continued, 
+            ai_message_tbc, 
             self.msgs.ai_tag_open, 
             &#34;&#34;
         )
     print(f&#34;Promt: {generation_messages.text()}&#34;)
     
-    generated = self.generate_from_prompt(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
+    generated = self.generate_from_literal_string(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
 
-    if ai_message_to_be_continued is not None:
+    if ai_message_tbc is not None:
         generation_messages.edit_last_message(
-            ai_message_to_be_continued + generated,
+            ai_message_tbc + generated,
             self.msgs.ai_tag_open,
             self.msgs.ai_tag_close
         )
@@ -365,8 +390,8 @@ Downloads model and sets up LlamaAI.</p>
     return output</code></pre>
 </details>
 </dd>
-<dt id="glai.ai.AutoAI.generate_from_prompt"><code class="name flex">
-<span>def <span class="ident">generate_from_prompt</span></span>(<span>self, prompt: str, max_tokens_if_needed: int = 2000, stop_at: str = None, include_stop_str: bool = True) ‑> str</span>
+<dt id="glai.ai.AutoAI.generate_from_literal_string"><code class="name flex">
+<span>def <span class="ident">generate_from_literal_string</span></span>(<span>self, prompt: str, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="../back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate text from a prompt using the LlamaAI model.</p>
@@ -374,8 +399,6 @@ Downloads model and sets up LlamaAI.</p>
 <dl>
 <dt><strong><code>prompt</code></strong></dt>
 <dd>Prompt text to generate from.</dd>
-<dt><strong><code>max_tokens_if_needed</code></strong></dt>
-<dd>Max tokens to allow.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>Generated text string.</p></div>
@@ -383,38 +406,52 @@ Downloads model and sets up LlamaAI.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def generate_from_prompt(
+<pre><code class="python">def generate_from_literal_string(
     self, 
     prompt: str,
-    max_tokens_if_needed: int = 2000,
     stop_at:str = None,
     include_stop_str:bool = True
-) -&gt; str:
+) -&gt; AIMessage:
     &#34;&#34;&#34;
     Generate text from a prompt using the LlamaAI model.
 
     Args:
         prompt: Prompt text to generate from.
-        max_tokens_if_needed: Max tokens to allow.
 
     Returns:
         Generated text string.
     &#34;&#34;&#34;
     return self.ai.infer(
-        prompt, only_string=True, max_tokens_if_needed=max_tokens_if_needed, stop_at_str=stop_at, include_stop_str=include_stop_str
+        prompt, only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str
     )</code></pre>
 </details>
 </dd>
+<dt id="glai.ai.AutoAI.generate_from_messages"><code class="name flex">
+<span>def <span class="ident">generate_from_messages</span></span>(<span>self, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="../back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_from_messages(self, stop_at:str = None, include_stop_str:bool = True) -&gt; AIMessage:
+    prompt = self.msgs.text()
+    ai_message = self.generate_from_literal_string(prompt, stop_at=stop_at, include_stop_str=include_stop_str)
+    self.msgs.add_ai_message(ai_message)
+    return ai_message</code></pre>
+</details>
+</dd>
 <dt id="glai.ai.AutoAI.is_within_input_limit"><code class="name flex">
-<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, user_message_text: str, ai_message_to_be_continued: Optional[str] = None) ‑> bool</span>
+<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Check if the generated message is within the input limit.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>user_message_text</code></strong></dt>
+<dt><strong><code>user_message</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_message_to_be_continued</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -425,20 +462,20 @@ Downloads model and sets up LlamaAI.</p>
 </summary>
 <pre><code class="python">def is_within_input_limit(
     self,
-    user_message_text: str,
-    ai_message_to_be_continued: Optional[str] = None
+    user_message: str,
+    ai_message_tbc: Optional[str] = None
     ) -&gt; bool:
     &#34;&#34;&#34;
     Check if the generated message is within the input limit.
 
     Args:
-        user_message_text: User message text.
-        ai_message_to_be_continued: Optional text to prepend.
+        user_message: User message text.
+        ai_message_tbc: Optional text to prepend.
 
     Returns:
         True if within input limit, False otherwise.
     &#34;&#34;&#34;
-    return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_to_be_continued))</code></pre>
+    return self.ai.is_within_input_limit(self.count_tokens(user_message, ai_message_tbc))</code></pre>
 </details>
 </dd>
 </dl>
@@ -734,7 +771,7 @@ LLama</p></div>
         &#34;&#34;&#34;
         if self.model_data is None:
             raise Exception(&#34;No model data loaded. Use find_model_data(), get_model_data_from_url(), or get_model_data_from_file() first.&#34;)
-        self.messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags)
+        self.messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags, system_tags=self.model_data.system_tags)
 
     def load_ai(self,
                 max_total_tokens: int = 200,) -&gt; None:
@@ -759,9 +796,10 @@ LLama</p></div>
 
     def generate(self,
               user_message: str,
-              ai_response_content_tbc: Optional[str] = None,
+              ai_message_tbc: Optional[str] = None,
               stop_at:Optional[str]=None,
-              include_stop_str:bool=True
+              include_stop_str:bool=True,
+              system_message: Optional[str] = None
               ) -&gt; AIMessage:
         &#34;&#34;&#34;
         Generate AI response to user message.
@@ -771,9 +809,12 @@ LLama</p></div>
 
         Args:
             user_message: User message text.
-            ai_response_content_tbc: Optional text to prepend to AI response.
+            ai_message_tbc: Optional text to prepend to AI response.
             stop_at: Optional string to stop generation at.
             include_stop_str: Whether to include stop string in generated message.
+            system_message: Optional system message to include at the start, not all models support this.
+            If you provide system message to a model that doesn&#39;t support it, it will be ignored.
+            You can check if a model supports system messages by checking the model_data.has_system_messages()
 
         Returns:
             Generated AIMessage object.
@@ -786,16 +827,21 @@ LLama</p></div>
         if self.messages is None:
             raise Exception(&#34;No messages loaded. Use load_ai() first.&#34;)
         self.messages.reset_messages()
+        if self.model_data.has_system_tags():
+            if system_message is not None:
+                self.messages.set_system_message(system_message)
+            else:
+                print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
         self.messages.add_user_message(user_message)
-        print(f&#34;User message: \n{self.messages.get_last_message()}&#34;)
+        print(f&#34;Input to model: \n{self.messages.text()}&#34;)
         generated: str = &#34;&#34;
-        if not (ai_response_content_tbc == &#34;&#34; or ai_response_content_tbc is None):
-            generated += ai_response_content_tbc
-            self.messages.add_message(ai_response_content_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
+        if ai_message_tbc is not None:
+            generated += ai_message_tbc
+            self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
         if stop_at is None:
             stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == &#34;&#34;, self.messages.ai_tag_close != &#34; &#34;]) else None
         generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
-        if not (ai_response_content_tbc == &#34;&#34; or ai_response_content_tbc is None):
+        if ai_message_tbc is not None:
             self.messages.edit_last_message(generated,
                                             self.model_data.get_ai_tag_open(),
                                             self.model_data.get_ai_tag_close())
@@ -811,14 +857,14 @@ LLama</p></div>
     def count_tokens(
         self,
         user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        ai_message_tbc: Optional[str] = None
     ) -&gt; int:
         &#34;&#34;&#34;
         Count the number of tokens in a generated message.
 
         Args:
             user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             Number of tokens in generated message.
@@ -827,9 +873,9 @@ LLama</p></div>
         generation_messages.reset_messages()
         generation_messages.add_user_message(user_message_text)
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.add_message(
-                ai_message_to_be_continued, 
+                ai_message_tbc, 
                 self.messages.ai_tag_open, 
                 &#34;&#34;
             )
@@ -839,19 +885,19 @@ LLama</p></div>
     def is_within_input_limit(
         self,
         user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        ai_message_tbc: Optional[str] = None
         ) -&gt; bool:
         &#34;&#34;&#34;
         Check if the generated message is within the input limit.
 
         Args:
             user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             True if within input limit, False otherwise.
         &#34;&#34;&#34;
-        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_to_be_continued))</code></pre>
+        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -943,7 +989,7 @@ Sets model data attribute.</p>
 </details>
 </dd>
 <dt id="glai.ai.EasyAI.count_tokens"><code class="name flex">
-<span>def <span class="ident">count_tokens</span></span>(<span>self, user_message_text: str, ai_message_to_be_continued: Optional[str] = None) ‑> int</span>
+<span>def <span class="ident">count_tokens</span></span>(<span>self, user_message_text: str, ai_message_tbc: Optional[str] = None) ‑> int</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Count the number of tokens in a generated message.</p>
@@ -951,7 +997,7 @@ Sets model data attribute.</p>
 <dl>
 <dt><strong><code>user_message_text</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_message_to_be_continued</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -963,14 +1009,14 @@ Sets model data attribute.</p>
 <pre><code class="python">def count_tokens(
     self,
     user_message_text: str,
-    ai_message_to_be_continued: Optional[str] = None
+    ai_message_tbc: Optional[str] = None
 ) -&gt; int:
     &#34;&#34;&#34;
     Count the number of tokens in a generated message.
 
     Args:
         user_message_text: User message text.
-        ai_message_to_be_continued: Optional text to prepend.
+        ai_message_tbc: Optional text to prepend.
 
     Returns:
         Number of tokens in generated message.
@@ -979,9 +1025,9 @@ Sets model data attribute.</p>
     generation_messages.reset_messages()
     generation_messages.add_user_message(user_message_text)
 
-    if ai_message_to_be_continued is not None:
+    if ai_message_tbc is not None:
         generation_messages.add_message(
-            ai_message_to_be_continued, 
+            ai_message_tbc, 
             self.messages.ai_tag_open, 
             &#34;&#34;
         )
@@ -1039,7 +1085,7 @@ in the search.</p>
 </details>
 </dd>
 <dt id="glai.ai.EasyAI.generate"><code class="name flex">
-<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_response_content_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="../back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.back_end.messages.AIMessage" href="../back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate AI response to user message.</p>
@@ -1049,13 +1095,17 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 <dl>
 <dt><strong><code>user_message</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_response_content_tbc</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend to AI response.</dd>
 <dt><strong><code>stop_at</code></strong></dt>
 <dd>Optional string to stop generation at.</dd>
 <dt><strong><code>include_stop_str</code></strong></dt>
 <dd>Whether to include stop string in generated message.</dd>
+<dt><strong><code>system_message</code></strong></dt>
+<dd>Optional system message to include at the start, not all models support this.</dd>
 </dl>
+<p>If you provide system message to a model that doesn't support it, it will be ignored.
+You can check if a model supports system messages by checking the model_data.has_system_messages()</p>
 <h2 id="returns">Returns</h2>
 <p>Generated AIMessage object.</p>
 <h2 id="raises">Raises</h2>
@@ -1069,9 +1119,10 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 </summary>
 <pre><code class="python">def generate(self,
           user_message: str,
-          ai_response_content_tbc: Optional[str] = None,
+          ai_message_tbc: Optional[str] = None,
           stop_at:Optional[str]=None,
-          include_stop_str:bool=True
+          include_stop_str:bool=True,
+          system_message: Optional[str] = None
           ) -&gt; AIMessage:
     &#34;&#34;&#34;
     Generate AI response to user message.
@@ -1081,9 +1132,12 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 
     Args:
         user_message: User message text.
-        ai_response_content_tbc: Optional text to prepend to AI response.
+        ai_message_tbc: Optional text to prepend to AI response.
         stop_at: Optional string to stop generation at.
         include_stop_str: Whether to include stop string in generated message.
+        system_message: Optional system message to include at the start, not all models support this.
+        If you provide system message to a model that doesn&#39;t support it, it will be ignored.
+        You can check if a model supports system messages by checking the model_data.has_system_messages()
 
     Returns:
         Generated AIMessage object.
@@ -1096,16 +1150,21 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
     if self.messages is None:
         raise Exception(&#34;No messages loaded. Use load_ai() first.&#34;)
     self.messages.reset_messages()
+    if self.model_data.has_system_tags():
+        if system_message is not None:
+            self.messages.set_system_message(system_message)
+        else:
+            print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
     self.messages.add_user_message(user_message)
-    print(f&#34;User message: \n{self.messages.get_last_message()}&#34;)
+    print(f&#34;Input to model: \n{self.messages.text()}&#34;)
     generated: str = &#34;&#34;
-    if not (ai_response_content_tbc == &#34;&#34; or ai_response_content_tbc is None):
-        generated += ai_response_content_tbc
-        self.messages.add_message(ai_response_content_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
+    if ai_message_tbc is not None:
+        generated += ai_message_tbc
+        self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
     if stop_at is None:
         stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == &#34;&#34;, self.messages.ai_tag_close != &#34; &#34;]) else None
     generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
-    if not (ai_response_content_tbc == &#34;&#34; or ai_response_content_tbc is None):
+    if ai_message_tbc is not None:
         self.messages.edit_last_message(generated,
                                         self.model_data.get_ai_tag_open(),
                                         self.model_data.get_ai_tag_close())
@@ -1116,7 +1175,7 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 </details>
 </dd>
 <dt id="glai.ai.EasyAI.is_within_input_limit"><code class="name flex">
-<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, user_message_text: str, ai_message_to_be_continued: Optional[str] = None) ‑> bool</span>
+<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, user_message_text: str, ai_message_tbc: Optional[str] = None) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Check if the generated message is within the input limit.</p>
@@ -1124,7 +1183,7 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 <dl>
 <dt><strong><code>user_message_text</code></strong></dt>
 <dd>User message text.</dd>
-<dt><strong><code>ai_message_to_be_continued</code></strong></dt>
+<dt><strong><code>ai_message_tbc</code></strong></dt>
 <dd>Optional text to prepend.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -1136,19 +1195,19 @@ content to AI response. Adds messages and returns generated AIMessage.</p>
 <pre><code class="python">def is_within_input_limit(
     self,
     user_message_text: str,
-    ai_message_to_be_continued: Optional[str] = None
+    ai_message_tbc: Optional[str] = None
     ) -&gt; bool:
     &#34;&#34;&#34;
     Check if the generated message is within the input limit.
 
     Args:
         user_message_text: User message text.
-        ai_message_to_be_continued: Optional text to prepend.
+        ai_message_tbc: Optional text to prepend.
 
     Returns:
         True if within input limit, False otherwise.
     &#34;&#34;&#34;
-    return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_to_be_continued))</code></pre>
+    return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))</code></pre>
 </details>
 </dd>
 <dt id="glai.ai.EasyAI.load_ai"><code class="name flex">
@@ -1365,7 +1424,8 @@ the model from the URL and creates new model data. Sets model data attribute.</p
 <ul class="">
 <li><code><a title="glai.ai.AutoAI.count_tokens" href="#glai.ai.AutoAI.count_tokens">count_tokens</a></code></li>
 <li><code><a title="glai.ai.AutoAI.generate" href="#glai.ai.AutoAI.generate">generate</a></code></li>
-<li><code><a title="glai.ai.AutoAI.generate_from_prompt" href="#glai.ai.AutoAI.generate_from_prompt">generate_from_prompt</a></code></li>
+<li><code><a title="glai.ai.AutoAI.generate_from_literal_string" href="#glai.ai.AutoAI.generate_from_literal_string">generate_from_literal_string</a></code></li>
+<li><code><a title="glai.ai.AutoAI.generate_from_messages" href="#glai.ai.AutoAI.generate_from_messages">generate_from_messages</a></code></li>
 <li><code><a title="glai.ai.AutoAI.is_within_input_limit" href="#glai.ai.AutoAI.is_within_input_limit">is_within_input_limit</a></code></li>
 </ul>
 </li>
