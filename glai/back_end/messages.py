@@ -170,7 +170,7 @@ class AIMessages:
         Returns:
             tuple[str]: The system tags.
         """
-        if self.system_tag_open is not None or self.system_tag_close is not None:
+        if self.system_tag_open is not None and self.system_tag_close is not None:
             return (self.system_tag_open, self.system_tag_close)
         else:
             return None
@@ -275,7 +275,7 @@ class AIMessages:
         Returns:
         AIMessage
         """
-        self._message_id_generator += 1
+        self._message_id_generator += 1 if len(self.messages) > 0 else 0
         updated_messages = {}
         for id, msg in self.messages.items():
             if id < message_id:
@@ -330,7 +330,7 @@ class AIMessages:
         else:
             if isinstance(message, str):
                 message = AIMessage(message, self.system_tag_open, self.system_tag_close)    
-            return self._insert_message(message)
+            return self._insert_message(message, 0)
 
     def reset_messages(self) -> None:
         self.messages = {}

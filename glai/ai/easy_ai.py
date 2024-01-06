@@ -230,7 +230,7 @@ class EasyAI:
         """
         if self.model_data is None:
             raise Exception("No model data loaded. Use find_model_data(), get_model_data_from_url(), or get_model_data_from_file() first.")
-        self.messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags)
+        self.messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags, system_tags=self.model_data.system_tags)
 
     def load_ai(self,
                 max_total_tokens: int = 200,) -> None:

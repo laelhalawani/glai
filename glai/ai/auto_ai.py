@@ -47,7 +47,7 @@ class AutoAI:
         )
         print(f"Using model: {self.model_data}")
         self.msgs: AIMessages = AIMessages(
-            self.model_data.user_tags, self.model_data.ai_tags
+            self.model_data.user_tags, self.model_data.ai_tags, self.model_data.system_tags
         )
     
     def generate_from_messages(self, stop_at:str = None, include_stop_str:bool = True) -> AIMessage:
