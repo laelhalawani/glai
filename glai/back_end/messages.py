@@ -393,7 +393,7 @@ class AIMessages:
                 print("Warning: System message not found, adding system message to the start of the message list.")
                 self.set_system_message(new_content)
 
-    def has_system_tags()(self) -> bool:
+    def has_system_tags(self) -> bool:
         """
         Returns whether the model supports system messages.
 
