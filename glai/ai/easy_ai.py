@@ -255,7 +255,7 @@ class EasyAI:
 
     def generate(self,
               user_message: str,
-              ai_response_content_tbc: Optional[str] = None,
+              ai_message_tbc: Optional[str] = None,
               stop_at:Optional[str]=None,
               include_stop_str:bool=True
               ) -> AIMessage:
@@ -267,7 +267,7 @@ class EasyAI:
 
         Args:
             user_message: User message text.
-            ai_response_content_tbc: Optional text to prepend to AI response.
+            ai_message_tbc: Optional text to prepend to AI response.
             stop_at: Optional string to stop generation at.
             include_stop_str: Whether to include stop string in generated message.
 
@@ -285,13 +285,13 @@ class EasyAI:
         self.messages.add_user_message(user_message)
         print(f"User message: \n{self.messages.get_last_message()}")
         generated: str = ""
-        if not (ai_response_content_tbc == "" or ai_response_content_tbc is None):
-            generated += ai_response_content_tbc
-            self.messages.add_message(ai_response_content_tbc, self.model_data.get_ai_tag_open(), "")
+        if ai_message_tbc is not None:
+            generated += ai_message_tbc
+            self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), "")
         if stop_at is None:
             stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == "", self.messages.ai_tag_close != " "]) else None
         generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
-        if not (ai_response_content_tbc == "" or ai_response_content_tbc is None):
+        if not (ai_message_tbc == "" or ai_message_tbc is None):
             self.messages.edit_last_message(generated,
                                             self.model_data.get_ai_tag_open(),
                                             self.model_data.get_ai_tag_close())
@@ -307,14 +307,14 @@ class EasyAI:
     def count_tokens(
         self,
         user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        ai_message_tbc: Optional[str] = None
     ) -> int:
         """
         Count the number of tokens in a generated message.
 
         Args:
             user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             Number of tokens in generated message.
@@ -323,9 +323,9 @@ class EasyAI:
         generation_messages.reset_messages()
         generation_messages.add_user_message(user_message_text)
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.add_message(
-                ai_message_to_be_continued, 
+                ai_message_tbc, 
                 self.messages.ai_tag_open, 
                 ""
             )
@@ -335,16 +335,16 @@ class EasyAI:
     def is_within_input_limit(
         self,
         user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        ai_message_tbc: Optional[str] = None
         ) -> bool:
         """
         Check if the generated message is within the input limit.
 
         Args:
             user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             True if within input limit, False otherwise.
         """
-        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_to_be_continued))
+        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))
