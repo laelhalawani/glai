@@ -1,5 +1,5 @@
 from typing import Optional, Tuple
-from ..back_end import AIMessages, AIMessage, ModelData, ModelDB, DEFAULT_LOCAL_GGUF_DIR
+from ..back_end import AIMessages, AIMessage, ModelData, ModelDB, DEFAULT_LOCAL_GGUF_DIR, MODEL_EXAMPLES_DB_DIR
 from gguf_llama import LlamaAI
 
 __all__ = ['EasyAI']
@@ -12,13 +12,13 @@ class EasyAI:
     Initialization:
     Can be intialized with no arguments, followed by following configuration methods, step by step, all in one or using a dict:\n
     Step by step call these with appropriate arguments:\n
-        1. `self.load_model_db(model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR)`
+        1. `self.load_model_db(model_db_dir: str = MODEL_EXAMPLES_DB_DIR)`
         2. One of the following with necessary args: `self.model_data_from_url()` or `self.model_data_from_file()` or `self.find_model_data()`
         3. `self.load_ai(max_total_tokens: int = 200)`
     All in one:\n
         ```python
         self.configure(
-            model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR, 
+            model_db_dir:str = MODEL_EXAMPLES_DB_DIR, 
             model_url: Optional[str] = None, 
             model_gguf_path: Optional[str] = None, 
             name_search: Optional[str] = None, 
@@ -29,7 +29,7 @@ class EasyAI:
         ```
         
         Or with a dictionary with the following keys:
-        - model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+        - model_db_dir: Directory to store model data in. Defaults to MODEL_EXAMPLES_DB_DIR.
         - model_url: URL of model to configure with. Automatically downloads and builds as needed. (Optional)
         - name_search: Name of model to search for in the model db dir.(Optional)
         - quantization_search: Quantization of model to search for in the model db dir..(Optional)
@@ -68,7 +68,7 @@ class EasyAI:
             self.configure(**kwds)
 
     def configure(self,
-                  model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR,
+                  model_db_dir: str = MODEL_EXAMPLES_DB_DIR,
                   model_url: Optional[str] = None,
                   model_gguf_path: Optional[str] = None,
                   name_search: Optional[str] = None,
@@ -83,7 +83,7 @@ class EasyAI:
         Sets model data attribute.
 
         Args:
-            model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+            model_db_dir: Directory to store model data in. Defaults to MODEL_EXAMPLES_DB_DIR.
             max_total_tokens: Max tokens to be processed (input+generation) by LlamaAI model. (Defaults to 200, set to around 500-1k for regular use)
             
             Provide at least one of these args to fetch ModelData: 
@@ -101,7 +101,7 @@ class EasyAI:
 
         """
         if model_db_dir is None:
-            print(f"Using default model DB dir: {DEFAULT_LOCAL_GGUF_DIR}")
+            print(f"Using default model DB dir: {MODEL_EXAMPLES_DB_DIR}")
         self.load_model_db(model_db_dir)
         if model_url is not None:
             self.model_data_from_url(model_url)
@@ -120,7 +120,7 @@ class EasyAI:
             
 
 
-    def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR, copy_examples=True) -> None:
+    def load_model_db(self, db_dir: str = MODEL_EXAMPLES_DB_DIR, copy_examples=True) -> None:
         """
         Load ModelDB from given directory.
 

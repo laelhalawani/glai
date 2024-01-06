@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional
-from ..back_end import AIMessages, AIMessage, ModelData, ModelDB, DEFAULT_LOCAL_GGUF_DIR
+from ..back_end import AIMessages, AIMessage, ModelData, ModelDB, DEFAULT_LOCAL_GGUF_DIR, MODEL_EXAMPLES_DB_DIR
 from gguf_llama import LlamaAI
 
 __all__ = ['AutoAI']
@@ -20,7 +20,7 @@ class AutoAI:
         keyword_search: Keyword of model to search for. Optional. Default None.
         new_tokens: New token length for LlamaAI model. Default 1500.
         max_input_tokens: Max input tokens for LlamaAI model. Default 900.
-        model_db_dir: Directory to store model data in. Default DEFAULT_LOCAL_GGUF_DIR.
+        model_db_dir: Directory to store model data in. Defaults to global packages model directory.
 
     Attributes:
         ai_db: ModelDB object. - represents the database of models, has useful functions for searching and importing models.
@@ -34,7 +34,7 @@ class AutoAI:
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
                  max_total_tokens: int = 1500,
-                 model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR,
+                 model_db_dir:str = MODEL_EXAMPLES_DB_DIR,
                  ) -> None:
 
         self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
