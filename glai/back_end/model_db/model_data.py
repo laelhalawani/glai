@@ -29,6 +29,10 @@ Models data format:
         "open": "",
         "close": ""
     },
+    "system_tags": {
+        "open": null,
+        "close": null
+    },
     "save_dir": "./models_db/gguf_models"
 }
 """
@@ -40,6 +44,7 @@ class ModelData:
         db_dir:str,
         user_tags:Union[dict, list, set] = ("", ""), 
         ai_tags:Union[dict, list, set] = ("", ""),
+        system_tags:Optional[Union[dict, list, set]] = None,
         description:Optional[str] = None, 
         keywords:Optional[list] = None,
         ):
@@ -53,6 +58,7 @@ class ModelData:
         self.keywords = None
         self.user_tags = None
         self.ai_tags = None
+        self.system_tags = None
         self.save_dir = None
 
         #set values
@@ -63,7 +69,7 @@ class ModelData:
         self.model_quantization = self._url_extract_quantization(gguf_url)
         self.description = description if description is not None else ""
         self.keywords = keywords if keywords is not None else []
-        self.set_tags(ai_tags, user_tags)
+        self.set_tags(ai_tags, user_tags, system_tags)
 
     def __str__(self) -> str:
         t = f"""ModelData(
@@ -74,6 +80,7 @@ class ModelData:
             user_tags: {self.user_tags},
             ai_tags: {self.ai_tags},
             ---optionally provided, no defaults---
+            system_tags: {self.system_tags},
             description: {self.description},
             keywords: {self.keywords},
             ---automatically generated---
@@ -153,13 +160,30 @@ class ModelData:
         else:
             raise TypeError(f"Invalid type for user tags: {type(user_tags)}, must be dict, set or list.")
 
+    def set_system_tags(self, system_tags:Union[dict, set[str], list[str], tuple[str]]) -> None:
+        if isinstance(system_tags, dict):
+            if "open" in system_tags and "close" in system_tags:
+                self.system_tags = system_tags
+            else:
+                raise ValueError(f"Invalid system tags: {system_tags}, for dict tags both 'open' and 'close' keys must be present.")
+        elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
+            self.system_tags = {
+                "open": system_tags[0],
+                "close": system_tags[1]
+            }
+        else:
+            raise TypeError(f"Invalid type for system tags: {type(system_tags)}, must be dict, set or list.")
     def set_tags(self, 
                  ai_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-                 user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]]) -> None:
+                 user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+                 system_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
+                 ) -> None:
         if ai_tags is not None:
             self.set_ai_tags(ai_tags)
         if user_tags is not None:
             self.set_user_tags(user_tags)
+        if system_tags is not None:
+            self.set_system_tags(system_tags)
 
     def set_save_dir(self, save_dir:str) -> None:
         self.save_dir = save_dir
@@ -175,6 +199,7 @@ class ModelData:
             "keywords": self.keywords,
             "user_tags": self.user_tags,
             "ai_tags": self.ai_tags,
+            "system_tags": self.system_tags,
             "save_dir": self.save_dir,
         }
         return model_data
@@ -186,7 +211,8 @@ class ModelData:
         keywords = model_data["keywords"] if "keywords" in model_data else None
         user_tags = model_data["user_tags"]
         ai_tags = model_data["ai_tags"]
-        new_model_data = ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+        system_tags = model_data["system_tags"] if "system_tags" in model_data else None
+        new_model_data = ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
         return new_model_data
 
     def is_downloaded(self) -> bool:
@@ -247,18 +273,20 @@ class ModelData:
         return ModelData.from_dict(model_data)
 
     @staticmethod
-    def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = ("[INST]", "[/INST]"), ai_tags:Union[dict, list, set] = ("", ""), description:Optional[str] = None, keywords:Optional[list] = None) -> "ModelData":
-        return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+    def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = ("", ""), ai_tags:Union[dict, list, set] = ("", ""), system_tags:Union[dict, list, set] = ("", ""),
+                  description:Optional[str] = None, keywords:Optional[list] = None) -> "ModelData":
+        return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
 
     def model_path(self) -> str:
         return self.gguf_file_path
 
     @staticmethod
-    def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = ("[INST]", "[/INST]"), ai_tags:Union[dict, list, set] = ("", ""), description:Optional[str] = None, keywords:Optional[list] = None) -> "ModelData":
+    def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = ("", ""), ai_tags:Union[dict, list, set] = ("", ""), system_tags:Union[dict, list, set] = ("", ""),
+                  description:Optional[str] = None, keywords:Optional[list] = None) -> "ModelData":
         #creates a model where url is also the file path
         save_dir = get_directory(gguf_file_path) if save_dir is None else save_dir
         url = gguf_file_path
-        return ModelData(url, save_dir, user_tags, ai_tags, description, keywords)
+        return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
 
     def get_ai_tag_open(self) -> str:
         return self.ai_tags["open"]
@@ -272,8 +300,20 @@ class ModelData:
     def get_user_tag_close(self) -> str:
         return self.user_tags["close"]
     
+    def get_system_tag_open(self) -> str:
+        return self.system_tags["open"]
+    
+    def get_system_tag_close(self) -> str:
+        return self.system_tags["close"]
+    
     def get_ai_tags(self) -> list[str]:
         return [self.get_ai_tag_open(), self.get_ai_tag_close()]
     
     def get_user_tags(self) -> list[str]:
         return [self.get_user_tag_open(), self.get_user_tag_close()]
+    
+    def get_system_tags(self) -> list[str]:
+        return [self.get_system_tag_open(), self.get_system_tag_close()]
+    
+    def has_system_tags(self) -> bool:
+        return self.system_tags is not None

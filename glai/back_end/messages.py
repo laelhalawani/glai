@@ -133,12 +133,12 @@ class AIMessages:
                     self.system_tag_open = system_tags["open"]
                     self.system_tag_close = system_tags["close"]
                 else:
-                    raise ValueError(f"Invalid user tags: {system_tags}, for dict tags both 'open' and 'close' keys must be present.")
+                    raise ValueError(f"Invalid system tags: {system_tags}, for dict tags both 'open' and 'close' keys must be present.")
             elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
                 self.system_tag_open = system_tags[0]
                 self.system_tag_close = system_tags[1]
             else:
-                raise TypeError(f"Invalid type for user tags: {type(system_tags)}, must be dict, set or list.")
+                raise TypeError(f"Invalid type for system tags: {type(system_tags)}, must be dict, set or list.")
         else:
             self.system_tag_open = None
             self.system_tag_close = None
@@ -325,8 +325,8 @@ class AIMessages:
         Returns:
             AIMessage
         """
-        if self.system_tags() is None:
-            raise ValueError("System tags are not set, this model does not support system messages.")
+        if self.has_system_tags():
+            print("System tags are not set, this model does not support system messages.")
         else:
             if isinstance(message, str):
                 message = AIMessage(message, self.system_tag_open, self.system_tag_close)    
@@ -393,7 +393,7 @@ class AIMessages:
                 print("Warning: System message not found, adding system message to the start of the message list.")
                 self.set_system_message(new_content)
 
-    def has_system_message_support(self) -> bool:
+    def has_system_tags()(self) -> bool:
         """
         Returns whether the model supports system messages.
 

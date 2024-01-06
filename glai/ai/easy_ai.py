@@ -257,7 +257,8 @@ class EasyAI:
               user_message: str,
               ai_message_tbc: Optional[str] = None,
               stop_at:Optional[str]=None,
-              include_stop_str:bool=True
+              include_stop_str:bool=True,
+              system_message: Optional[str] = None
               ) -> AIMessage:
         """
         Generate AI response to user message.
@@ -270,6 +271,9 @@ class EasyAI:
             ai_message_tbc: Optional text to prepend to AI response.
             stop_at: Optional string to stop generation at.
             include_stop_str: Whether to include stop string in generated message.
+            system_message: Optional system message to include at the start, not all models support this.
+            If you provide system message to a model that doesn't support it, it will be ignored.
+            You can check if a model supports system messages by checking the model_data.has_system_messages()
 
         Returns:
             Generated AIMessage object.
@@ -282,8 +286,13 @@ class EasyAI:
         if self.messages is None:
             raise Exception("No messages loaded. Use load_ai() first.")
         self.messages.reset_messages()
+        if self.model_data.has_system_tags():
+            if system_message is not None:
+                self.messages.set_system_message(system_message)
+            else:
+                print("WARNING: Model supports system messages, but no system message provided.")
         self.messages.add_user_message(user_message)
-        print(f"User message: \n{self.messages.get_last_message()}")
+        print(f"Input to model: \n{self.messages.text()}")
         generated: str = ""
         if ai_message_tbc is not None:
             generated += ai_message_tbc

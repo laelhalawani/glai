@@ -145,13 +145,14 @@ class ModelDB:
     def load_models_data_from_repo(self, hf_repo_url:str, 
                         user_tags:Optional[list[str]]=None,
                         ai_tags:Optional[list[str]]=None,
+                        system_tags:Optional[list[str]]=None,
                         keywords:Optional[list[str]]=None, 
                         description:Optional[str]=None):  
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
         model_datas = []
         for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_datas.append(model_data)
             model_data.save_json()
         self.models.extend(model_datas)
@@ -160,6 +161,7 @@ class ModelDB:
     def import_models_from_repo(self, hf_repo_url:str,
                         user_tags:Optional[list[str]]=None,
                         ai_tags:Optional[list[str]]=None,
+                        system_tags:Optional[list[str]]=None,
                         keywords:Optional[list[str]]=None, 
                         description:Optional[str]=None,
                         replace_existing:bool=False,
@@ -167,7 +169,7 @@ class ModelDB:
         #create model data from hf repo
         model_links = ModelDB._model_links_from_repo(hf_repo_url)
         for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, description=description, keywords=keywords)
+            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
             model_data.save_json(replace_existing=replace_existing)
         self.load_models()
     

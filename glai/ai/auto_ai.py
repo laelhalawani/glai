@@ -34,7 +34,8 @@ class AutoAI:
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
                  max_total_tokens: int = 1500,
-                 model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR) -> None:
+                 model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR,
+                 ) -> None:
 
         self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
         self.model_data: ModelData = self.ai_db.find_model(
@@ -51,11 +52,11 @@ class AutoAI:
     
     def generate_from_messages(self, stop_at:str = None, include_stop_str:bool = True) -> AIMessage:
         prompt = self.msgs.text()
-        ai_message = self.generate_from_prompt(prompt, stop_at=stop_at, include_stop_str=include_stop_str)
+        ai_message = self.generate_from_literal_string(prompt, stop_at=stop_at, include_stop_str=include_stop_str)
         self.msgs.add_ai_message(ai_message)
         return ai_message
     
-    def generate_from_prompt(
+    def generate_from_literal_string(
         self, 
         prompt: str,
         stop_at:str = None,
@@ -79,7 +80,8 @@ class AutoAI:
         user_message: str,
         ai_message_tbc: Optional[str] = None,
         stop_at:Optional[str] = None,
-        include_stop_str:bool = True
+        include_stop_str:bool = True,
+        system_message: Optional[str] = None
     ) -> AIMessage:
         """
         Generate an AI response to a user message.
@@ -89,12 +91,19 @@ class AutoAI:
             ai_message_tbc: Optional text to prepend.
             stop_at: Optional string to stop generation at.
             include_stop_str: Whether to include the stop string in the generated message.
-
+            system_message: Optional system message to include at the start, not all models support this.
+            If you provide system message to a model that doesn't support it, it will be ignored.
+            You can check if a model supports system messages by checking the model_data.has_system_tags() method.
         Returns:
             Generated AIMessage object.
         """
-        generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags)
+        generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags, system_tags=self.model_data.system_tags)
         generation_messages.reset_messages()
+        if self.model_data.has_system_tags():
+            if system_message is not None:
+                generation_messages.set_system_message(system_message)
+            else:
+                print("WARNING: Model supports system messages, but no system message provided.")
         generation_messages.add_user_message(user_message)
 
 
@@ -106,7 +115,7 @@ class AutoAI:
             )
         print(f"Promt: {generation_messages.text()}")
         
-        generated = self.generate_from_prompt(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
+        generated = self.generate_from_literal_string(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
 
         if ai_message_tbc is not None:
             generation_messages.edit_last_message(
