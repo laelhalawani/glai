@@ -76,8 +76,8 @@ class AutoAI:
 
     def generate(
         self,
-        user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None,
+        user_message: str,
+        ai_message_tbc: Optional[str] = None,
         stop_at:Optional[str] = None,
         include_stop_str:bool = True
     ) -> AIMessage:
@@ -85,8 +85,8 @@ class AutoAI:
         Generate an AI response to a user message.
 
         Args:
-            user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            user_message: User message text.
+            ai_message_tbc: Optional text to prepend.
             stop_at: Optional string to stop generation at.
             include_stop_str: Whether to include the stop string in the generated message.
 
@@ -95,12 +95,12 @@ class AutoAI:
         """
         generation_messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags)
         generation_messages.reset_messages()
-        generation_messages.add_user_message(user_message_text)
+        generation_messages.add_user_message(user_message)
 
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.add_message(
-                ai_message_to_be_continued, 
+                ai_message_tbc, 
                 self.msgs.ai_tag_open, 
                 ""
             )
@@ -108,9 +108,9 @@ class AutoAI:
         
         generated = self.generate_from_prompt(generation_messages.text(), stop_at=stop_at, include_stop_str=include_stop_str)
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.edit_last_message(
-                ai_message_to_be_continued + generated,
+                ai_message_tbc + generated,
                 self.msgs.ai_tag_open,
                 self.msgs.ai_tag_close
             )
@@ -123,26 +123,26 @@ class AutoAI:
 
     def count_tokens(
         self,
-        user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        user_message: str,
+        ai_message_tbc: Optional[str] = None
     ) -> int:
         """
         Count the number of tokens in a generated message.
 
         Args:
-            user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            user_message: User message text.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             Number of tokens in generated message.
         """
         generation_messages = AIMessages()
         generation_messages.reset_messages()
-        generation_messages.add_user_message(user_message_text)
+        generation_messages.add_user_message(user_message)
 
-        if ai_message_to_be_continued is not None:
+        if ai_message_tbc is not None:
             generation_messages.add_message(
-                ai_message_to_be_continued, 
+                ai_message_tbc, 
                 self.msgs.ai_tag_open, 
                 ""
             )
@@ -150,17 +150,17 @@ class AutoAI:
     
     def is_within_input_limit(
         self,
-        user_message_text: str,
-        ai_message_to_be_continued: Optional[str] = None
+        user_message: str,
+        ai_message_tbc: Optional[str] = None
         ) -> bool:
         """
         Check if the generated message is within the input limit.
 
         Args:
-            user_message_text: User message text.
-            ai_message_to_be_continued: Optional text to prepend.
+            user_message: User message text.
+            ai_message_tbc: Optional text to prepend.
 
         Returns:
             True if within input limit, False otherwise.
         """
-        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_to_be_continued))
+        return self.ai.is_within_input_limit(self.count_tokens(user_message, ai_message_tbc))
