@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import Union, Any
+<pre><code class="python">from typing import Optional, Union, Any
 from util_helper.file_handler import save_json_file, load_json_file
 
 class AIMessage:
@@ -117,6 +117,8 @@ class AIMessages:
         user_tag_close (str): The closing tag for user messages.
         ai_tag_open (str): The opening tag for AI messages.
         ai_tag_close (str): The closing tag for AI messages.
+        system_tag_open (str): The opening tag for system messages.
+        system_tag_close (str): The closing tag for system messages.
         messages (dict): The messages in the collection: {id: AIMessage}.
         _message_id_generator (int): The id generator for the messages.
 
@@ -124,9 +126,10 @@ class AIMessages:
         messages (Union[AIMessages, AIMessage, str, list]): The messages to add to the collection.
         user_tags (tuple): The tags to use for user messages.
         ai_tags (tuple): The tags to use for AI messages.
+        system_tags (tuple): The tags to use for system messages.
     &#34;&#34;&#34;
 
-    def __init__(self,user_tags:Union[tuple[str], list[str], dict]=(&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[tuple[str], list[str], dict]=(&#34;&#34;, &#34;&#34;)):
+    def __init__(self,user_tags:Union[tuple[str], list[str], dict]=(&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[tuple[str], list[str], dict]=(&#34;&#34;, &#34;&#34;), system_tags:Optional[Union[tuple[str], list[str], dict]]=None):
         if isinstance(user_tags, dict):
             if &#34;open&#34; in user_tags and &#34;close&#34; in user_tags:
                 self.user_tag_open = user_tags[&#34;open&#34;]
@@ -150,6 +153,22 @@ class AIMessages:
             self.ai_tag_close = ai_tags[1]
         else:
             raise TypeError(f&#34;Invalid type for user tags: {type(ai_tags)}, must be dict, set or list.&#34;)
+        
+        if system_tags is not None:
+            if isinstance(system_tags, dict):
+                if &#34;open&#34; in system_tags and &#34;close&#34; in system_tags:
+                    self.system_tag_open = system_tags[&#34;open&#34;]
+                    self.system_tag_close = system_tags[&#34;close&#34;]
+                else:
+                    raise ValueError(f&#34;Invalid system tags: {system_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+            elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
+                self.system_tag_open = system_tags[0]
+                self.system_tag_close = system_tags[1]
+            else:
+                raise TypeError(f&#34;Invalid type for system tags: {type(system_tags)}, must be dict, set or list.&#34;)
+        else:
+            self.system_tag_open = None
+            self.system_tag_close = None
         self.messages = {}
         self._message_id_generator = 0
     
@@ -169,7 +188,19 @@ class AIMessages:
         Returns:
             tuple[str]: The AI tags.
         &#34;&#34;&#34;
-        return (self.ai_tag_open, self.ai_tag_close)    
+        return (self.ai_tag_open, self.ai_tag_close)
+
+    def system_tags(self) -&gt; Union[tuple[str], None]:
+        &#34;&#34;&#34;
+        Returns the system tags.
+
+        Returns:
+            tuple[str]: The system tags.
+        &#34;&#34;&#34;
+        if self.system_tag_open is not None and self.system_tag_close is not None:
+            return (self.system_tag_open, self.system_tag_close)
+        else:
+            return None
     
     def load_messages(self, messages:Union[Any, AIMessage, str, list[Union[dict, AIMessage]]]) -&gt; None:
         if messages is not None:
@@ -203,6 +234,8 @@ class AIMessages:
             &#34;user_tag_close&#34;: self.user_tag_close,
             &#34;ai_tag_open&#34;: self.ai_tag_open,
             &#34;ai_tag_close&#34;: self.ai_tag_close,
+            &#34;system_tag_open&#34;: self.system_tag_open,
+            &#34;system_tag_close&#34;: self.system_tag_close,
             &#34;messages&#34;: [message.to_dict() for message in self.messages]
         }
     
@@ -222,6 +255,8 @@ class AIMessages:
         ai_msgs.user_tag_close = messages_dict[&#34;user_tag_close&#34;]
         ai_msgs.ai_tag_open = messages_dict[&#34;ai_tag_open&#34;]
         ai_msgs.ai_tag_close = messages_dict[&#34;ai_tag_close&#34;]
+        ai_msgs.system_tag_open = messages_dict[&#34;system_tag_open&#34;] if &#34;system_tag_open&#34; in messages_dict else None
+        ai_msgs.system_tag_close = messages_dict[&#34;system_tag_close&#34;] if &#34;system_tag_close&#34; in messages_dict else None
         ai_msgs.load_messages(messages_dict[&#34;messages&#34;])
         return ai_msgs
     
@@ -237,23 +272,47 @@ class AIMessages:
         id = self._message_id_generator
         return id
     
-    def add_message(self, message:str, tag_open:str, tag_close:str) -&gt; AIMessage:
+    def add_message(self, message:Union[str, AIMessage], tag_open:str, tag_close:str) -&gt; AIMessage:
         &#34;&#34;&#34;
         Adds a new message to the messages dictionary.
         Iters the message ID generator.
 
         Parameters:
-        - message (str): The content of the message.
-        - tag_open (str): The opening tag for the message.
-        - tag_close (str): The closing tag for the message.
+        - message (str|AIMessage): The content of the message or the message object
+        - tag_open (str): The opening tag for the message, set to None if message is AIMessage
+        - tag_close (str): The closing tag for the message, set to None if message is AIMessage
 
         Returns:
         AIMessage
         &#34;&#34;&#34;
-        self.messages[self._generate_message_id()] = AIMessage(message, tag_open, tag_close)
+        if isinstance(message, str):
+            message = AIMessage(message, tag_open, tag_close)
+        self.messages[self._generate_message_id()] = message
         return self.messages[self._message_id_generator]
 
-    def add_user_message(self, message: str) -&gt; AIMessage:
+    def _insert_message(self, message:AIMessage, message_id:int) -&gt; AIMessage:
+        &#34;&#34;&#34;
+        Inserts a new message to the messages dictionary.
+        Iters the message ID generator.
+
+        Parameters:
+        - message (AIMessage): The message object
+        - message_id (int): The id to insert the message at
+
+        Returns:
+        AIMessage
+        &#34;&#34;&#34;
+        self._message_id_generator += 1 if len(self.messages) &gt; 0 else 0
+        updated_messages = {}
+        for id, msg in self.messages.items():
+            if id &lt; message_id:
+                updated_messages[id] = msg
+            else:
+                updated_messages[id+1] = msg
+        updated_messages[message_id] = message
+        self.messages = updated_messages
+
+    def add_user_message(self, message: Union[str, AIMessage]) -&gt; AIMessage:
         &#34;&#34;&#34;
         Adds a user message to the message list.
         Uses add_message() with the user tags.
@@ -267,7 +326,7 @@ class AIMessages:
         &#34;&#34;&#34;
         return self.add_message(message, self.user_tag_open, self.user_tag_close)
 
-    def add_ai_message(self, message:str) -&gt; AIMessage:
+    def add_ai_message(self, message:Union[str, AIMessage]) -&gt; AIMessage:
         &#34;&#34;&#34;
         Adds a ai message to the message list.
         Uses add_message() with the ai tags.
@@ -280,6 +339,25 @@ class AIMessages:
             AIMessage
         &#34;&#34;&#34;
         return self.add_message(message, self.ai_tag_open, self.ai_tag_close)
+    
+    def set_system_message(self, message:Union[str, AIMessage]) -&gt; AIMessage:
+        &#34;&#34;&#34;
+        Adds a system message to the message list.
+        Uses add_message() with the system tags.
+        Automatically iters the message ID generator.
+
+        Parameters:
+            message (str): The message to be added.
+
+        Returns:
+            AIMessage
+        &#34;&#34;&#34;
+        if not self.has_system_tags():
+            print(&#34;System tags are not set, this model does not support system messages.&#34;)
+        else:
+            if isinstance(message, str):
+                message = AIMessage(message, self.system_tag_open, self.system_tag_close)    
+            return self._insert_message(message, 0)
 
     def reset_messages(self) -&gt; None:
         self.messages = {}
@@ -331,6 +409,25 @@ class AIMessages:
             None
         &#34;&#34;&#34;
         self.messages[message_id].edit(new_content, tag_open, tag_close)
+
+    def edit_system_message(self, new_content:str) -&gt; None:
+        if self.system_tags() is None:
+            raise ValueError(&#34;System tags are not set, this model does not support system messages.&#34;)
+        else:
+            if self.messages[0].tag_open == self.system_tag_open and self.messages[0].tag_close == self.system_tag_close:
+                self.edit_message(0, new_content)
+            else:
+                print(&#34;Warning: System message not found, adding system message to the start of the message list.&#34;)
+                self.set_system_message(new_content)
+
+    def has_system_tags(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Returns whether the model supports system messages.
+
+        Returns:
+            bool: Whether the model supports system messages.
+        &#34;&#34;&#34;
+        return self.system_tags() is not None
     
     def save_json(self, file_path:str) -&gt; None:
         &#34;&#34;&#34;
@@ -357,6 +454,20 @@ class AIMessages:
         &#34;&#34;&#34;
         return AIMessages.from_dict(load_json_file(file_path))
     
+    @staticmethod
+    def create_single_message(message:str, tag_open:str=&#34;&#34;, tag_close:str=&#34;&#34;) -&gt;AIMessage:
+        &#34;&#34;&#34;
+        Creates a single AIMessage.
+
+        Args:
+            message (str): The content of the message.
+            tag_open (str): The opening tag for the message.
+            tag_close (str): The closing tag for the message.
+
+        Returns:
+            AIMessage: The created AIMessage.
+        &#34;&#34;&#34;
+        return AIMessage(message, tag_open, tag_close)
     </code></pre>
 </details>
 </section>
@@ -612,7 +723,7 @@ def from_dict(message_dict:dict) -&gt; &#34;AIMessage&#34;:
 </dd>
 <dt id="glai.back_end.messages.AIMessages"><code class="flex name class">
 <span>class <span class="ident">AIMessages</span></span>
-<span>(</span><span>user_tags: Union[tuple[str], list[str], dict] = ('[INST]', '[/INST]'), ai_tags: Union[tuple[str], list[str], dict] = ('', ''))</span>
+<span>(</span><span>user_tags: Union[tuple[str], list[str], dict] = ('[INST]', '[/INST]'), ai_tags: Union[tuple[str], list[str], dict] = ('', ''), system_tags: Union[tuple[str], list[str], dict, ForwardRef(None)] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a collection of messages in an AI system.</p>
@@ -621,6 +732,8 @@ def from_dict(message_dict:dict) -&gt; &#34;AIMessage&#34;:
 user_tag_close (str): The closing tag for user messages.
 ai_tag_open (str): The opening tag for AI messages.
 ai_tag_close (str): The closing tag for AI messages.
+system_tag_open (str): The opening tag for system messages.
+system_tag_close (str): The closing tag for system messages.
 messages (dict): The messages in the collection: {id: AIMessage}.
 _message_id_generator (int): The id generator for the messages.</p>
 <h2 id="args">Args</h2>
@@ -631,6 +744,8 @@ _message_id_generator (int): The id generator for the messages.</p>
 <dd>The tags to use for user messages.</dd>
 <dt><strong><code>ai_tags</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The tags to use for AI messages.</dd>
+<dt><strong><code>system_tags</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>The tags to use for system messages.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -644,6 +759,8 @@ _message_id_generator (int): The id generator for the messages.</p>
         user_tag_close (str): The closing tag for user messages.
         ai_tag_open (str): The opening tag for AI messages.
         ai_tag_close (str): The closing tag for AI messages.
+        system_tag_open (str): The opening tag for system messages.
+        system_tag_close (str): The closing tag for system messages.
         messages (dict): The messages in the collection: {id: AIMessage}.
         _message_id_generator (int): The id generator for the messages.
 
@@ -651,9 +768,10 @@ _message_id_generator (int): The id generator for the messages.</p>
         messages (Union[AIMessages, AIMessage, str, list]): The messages to add to the collection.
         user_tags (tuple): The tags to use for user messages.
         ai_tags (tuple): The tags to use for AI messages.
+        system_tags (tuple): The tags to use for system messages.
     &#34;&#34;&#34;
 
-    def __init__(self,user_tags:Union[tuple[str], list[str], dict]=(&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[tuple[str], list[str], dict]=(&#34;&#34;, &#34;&#34;)):
+    def __init__(self,user_tags:Union[tuple[str], list[str], dict]=(&#34;[INST]&#34;, &#34;[/INST]&#34;), ai_tags:Union[tuple[str], list[str], dict]=(&#34;&#34;, &#34;&#34;), system_tags:Optional[Union[tuple[str], list[str], dict]]=None):
         if isinstance(user_tags, dict):
             if &#34;open&#34; in user_tags and &#34;close&#34; in user_tags:
                 self.user_tag_open = user_tags[&#34;open&#34;]
@@ -677,6 +795,22 @@ _message_id_generator (int): The id generator for the messages.</p>
             self.ai_tag_close = ai_tags[1]
         else:
             raise TypeError(f&#34;Invalid type for user tags: {type(ai_tags)}, must be dict, set or list.&#34;)
+        
+        if system_tags is not None:
+            if isinstance(system_tags, dict):
+                if &#34;open&#34; in system_tags and &#34;close&#34; in system_tags:
+                    self.system_tag_open = system_tags[&#34;open&#34;]
+                    self.system_tag_close = system_tags[&#34;close&#34;]
+                else:
+                    raise ValueError(f&#34;Invalid system tags: {system_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
+            elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
+                self.system_tag_open = system_tags[0]
+                self.system_tag_close = system_tags[1]
+            else:
+                raise TypeError(f&#34;Invalid type for system tags: {type(system_tags)}, must be dict, set or list.&#34;)
+        else:
+            self.system_tag_open = None
+            self.system_tag_close = None
         self.messages = {}
         self._message_id_generator = 0
     
@@ -696,7 +830,19 @@ _message_id_generator (int): The id generator for the messages.</p>
         Returns:
             tuple[str]: The AI tags.
         &#34;&#34;&#34;
-        return (self.ai_tag_open, self.ai_tag_close)    
+        return (self.ai_tag_open, self.ai_tag_close)
+
+    def system_tags(self) -&gt; Union[tuple[str], None]:
+        &#34;&#34;&#34;
+        Returns the system tags.
+
+        Returns:
+            tuple[str]: The system tags.
+        &#34;&#34;&#34;
+        if self.system_tag_open is not None and self.system_tag_close is not None:
+            return (self.system_tag_open, self.system_tag_close)
+        else:
+            return None
     
     def load_messages(self, messages:Union[Any, AIMessage, str, list[Union[dict, AIMessage]]]) -&gt; None:
         if messages is not None:
@@ -730,6 +876,8 @@ _message_id_generator (int): The id generator for the messages.</p>
             &#34;user_tag_close&#34;: self.user_tag_close,
             &#34;ai_tag_open&#34;: self.ai_tag_open,
             &#34;ai_tag_close&#34;: self.ai_tag_close,
+            &#34;system_tag_open&#34;: self.system_tag_open,
+            &#34;system_tag_close&#34;: self.system_tag_close,
             &#34;messages&#34;: [message.to_dict() for message in self.messages]
         }
     
@@ -749,6 +897,8 @@ _message_id_generator (int): The id generator for the messages.</p>
         ai_msgs.user_tag_close = messages_dict[&#34;user_tag_close&#34;]
         ai_msgs.ai_tag_open = messages_dict[&#34;ai_tag_open&#34;]
         ai_msgs.ai_tag_close = messages_dict[&#34;ai_tag_close&#34;]
+        ai_msgs.system_tag_open = messages_dict[&#34;system_tag_open&#34;] if &#34;system_tag_open&#34; in messages_dict else None
+        ai_msgs.system_tag_close = messages_dict[&#34;system_tag_close&#34;] if &#34;system_tag_close&#34; in messages_dict else None
         ai_msgs.load_messages(messages_dict[&#34;messages&#34;])
         return ai_msgs
     
@@ -764,23 +914,47 @@ _message_id_generator (int): The id generator for the messages.</p>
         id = self._message_id_generator
         return id
     
-    def add_message(self, message:str, tag_open:str, tag_close:str) -&gt; AIMessage:
+    def add_message(self, message:Union[str, AIMessage], tag_open:str, tag_close:str) -&gt; AIMessage:
         &#34;&#34;&#34;
         Adds a new message to the messages dictionary.
         Iters the message ID generator.
 
         Parameters:
-        - message (str): The content of the message.
-        - tag_open (str): The opening tag for the message.
-        - tag_close (str): The closing tag for the message.
+        - message (str|AIMessage): The content of the message or the message object
+        - tag_open (str): The opening tag for the message, set to None if message is AIMessage
+        - tag_close (str): The closing tag for the message, set to None if message is AIMessage
 
         Returns:
         AIMessage
         &#34;&#34;&#34;
-        self.messages[self._generate_message_id()] = AIMessage(message, tag_open, tag_close)
+        if isinstance(message, str):
+            message = AIMessage(message, tag_open, tag_close)
+        self.messages[self._generate_message_id()] = message
         return self.messages[self._message_id_generator]
 
-    def add_user_message(self, message: str) -&gt; AIMessage:
+    def _insert_message(self, message:AIMessage, message_id:int) -&gt; AIMessage:
+        &#34;&#34;&#34;
+        Inserts a new message to the messages dictionary.
+        Iters the message ID generator.
+
+        Parameters:
+        - message (AIMessage): The message object
+        - message_id (int): The id to insert the message at
+
+        Returns:
+        AIMessage
+        &#34;&#34;&#34;
+        self._message_id_generator += 1 if len(self.messages) &gt; 0 else 0
+        updated_messages = {}
+        for id, msg in self.messages.items():
+            if id &lt; message_id:
+                updated_messages[id] = msg
+            else:
+                updated_messages[id+1] = msg
+        updated_messages[message_id] = message
+        self.messages = updated_messages
+
+    def add_user_message(self, message: Union[str, AIMessage]) -&gt; AIMessage:
         &#34;&#34;&#34;
         Adds a user message to the message list.
         Uses add_message() with the user tags.
@@ -794,7 +968,7 @@ _message_id_generator (int): The id generator for the messages.</p>
         &#34;&#34;&#34;
         return self.add_message(message, self.user_tag_open, self.user_tag_close)
 
-    def add_ai_message(self, message:str) -&gt; AIMessage:
+    def add_ai_message(self, message:Union[str, AIMessage]) -&gt; AIMessage:
         &#34;&#34;&#34;
         Adds a ai message to the message list.
         Uses add_message() with the ai tags.
@@ -807,6 +981,25 @@ _message_id_generator (int): The id generator for the messages.</p>
             AIMessage
         &#34;&#34;&#34;
         return self.add_message(message, self.ai_tag_open, self.ai_tag_close)
+    
+    def set_system_message(self, message:Union[str, AIMessage]) -&gt; AIMessage:
+        &#34;&#34;&#34;
+        Adds a system message to the message list.
+        Uses add_message() with the system tags.
+        Automatically iters the message ID generator.
+
+        Parameters:
+            message (str): The message to be added.
+
+        Returns:
+            AIMessage
+        &#34;&#34;&#34;
+        if not self.has_system_tags():
+            print(&#34;System tags are not set, this model does not support system messages.&#34;)
+        else:
+            if isinstance(message, str):
+                message = AIMessage(message, self.system_tag_open, self.system_tag_close)    
+            return self._insert_message(message, 0)
 
     def reset_messages(self) -&gt; None:
         self.messages = {}
@@ -858,6 +1051,25 @@ _message_id_generator (int): The id generator for the messages.</p>
             None
         &#34;&#34;&#34;
         self.messages[message_id].edit(new_content, tag_open, tag_close)
+
+    def edit_system_message(self, new_content:str) -&gt; None:
+        if self.system_tags() is None:
+            raise ValueError(&#34;System tags are not set, this model does not support system messages.&#34;)
+        else:
+            if self.messages[0].tag_open == self.system_tag_open and self.messages[0].tag_close == self.system_tag_close:
+                self.edit_message(0, new_content)
+            else:
+                print(&#34;Warning: System message not found, adding system message to the start of the message list.&#34;)
+                self.set_system_message(new_content)
+
+    def has_system_tags(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Returns whether the model supports system messages.
+
+        Returns:
+            bool: Whether the model supports system messages.
+        &#34;&#34;&#34;
+        return self.system_tags() is not None
     
     def save_json(self, file_path:str) -&gt; None:
         &#34;&#34;&#34;
@@ -882,10 +1094,64 @@ _message_id_generator (int): The id generator for the messages.</p>
         Returns:
             AIMessages: The created AIMessages.
         &#34;&#34;&#34;
-        return AIMessages.from_dict(load_json_file(file_path))</code></pre>
+        return AIMessages.from_dict(load_json_file(file_path))
+    
+    @staticmethod
+    def create_single_message(message:str, tag_open:str=&#34;&#34;, tag_close:str=&#34;&#34;) -&gt;AIMessage:
+        &#34;&#34;&#34;
+        Creates a single AIMessage.
+
+        Args:
+            message (str): The content of the message.
+            tag_open (str): The opening tag for the message.
+            tag_close (str): The closing tag for the message.
+
+        Returns:
+            AIMessage: The created AIMessage.
+        &#34;&#34;&#34;
+        return AIMessage(message, tag_open, tag_close)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
+<dt id="glai.back_end.messages.AIMessages.create_single_message"><code class="name flex">
+<span>def <span class="ident">create_single_message</span></span>(<span>message: str, tag_open: str = '', tag_close: str = '') ‑> <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a single AIMessage.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
+<dd>The content of the message.</dd>
+<dt><strong><code>tag_open</code></strong> :&ensp;<code>str</code></dt>
+<dd>The opening tag for the message.</dd>
+<dt><strong><code>tag_close</code></strong> :&ensp;<code>str</code></dt>
+<dd>The closing tag for the message.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a></code></dt>
+<dd>The created AIMessage.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def create_single_message(message:str, tag_open:str=&#34;&#34;, tag_close:str=&#34;&#34;) -&gt;AIMessage:
+    &#34;&#34;&#34;
+    Creates a single AIMessage.
+
+    Args:
+        message (str): The content of the message.
+        tag_open (str): The opening tag for the message.
+        tag_close (str): The closing tag for the message.
+
+    Returns:
+        AIMessage: The created AIMessage.
+    &#34;&#34;&#34;
+    return AIMessage(message, tag_open, tag_close)</code></pre>
+</details>
+</dd>
 <dt id="glai.back_end.messages.AIMessages.from_dict"><code class="name flex">
 <span>def <span class="ident">from_dict</span></span>(<span>messages_dict: dict) ‑> <a title="glai.back_end.messages.AIMessages" href="#glai.back_end.messages.AIMessages">AIMessages</a></span>
 </code></dt>
@@ -921,6 +1187,8 @@ def from_dict(messages_dict:dict) -&gt; &#34;AIMessages&#34;:
     ai_msgs.user_tag_close = messages_dict[&#34;user_tag_close&#34;]
     ai_msgs.ai_tag_open = messages_dict[&#34;ai_tag_open&#34;]
     ai_msgs.ai_tag_close = messages_dict[&#34;ai_tag_close&#34;]
+    ai_msgs.system_tag_open = messages_dict[&#34;system_tag_open&#34;] if &#34;system_tag_open&#34; in messages_dict else None
+    ai_msgs.system_tag_close = messages_dict[&#34;system_tag_close&#34;] if &#34;system_tag_close&#34; in messages_dict else None
     ai_msgs.load_messages(messages_dict[&#34;messages&#34;])
     return ai_msgs</code></pre>
 </details>
@@ -962,7 +1230,7 @@ def from_json(file_path:str) -&gt; &#34;AIMessages&#34;:
 <h3>Methods</h3>
 <dl>
 <dt id="glai.back_end.messages.AIMessages.add_ai_message"><code class="name flex">
-<span>def <span class="ident">add_ai_message</span></span>(<span>self, message: str) ‑> <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">add_ai_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a ai message to the message list.
@@ -976,7 +1244,7 @@ Automatically iters the message ID generator.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_ai_message(self, message:str) -&gt; AIMessage:
+<pre><code class="python">def add_ai_message(self, message:Union[str, AIMessage]) -&gt; AIMessage:
     &#34;&#34;&#34;
     Adds a ai message to the message list.
     Uses add_message() with the ai tags.
@@ -992,40 +1260,42 @@ Automatically iters the message ID generator.</p>
 </details>
 </dd>
 <dt id="glai.back_end.messages.AIMessages.add_message"><code class="name flex">
-<span>def <span class="ident">add_message</span></span>(<span>self, message: str, tag_open: str, tag_close: str) ‑> <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">add_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a>], tag_open: str, tag_close: str) ‑> <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a new message to the messages dictionary.
 Iters the message ID generator.</p>
 <p>Parameters:
-- message (str): The content of the message.
-- tag_open (str): The opening tag for the message.
-- tag_close (str): The closing tag for the message.</p>
+- message (str|AIMessage): The content of the message or the message object
+- tag_open (str): The opening tag for the message, set to None if message is AIMessage
+- tag_close (str): The closing tag for the message, set to None if message is AIMessage</p>
 <p>Returns:
 AIMessage</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_message(self, message:str, tag_open:str, tag_close:str) -&gt; AIMessage:
+<pre><code class="python">def add_message(self, message:Union[str, AIMessage], tag_open:str, tag_close:str) -&gt; AIMessage:
     &#34;&#34;&#34;
     Adds a new message to the messages dictionary.
     Iters the message ID generator.
 
     Parameters:
-    - message (str): The content of the message.
-    - tag_open (str): The opening tag for the message.
-    - tag_close (str): The closing tag for the message.
+    - message (str|AIMessage): The content of the message or the message object
+    - tag_open (str): The opening tag for the message, set to None if message is AIMessage
+    - tag_close (str): The closing tag for the message, set to None if message is AIMessage
 
     Returns:
     AIMessage
     &#34;&#34;&#34;
-    self.messages[self._generate_message_id()] = AIMessage(message, tag_open, tag_close)
+    if isinstance(message, str):
+        message = AIMessage(message, tag_open, tag_close)
+    self.messages[self._generate_message_id()] = message
     return self.messages[self._message_id_generator]</code></pre>
 </details>
 </dd>
 <dt id="glai.back_end.messages.AIMessages.add_user_message"><code class="name flex">
-<span>def <span class="ident">add_user_message</span></span>(<span>self, message: str) ‑> <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">add_user_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a user message to the message list.
@@ -1039,7 +1309,7 @@ Automatically iters the message ID generator.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_user_message(self, message: str) -&gt; AIMessage:
+<pre><code class="python">def add_user_message(self, message: Union[str, AIMessage]) -&gt; AIMessage:
     &#34;&#34;&#34;
     Adds a user message to the message list.
     Uses add_message() with the user tags.
@@ -1075,7 +1345,7 @@ Automatically iters the message ID generator.</p>
     Returns:
         tuple[str]: The AI tags.
     &#34;&#34;&#34;
-    return (self.ai_tag_open, self.ai_tag_close)    </code></pre>
+    return (self.ai_tag_open, self.ai_tag_close)</code></pre>
 </details>
 </dd>
 <dt id="glai.back_end.messages.AIMessages.edit_last_message"><code class="name flex">
@@ -1140,6 +1410,26 @@ tag_close (str): The new closing tag for the message.</p>
     self.messages[message_id].edit(new_content, tag_open, tag_close)</code></pre>
 </details>
 </dd>
+<dt id="glai.back_end.messages.AIMessages.edit_system_message"><code class="name flex">
+<span>def <span class="ident">edit_system_message</span></span>(<span>self, new_content: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def edit_system_message(self, new_content:str) -&gt; None:
+    if self.system_tags() is None:
+        raise ValueError(&#34;System tags are not set, this model does not support system messages.&#34;)
+    else:
+        if self.messages[0].tag_open == self.system_tag_open and self.messages[0].tag_close == self.system_tag_close:
+            self.edit_message(0, new_content)
+        else:
+            print(&#34;Warning: System message not found, adding system message to the start of the message list.&#34;)
+            self.set_system_message(new_content)</code></pre>
+</details>
+</dd>
 <dt id="glai.back_end.messages.AIMessages.get_last_message"><code class="name flex">
 <span>def <span class="ident">get_last_message</span></span>(<span>self) ‑> <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a></span>
 </code></dt>
@@ -1162,6 +1452,30 @@ tag_close (str): The new closing tag for the message.</p>
         AIMessage: The last message in the collection.
     &#34;&#34;&#34;
     return self.messages[self._message_id_generator]</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.messages.AIMessages.has_system_tags"><code class="name flex">
+<span>def <span class="ident">has_system_tags</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns whether the model supports system messages.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>Whether the model supports system messages.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_system_tags(self) -&gt; bool:
+    &#34;&#34;&#34;
+    Returns whether the model supports system messages.
+
+    Returns:
+        bool: Whether the model supports system messages.
+    &#34;&#34;&#34;
+    return self.system_tags() is not None</code></pre>
 </details>
 </dd>
 <dt id="glai.back_end.messages.AIMessages.load_messages"><code class="name flex">
@@ -1234,6 +1548,68 @@ tag_close (str): The new closing tag for the message.</p>
     save_json_file(self.to_dict(), file_path)</code></pre>
 </details>
 </dd>
+<dt id="glai.back_end.messages.AIMessages.set_system_message"><code class="name flex">
+<span>def <span class="ident">set_system_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.back_end.messages.AIMessage" href="#glai.back_end.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adds a system message to the message list.
+Uses add_message() with the system tags.
+Automatically iters the message ID generator.</p>
+<h2 id="parameters">Parameters</h2>
+<p>message (str): The message to be added.</p>
+<h2 id="returns">Returns</h2>
+<p>AIMessage</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_system_message(self, message:Union[str, AIMessage]) -&gt; AIMessage:
+    &#34;&#34;&#34;
+    Adds a system message to the message list.
+    Uses add_message() with the system tags.
+    Automatically iters the message ID generator.
+
+    Parameters:
+        message (str): The message to be added.
+
+    Returns:
+        AIMessage
+    &#34;&#34;&#34;
+    if not self.has_system_tags():
+        print(&#34;System tags are not set, this model does not support system messages.&#34;)
+    else:
+        if isinstance(message, str):
+            message = AIMessage(message, self.system_tag_open, self.system_tag_close)    
+        return self._insert_message(message, 0)</code></pre>
+</details>
+</dd>
+<dt id="glai.back_end.messages.AIMessages.system_tags"><code class="name flex">
+<span>def <span class="ident">system_tags</span></span>(<span>self) ‑> Optional[tuple[str]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the system tags.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple[str]</code></dt>
+<dd>The system tags.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def system_tags(self) -&gt; Union[tuple[str], None]:
+    &#34;&#34;&#34;
+    Returns the system tags.
+
+    Returns:
+        tuple[str]: The system tags.
+    &#34;&#34;&#34;
+    if self.system_tag_open is not None and self.system_tag_close is not None:
+        return (self.system_tag_open, self.system_tag_close)
+    else:
+        return None</code></pre>
+</details>
+</dd>
 <dt id="glai.back_end.messages.AIMessages.text"><code class="name flex">
 <span>def <span class="ident">text</span></span>(<span>self)</span>
 </code></dt>
@@ -1273,6 +1649,8 @@ tag_close (str): The new closing tag for the message.</p>
         &#34;user_tag_close&#34;: self.user_tag_close,
         &#34;ai_tag_open&#34;: self.ai_tag_open,
         &#34;ai_tag_close&#34;: self.ai_tag_close,
+        &#34;system_tag_open&#34;: self.system_tag_open,
+        &#34;system_tag_close&#34;: self.system_tag_close,
         &#34;messages&#34;: [message.to_dict() for message in self.messages]
     }</code></pre>
 </details>
@@ -1331,19 +1709,24 @@ tag_close (str): The new closing tag for the message.</p>
 </li>
 <li>
 <h4><code><a title="glai.back_end.messages.AIMessages" href="#glai.back_end.messages.AIMessages">AIMessages</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="glai.back_end.messages.AIMessages.add_ai_message" href="#glai.back_end.messages.AIMessages.add_ai_message">add_ai_message</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.add_message" href="#glai.back_end.messages.AIMessages.add_message">add_message</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.add_user_message" href="#glai.back_end.messages.AIMessages.add_user_message">add_user_message</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.ai_tags" href="#glai.back_end.messages.AIMessages.ai_tags">ai_tags</a></code></li>
+<li><code><a title="glai.back_end.messages.AIMessages.create_single_message" href="#glai.back_end.messages.AIMessages.create_single_message">create_single_message</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.edit_last_message" href="#glai.back_end.messages.AIMessages.edit_last_message">edit_last_message</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.edit_message" href="#glai.back_end.messages.AIMessages.edit_message">edit_message</a></code></li>
+<li><code><a title="glai.back_end.messages.AIMessages.edit_system_message" href="#glai.back_end.messages.AIMessages.edit_system_message">edit_system_message</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.from_dict" href="#glai.back_end.messages.AIMessages.from_dict">from_dict</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.from_json" href="#glai.back_end.messages.AIMessages.from_json">from_json</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.get_last_message" href="#glai.back_end.messages.AIMessages.get_last_message">get_last_message</a></code></li>
+<li><code><a title="glai.back_end.messages.AIMessages.has_system_tags" href="#glai.back_end.messages.AIMessages.has_system_tags">has_system_tags</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.load_messages" href="#glai.back_end.messages.AIMessages.load_messages">load_messages</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.reset_messages" href="#glai.back_end.messages.AIMessages.reset_messages">reset_messages</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.save_json" href="#glai.back_end.messages.AIMessages.save_json">save_json</a></code></li>
+<li><code><a title="glai.back_end.messages.AIMessages.set_system_message" href="#glai.back_end.messages.AIMessages.set_system_message">set_system_message</a></code></li>
+<li><code><a title="glai.back_end.messages.AIMessages.system_tags" href="#glai.back_end.messages.AIMessages.system_tags">system_tags</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.text" href="#glai.back_end.messages.AIMessages.text">text</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.to_dict" href="#glai.back_end.messages.AIMessages.to_dict">to_dict</a></code></li>
 <li><code><a title="glai.back_end.messages.AIMessages.user_tags" href="#glai.back_end.messages.AIMessages.user_tags">user_tags</a></code></li>

@@ -1,5 +1,6 @@
-from glai.back_end.model_db.db import ModelDB
+from glai.back_end.model_db.db import ModelDB, MODEL_EXAMPLES_DB_DIR
 from glai.ai import AutoAI, EasyAI
+
 
 
 # IMPORT REPO EXAMPLE
@@ -21,7 +22,7 @@ def import_repo_example():
 def auto_ai_quick_example():
     print(f"----> EXAMPLE: AutoAI quick example...")
     #input()
-    auto_ai = AutoAI("zephyr", "q2_k", max_total_tokens=50, max_input_tokens=100)
+    auto_ai = AutoAI("zephyr", "q2_k", max_total_tokens=50)
     auto_ai.generate(
         user_message_text="Output just 'hi' in single quotes with no other prose. Do not include any additional information nor comments.",
         ai_message_to_be_continued= "'", 
@@ -52,8 +53,7 @@ def easy_ai_all_in_one_example():
         model_db_dir="./gguf_db",
         name_search="zephyr",
         quantization_search="q2_k",
-        new_tokens=50,
-        max_input_tokens=100
+        max_total_tokens=50
     )
     easy_ai.generate("Output a python list of 3 unique cat names.", "['", "']")
 
@@ -66,8 +66,7 @@ conf = {
     "name_search": "zephyr",
     "quantization_search": "q2_k",
     "keyword_search": None,
-    "new_tokens": 50,
-    "max_input_tokens": 100
+    "max_total_tokens": 50
 }
 #AUTO AI FROM DICT ONE LINE EXAMPLE
 def auto_ai_from_dict_one_line_example():
@@ -106,6 +105,117 @@ def easy_ai_get_from_url_example():
         stop_at=None,
         include_stop_str=True,
     )
+
+
+def import_all_models_data():
+    print(MODEL_EXAMPLES_DB_DIR)
+    mdb = ModelDB(MODEL_EXAMPLES_DB_DIR, False)
+    system_tag_open = "<|im_start|>system\n"
+    system_tag_close = "<|im_end|>\n"
+    user_tag_open = "<|im_start|>user\n"
+    user_tag_close = system_tag_close
+    ai_tag_open="<|im_start|>assistant"
+    ai_tag_close=user_tag_close
+    mdb.import_models_from_repo(
+        hf_repo_url='https://huggingface.co/TheBloke/dolphin-2_6-phi-2-GGUF',
+        user_tags=(user_tag_open, user_tag_close),
+        ai_tags=(ai_tag_open, ai_tag_close),
+        system_tags=(system_tag_open, system_tag_close),
+        keywords=['dolphin', 'phi2', 'uncesored', '2.7B'],
+        description="Dolphin 2.6 phi 2 GGUF",
+        replace_existing=True,
+    )
+    system_tag_open = None
+    system_tag_close = None
+    user_tag_open = "[INST]"
+    user_tag_close = "[/INST]"
+    ai_tag_open=""
+    ai_tag_close=""
+    mdb.import_models_from_repo(
+        hf_repo_url='https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF',
+        user_tags=(user_tag_open, user_tag_close),
+        ai_tags=(ai_tag_open, ai_tag_close),
+        system_tags=(system_tag_open, system_tag_close),
+        keywords=[
+            "Mistral",
+            "7B",
+            "INST",
+            "v0.2",
+            "default",
+            "instruct",
+            "uncesored",
+            "open-source",
+            "apache"
+        ],
+        description="The Mistral-7B-Instruct-v0.2 Large Language Model (LLM) is an improved instruct fine-tuned version of Mistral-7B-Instruct-v0.1.",
+        replace_existing=True,
+    )
+
+    system_tag_open = None
+    system_tag_close = None
+    user_tag_open = "[INST]"
+    user_tag_close = "[/INST]"
+    ai_tag_open=""
+    ai_tag_close=""
+    mdb.import_models_from_repo(
+        hf_repo_url='https://huggingface.co/TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF',
+        user_tags=(user_tag_open, user_tag_close),
+        ai_tags=(ai_tag_open, ai_tag_close),
+        system_tags=(system_tag_open, system_tag_close),
+        keywords=[
+            "mixtral",
+            "8x7b",
+            "instruct",
+            "v0.1",
+            "MoE"
+        ],
+        description="The Mixtral-8x7B Large Language Model (LLM) is a pretrained generative Sparse Mixture of Experts. The Mistral-8x7B outperforms Llama 2 70B on most benchmarks we tested.",
+        replace_existing=True,
+    )
+
+    system_tag_open = None
+    system_tag_close = None
+    user_tag_open = "[INST]"
+    user_tag_close = "[/INST]"
+    ai_tag_open=""
+    ai_tag_close=""
+    mdb.import_models_from_repo(
+        hf_repo_url='https://huggingface.co/TheBloke/SOLAR-10.7B-Instruct-v1.0-GGUF',
+        user_tags=(user_tag_open, user_tag_close),
+        ai_tags=(ai_tag_open, ai_tag_close),
+        system_tags=(system_tag_open, system_tag_close),
+        keywords=[
+            "10.7B",
+            "upstage",
+            "isntruct",
+            "solar"
+        ],
+        description="We introduce SOLAR-10.7B, an advanced large language model (LLM) with 10.7 billion parameters, demonstrating superior performance in various natural language processing (NLP) tasks. It's compact, yet remarkably powerful, and demonstrates unparalleled state-of-the-art performance in models with parameters under 30B.",
+        replace_existing=True,
+    )
+
+    system_tag_open = None
+    system_tag_close = None
+    user_tag_open = "<|user|>"
+    user_tag_close = "<|endoftext|>"
+    ai_tag_open="<|assistant|>"
+    ai_tag_close="<|endoftext|>"
+    mdb.import_models_from_repo(
+        hf_repo_url='https://huggingface.co/TheBloke/stablelm-zephyr-3b-GGUF',
+        user_tags=(user_tag_open, user_tag_close),
+        ai_tags=(ai_tag_open, ai_tag_close),
+        system_tags=(system_tag_open, system_tag_close),
+        keywords=[
+            "zephyr",
+            "3b",
+            "instruct",
+            "non-commercial",
+            "research"
+        ],
+        description="StableLM Zephyr 3B is a 3 billion parameter instruction tuned inspired by HugginFaceH4's Zephyr 7B training pipeline this model was trained on a mix of publicly available datasets, synthetic datasets using Direct Preference Optimization (DPO), evaluation for this model based on MT Bench and Alpaca Benchmark",
+        replace_existing=True,
+    )
+
 #Run examples
 # import_repo_example() 
 # auto_ai_quick_example()
@@ -114,4 +224,4 @@ def easy_ai_get_from_url_example():
 # auto_ai_from_dict_one_line_example()
 # easy_ai_from_dict_one_line_example()
 # easy_ai_get_from_url_example()
-    
+#import_all_models_data()
