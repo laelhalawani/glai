@@ -1,5 +1,5 @@
 
-from typing import Union, Any
+from typing import Optional, Union, Any
 from util_helper.file_handler import save_json_file, load_json_file
 
 class AIMessage:
@@ -90,6 +90,8 @@ class AIMessages:
         user_tag_close (str): The closing tag for user messages.
         ai_tag_open (str): The opening tag for AI messages.
         ai_tag_close (str): The closing tag for AI messages.
+        system_tag_open (str): The opening tag for system messages.
+        system_tag_close (str): The closing tag for system messages.
         messages (dict): The messages in the collection: {id: AIMessage}.
         _message_id_generator (int): The id generator for the messages.
 
@@ -97,9 +99,10 @@ class AIMessages:
         messages (Union[AIMessages, AIMessage, str, list]): The messages to add to the collection.
         user_tags (tuple): The tags to use for user messages.
         ai_tags (tuple): The tags to use for AI messages.
+        system_tags (tuple): The tags to use for system messages.
     """
 
-    def __init__(self,user_tags:Union[tuple[str], list[str], dict]=("[INST]", "[/INST]"), ai_tags:Union[tuple[str], list[str], dict]=("", "")):
+    def __init__(self,user_tags:Union[tuple[str], list[str], dict]=("[INST]", "[/INST]"), ai_tags:Union[tuple[str], list[str], dict]=("", ""), system_tags:Optional[Union[tuple[str], list[str], dict]]=None):
         if isinstance(user_tags, dict):
             if "open" in user_tags and "close" in user_tags:
                 self.user_tag_open = user_tags["open"]
@@ -123,6 +126,22 @@ class AIMessages:
             self.ai_tag_close = ai_tags[1]
         else:
             raise TypeError(f"Invalid type for user tags: {type(ai_tags)}, must be dict, set or list.")
+        
+        if system_tags is not None:
+            if isinstance(system_tags, dict):
+                if "open" in system_tags and "close" in system_tags:
+                    self.system_tag_open = system_tags["open"]
+                    self.system_tag_close = system_tags["close"]
+                else:
+                    raise ValueError(f"Invalid user tags: {system_tags}, for dict tags both 'open' and 'close' keys must be present.")
+            elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
+                self.system_tag_open = system_tags[0]
+                self.system_tag_close = system_tags[1]
+            else:
+                raise TypeError(f"Invalid type for user tags: {type(system_tags)}, must be dict, set or list.")
+        else:
+            self.system_tag_open = None
+            self.system_tag_close = None
         self.messages = {}
         self._message_id_generator = 0
     
@@ -142,7 +161,19 @@ class AIMessages:
         Returns:
             tuple[str]: The AI tags.
         """
-        return (self.ai_tag_open, self.ai_tag_close)    
+        return (self.ai_tag_open, self.ai_tag_close)
+
+    def system_tags(self) -> Union[tuple[str], None]:
+        """
+        Returns the system tags.
+
+        Returns:
+            tuple[str]: The system tags.
+        """
+        if self.system_tag_open is not None or self.system_tag_close is not None:
+            return (self.system_tag_open, self.system_tag_close)
+        else:
+            return None
     
     def load_messages(self, messages:Union[Any, AIMessage, str, list[Union[dict, AIMessage]]]) -> None:
         if messages is not None:
@@ -176,6 +207,8 @@ class AIMessages:
             "user_tag_close": self.user_tag_close,
             "ai_tag_open": self.ai_tag_open,
             "ai_tag_close": self.ai_tag_close,
+            "system_tag_open": self.system_tag_open,
+            "system_tag_close": self.system_tag_close,
             "messages": [message.to_dict() for message in self.messages]
         }
     
@@ -195,6 +228,8 @@ class AIMessages:
         ai_msgs.user_tag_close = messages_dict["user_tag_close"]
         ai_msgs.ai_tag_open = messages_dict["ai_tag_open"]
         ai_msgs.ai_tag_close = messages_dict["ai_tag_close"]
+        ai_msgs.system_tag_open = messages_dict["system_tag_open"]
+        ai_msgs.system_tag_close = messages_dict["system_tag_close"]
         ai_msgs.load_messages(messages_dict["messages"])
         return ai_msgs
     
@@ -228,6 +263,28 @@ class AIMessages:
         self.messages[self._generate_message_id()] = message
         return self.messages[self._message_id_generator]
 
+    def _insert_message(self, message:AIMessage, message_id:int) -> AIMessage:
+        """
+        Inserts a new message to the messages dictionary.
+        Iters the message ID generator.
+
+        Parameters:
+        - message (AIMessage): The message object
+        - message_id (int): The id to insert the message at
+
+        Returns:
+        AIMessage
+        """
+        self._message_id_generator += 1
+        updated_messages = {}
+        for id, msg in self.messages.items():
+            if id < message_id:
+                updated_messages[id] = msg
+            else:
+                updated_messages[id+1] = msg
+        updated_messages[message_id] = message
+        self.messages = updated_messages
+
     def add_user_message(self, message: Union[str, AIMessage]) -> AIMessage:
         """
         Adds a user message to the message list.
@@ -255,6 +312,25 @@ class AIMessages:
             AIMessage
         """
         return self.add_message(message, self.ai_tag_open, self.ai_tag_close)
+    
+    def set_system_message(self, message:Union[str, AIMessage]) -> AIMessage:
+        """
+        Adds a system message to the message list.
+        Uses add_message() with the system tags.
+        Automatically iters the message ID generator.
+
+        Parameters:
+            message (str): The message to be added.
+
+        Returns:
+            AIMessage
+        """
+        if self.system_tags() is None:
+            raise ValueError("System tags are not set, this model does not support system messages.")
+        else:
+            if isinstance(message, str):
+                message = AIMessage(message, self.system_tag_open, self.system_tag_close)    
+            return self._insert_message(message)
 
     def reset_messages(self) -> None:
         self.messages = {}
@@ -306,6 +382,25 @@ class AIMessages:
             None
         """
         self.messages[message_id].edit(new_content, tag_open, tag_close)
+
+    def edit_system_message(self, new_content:str) -> None:
+        if self.system_tags() is None:
+            raise ValueError("System tags are not set, this model does not support system messages.")
+        else:
+            if self.messages[0].tag_open == self.system_tag_open and self.messages[0].tag_close == self.system_tag_close:
+                self.edit_message(0, new_content)
+            else:
+                print("Warning: System message not found, adding system message to the start of the message list.")
+                self.set_system_message(new_content)
+
+    def has_system_message_support(self) -> bool:
+        """
+        Returns whether the model supports system messages.
+
+        Returns:
+            bool: Whether the model supports system messages.
+        """
+        return self.system_tags() is not None
     
     def save_json(self, file_path:str) -> None:
         """
@@ -332,4 +427,18 @@ class AIMessages:
         """
         return AIMessages.from_dict(load_json_file(file_path))
     
+    @staticmethod
+    def create_single_message(message:str, tag_open:str="", tag_close:str="") ->AIMessage:
+        """
+        Creates a single AIMessage.
+
+        Args:
+            message (str): The content of the message.
+            tag_open (str): The opening tag for the message.
+            tag_close (str): The closing tag for the message.
+
+        Returns:
+            AIMessage: The created AIMessage.
+        """
+        return AIMessage(message, tag_open, tag_close)
     
