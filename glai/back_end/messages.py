@@ -325,7 +325,7 @@ class AIMessages:
         Returns:
             AIMessage
         """
-        if self.has_system_tags():
+        if not self.has_system_tags():
             print("System tags are not set, this model does not support system messages.")
         else:
             if isinstance(message, str):
