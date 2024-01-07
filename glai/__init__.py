@@ -1,7 +1,7 @@
 from .ai import AutoAI, EasyAI
-from .back_end import AIMessages, ModelDB, ModelData
+from .messages import AIMessages, AIMessage
 
-__all__ = ['AutoAI', 'EasyAI', 'ModelDB', 'AIMessages', 'ModelData']
+__all__ = ['AutoAI', 'EasyAI', 'AIMessages', 'AIMessage']
 # print(f"""
 # glai
 # GGUF LLAMA AI - Package for simplified text generation with Llama models quantized to GGUF format is loaded.

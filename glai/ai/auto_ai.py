@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from typing import Optional
-from ..back_end import AIMessages, AIMessage, ModelData, ModelDB, DEFAULT_LOCAL_GGUF_DIR, MODEL_EXAMPLES_DB_DIR
+from ..messages import AIMessages, AIMessage
+from gguf_modeldb import ModelDB, ModelData
 from gguf_llama import LlamaAI
 
 __all__ = ['AutoAI']
@@ -34,12 +35,13 @@ class AutoAI:
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
                  max_total_tokens: int = 1500,
-                 model_db_dir:str = MODEL_EXAMPLES_DB_DIR,
+                 model_db_dir:str = None,
+                 includ_only_downloaded_models:bool = False
                  ) -> None:
 
-        self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
+        self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_verified_models=True)
         self.model_data: ModelData = self.ai_db.find_model(
-            name_search, quantization_search, keyword_search
+            name_search, quantization_search, keyword_search, includ_only_downloaded_models
         )
         self.model_data.download_gguf()
         self.ai = LlamaAI(
@@ -103,7 +105,7 @@ class AutoAI:
             if system_message is not None:
                 generation_messages.set_system_message(system_message)
             else:
-                print("WARNING: Model supports system messages, but no system message provided.")
+                print("WARNING: Model seeps to support system messages, but no system message provided.")
         generation_messages.add_user_message(user_message)
 
 
