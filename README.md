@@ -16,12 +16,15 @@ Visit API documentation at: https://laelhalawani.github.io/glai/
 - Handles downloading model data, loading it to memory, and configuring message formatting.
 - Use generate() method to get completions by providing a user message.
 
-### ModelDB (used by AutoAI and EasyAI):
+## Requirement: 
+All requirements install automatically, but here's information on seleceted packages for more context.
+### ModelDB (used by AutoAI and EasyAI) 
+https://github.com/laelhalawani/gguf_modeldb
 - Manages database of model data files. via ModelData class objects.
 - Useful for searching for models and retrieving model metadata.
 - Can import models from HuggingFace repo URLs or import and download models from .gguf urls on huggingface.
-
 ### ModelData (used by ModelDB):
+https://github.com/laelhalawani/gguf_modeldb
 - Represents metadata and info about a specific model.
 - Used by ModelDB to track and load models.
 - Can be initialized from URL, file, or ModelDB search.
@@ -37,7 +40,8 @@ Usage examples.
 
 ### Import package
 ```python
-from glai import AutoAI, EasyAI, ModelDB, ModelData
+from glai import AutoAI, EasyAI 
+#it's enough to use one of these, probaly EasyAI will be better except some most basic cases
 ```
 ### AutoAI - automatic model loading
 ```python
