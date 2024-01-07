@@ -1,5 +1,6 @@
-from typing import Optional, Tuple
-from ..back_end import AIMessages, AIMessage, ModelData, ModelDB, DEFAULT_LOCAL_GGUF_DIR, MODEL_EXAMPLES_DB_DIR
+from typing import Optional, Tuple, Union
+from ..messages import AIMessages, AIMessage
+from gguf_modeldb import ModelDB, ModelData, VERIFIED_MODELS_DB_DIR
 from gguf_llama import LlamaAI
 
 __all__ = ['EasyAI']
@@ -68,12 +69,13 @@ class EasyAI:
             self.configure(**kwds)
 
     def configure(self,
-                  model_db_dir: str = MODEL_EXAMPLES_DB_DIR,
+                  model_db_dir: Optional[str] = None,
                   model_url: Optional[str] = None,
                   model_gguf_path: Optional[str] = None,
                   name_search: Optional[str] = None,
                   quantization_search: Optional[str] = None,
                   keyword_search: Optional[str] = None,
+                  search_only_downloaded: bool = False,
                   max_total_tokens: int = 200,
                                             ) -> None:
         """
@@ -83,7 +85,7 @@ class EasyAI:
         Sets model data attribute.
 
         Args:
-            model_db_dir: Directory to store model data in. Defaults to MODEL_EXAMPLES_DB_DIR.
+            model_db_dir: Directory to store model data in. If none is provided global db is used.This is preferred for most use cases.
             max_total_tokens: Max tokens to be processed (input+generation) by LlamaAI model. (Defaults to 200, set to around 500-1k for regular use)
             
             Provide at least one of these args to fetch ModelData: 
@@ -101,14 +103,14 @@ class EasyAI:
 
         """
         if model_db_dir is None:
-            print(f"Using default model DB dir: {MODEL_EXAMPLES_DB_DIR}")
+            print(f"Using provided verified models DB, files at {VERIFIED_MODELS_DB_DIR}")
         self.load_model_db(model_db_dir)
         if model_url is not None:
             self.model_data_from_url(model_url)
         elif model_gguf_path is not None:
             self.model_data_from_file(model_gguf_path)
         elif name_search is not None or quantization_search is not None or keyword_search is not None:
-            self.find_model_data(name_search, quantization_search, keyword_search)
+            self.find_model_data(name_search, quantization_search, keyword_search, search_only_downloaded)
         else:
             raise Exception("Can't find model data. Please provide a model URL, GGUF file path, or model name/quantization/keyword.")
         
@@ -120,7 +122,7 @@ class EasyAI:
             
 
 
-    def load_model_db(self, db_dir: str = MODEL_EXAMPLES_DB_DIR, copy_examples=True) -> None:
+    def load_model_db(self, db_dir:Optional[str] = None, copy_verified_models=True) -> None:
         """
         Load ModelDB from given directory.
 
@@ -128,12 +130,32 @@ class EasyAI:
             db_dir: Directory to load ModelDB from.
             copy_examples: Whether to copy example GGUF files to db_dir if db_dir is empty.
         """
-        self.model_db = ModelDB(model_db_dir=db_dir, copy_examples=copy_examples)
+        self.model_db = ModelDB(model_db_dir=db_dir, copy_verified_models=copy_verified_models)
 
+    def import_verified_models_to_db(self, model_name_quantization_list:Optional[list[Union[list,set,tuple]]] = None) -> None:
+        """
+        Import verified models to new ModelDB.
+
+        Imports verified models from global verified models DB to new ModelDB. If model_name_quantization_list is provided, only models in the list are imported.
+
+        Args:
+            model_name_quantization_list: List of tuples of model name and quantization to import. If None, all models are imported.
+        """
+        if self.model_db is None:
+            raise Exception("No model DB loaded. Use load_model_db() first.")
+        if model_name_quantization_list is not None:
+            for n_q_data in model_name_quantization_list:
+                name = n_q_data[0]
+                quantization = n_q_data[1]
+                self.model_db.import_verified_model(name, quantization, None, True)
+        else:
+            self.model_db.import_verified_model(None, None, None, True)
+        
     def find_model_data(self,
                         model_name: Optional[str] = None,  
                         quantization: Optional[str] = None,
-                        keyword: Optional[str] = None) -> ModelData:
+                        keyword: Optional[str] = None,
+                        only_downloaded: bool = False) -> ModelData:
         """
         Find model data in database that matches given criteria.
 
@@ -151,7 +173,7 @@ class EasyAI:
         """
         if self.model_db is None:
             raise Exception("No model DB loaded. Use load_model_db() first.")
-        model_data = self.model_db.find_model(model_name, quantization, keyword)
+        model_data = self.model_db.find_model(model_name, quantization, keyword, only_downloaded)
         self.model_data = model_data
         return model_data
 
@@ -342,10 +364,8 @@ class EasyAI:
 
         return self.ai.count_tokens(generation_messages.text())
     
-    def is_within_input_limit(
-        self,
-        user_message_text: str,
-        ai_message_tbc: Optional[str] = None
+    def is_within_context(self,
+        prompt: str,
         ) -> bool:
         """
         Check if the generated message is within the input limit.
@@ -357,4 +377,33 @@ class EasyAI:
         Returns:
             True if within input limit, False otherwise.
         """
-        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))
+        return self.ai.is_prompt_within_limit(prompt)
+    
+    def import_from_repo(self, hf_repo_url: str, user_tags: Tuple[str, str] = ("", ""), ai_tags: Tuple[str, str] = ("", ""), system_tags: Optional[Tuple[str, str]] = (None, None), keywords: Optional[str] = None, description: Optional[str] = None, replace_existing: bool = False) -> None:
+        """
+        Imports model data from HuggingFace model repo to current model DB. 
+
+        Args:
+            hf_repo_url: URL of model to import.
+            user_tags: User tags to assign to model data.
+            ai_tags: AI tags to assign to model data.
+            system_tags: System tags to assign to model data.
+            description: Optional description for model data.
+            keyword: Optional keyword for model data.
+            replace_existing: Whether to replace existing model data if found.
+
+        Raises:
+            Exception: If no model DB loaded yet.
+        """
+
+
+
+        self.model_db.import_models_from_repo(
+            hf_repo_url=hf_repo_url,
+            user_tags=user_tags,
+            ai_tags=ai_tags,
+            system_tags=system_tags,
+            keywords=keywords,
+            description=description,
+            replace_existing=replace_existing,
+        )
