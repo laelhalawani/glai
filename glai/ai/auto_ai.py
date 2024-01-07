@@ -24,7 +24,7 @@ class AutoAI:
         model_db_dir: Directory to store model data in. Defaults to global packages model directory.
 
     Attributes:
-        ai_db: ModelDB object. - represents the database of models, has useful functions for searching and importing models.
+        model_db: ModelDB object. - represents the database of models, has useful functions for searching and importing models.
         model_data: ModelData object. - represents the data of the model, has useful functions for creating, downloading and loading the model data and gguf.
         ai: LlamaAI object. - represents the LlamaAI model, a wrapper for llama llm and tokenizer models quantized to gguf format. Has methods for adjusting generation and for generating.
         msgs: AIMessages object. - represents the AIMessages a collection of AIMessage objects, has useful functions for adding and editing messages and can be printed to string.
@@ -39,8 +39,8 @@ class AutoAI:
                  model_db_dir:Optional[str] = None,
                  ) -> None:
 
-        self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_verified_models=True)
-        self.model_data: ModelData = self.ai_db.find_model(
+        self.model_db = ModelDB(model_db_dir=model_db_dir, copy_verified_models=True)
+        self.model_data: ModelData = self.model_db.find_model(
             name_search, quantization_search, keyword_search, search_only_downloaded_models
         )
         self.model_data.download_gguf()
