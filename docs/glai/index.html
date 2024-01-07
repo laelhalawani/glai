@@ -27,9 +27,9 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from .ai import AutoAI, EasyAI
-from .back_end import AIMessages, ModelDB, ModelData
+from .messages import AIMessages, AIMessage
 
-__all__ = [&#39;AutoAI&#39;, &#39;EasyAI&#39;, &#39;ModelDB&#39;, &#39;AIMessages&#39;, &#39;ModelData&#39;]
+__all__ = [&#39;AutoAI&#39;, &#39;EasyAI&#39;, &#39;AIMessages&#39;, &#39;AIMessage&#39;]
 # print(f&#34;&#34;&#34;
 # glai
 # GGUF LLAMA AI - Package for simplified text generation with Llama models quantized to GGUF format is loaded.
@@ -46,7 +46,7 @@ __all__ = [&#39;AutoAI&#39;, &#39;EasyAI&#39;, &#39;ModelDB&#39;, &#39;AIMessage
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="glai.back_end" href="back_end/index.html">glai.back_end</a></code></dt>
+<dt><code class="name"><a title="glai.messages" href="messages/index.html">glai.messages</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -59,6 +59,247 @@ __all__ = [&#39;AutoAI&#39;, &#39;EasyAI&#39;, &#39;ModelDB&#39;, &#39;AIMessage
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="glai.AIMessage"><code class="flex name class">
+<span>class <span class="ident">AIMessage</span></span>
+<span>(</span><span>content: str, tag_open: str, tag_close: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a message in an AI system.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>content</code></strong> :&ensp;<code>str</code></dt>
+<dd>The content of the message.</dd>
+<dt><strong><code>tag_open</code></strong> :&ensp;<code>str</code></dt>
+<dd>The opening tag for the message.</dd>
+<dt><strong><code>tag_close</code></strong> :&ensp;<code>str</code></dt>
+<dd>The closing tag for the message.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AIMessage:
+    &#34;&#34;&#34;
+    Represents a message in an AI system.
+
+    Attributes:
+        content (str): The content of the message.
+        tag_open (str): The opening tag for the message.
+        tag_close (str): The closing tag for the message.
+    &#34;&#34;&#34;
+
+    def __init__(self, content:str, tag_open:str, tag_close:str):
+        self.content = content
+        self.tag_open = tag_open
+        self.tag_close = tag_close
+
+    def __str__(self) -&gt; str:
+        return f&#34;{self.tag_open}{self.content}{self.tag_close}&#34;
+    
+    def __repr__(self) -&gt; str:
+        return self.__str__()
+    
+    def edit(self, new_content, new_tag_open=None, new_tag_close=None):
+        &#34;&#34;&#34;
+        Edits the content of the message.
+
+        Args:
+            new_content (str): The new content for the message.
+        &#34;&#34;&#34;
+        self.content = new_content
+        if new_tag_open is not None:
+            self.tag_open = new_tag_open
+        if new_tag_close is not None:
+            self.tag_close = new_tag_close
+    
+    def text(self):
+        &#34;&#34;&#34;
+        Returns the text representation of the message.
+
+        Returns:
+            str: The text representation of the message.
+        &#34;&#34;&#34;
+        return self.__str__()
+    
+    def get_tags(self) -&gt; tuple:
+        &#34;&#34;&#34;
+        Returns the tags of the message.
+
+        Returns:
+            tuple: The tags of the message.
+        &#34;&#34;&#34;
+        return (self.tag_open, self.tag_close)
+    
+    def to_dict(self) -&gt; dict:
+        &#34;&#34;&#34;
+        Returns the message as a dictionary.
+
+        Returns:
+            dict: The message as a dictionary.
+        &#34;&#34;&#34;
+        return {
+            &#34;content&#34;: self.content,
+            &#34;tag_open&#34;: self.tag_open,
+            &#34;tag_close&#34;: self.tag_close,
+        }
+    
+    @staticmethod 
+    def from_dict(message_dict:dict) -&gt; &#34;AIMessage&#34;:
+        &#34;&#34;&#34;
+        Creates a new AIMessage from a dictionary.
+
+        Args:
+            message_dict (dict): The dictionary to create the AIMessage from.
+
+        Returns:
+            AIMessage: The created AIMessage.
+        &#34;&#34;&#34;
+        return AIMessage(message_dict[&#34;content&#34;], message_dict[&#34;tag_open&#34;], message_dict[&#34;tag_close&#34;])</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="glai.AIMessage.from_dict"><code class="name flex">
+<span>def <span class="ident">from_dict</span></span>(<span>message_dict: dict) ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a new AIMessage from a dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message_dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The dictionary to create the AIMessage from.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="glai.AIMessage" href="#glai.AIMessage">AIMessage</a></code></dt>
+<dd>The created AIMessage.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod 
+def from_dict(message_dict:dict) -&gt; &#34;AIMessage&#34;:
+    &#34;&#34;&#34;
+    Creates a new AIMessage from a dictionary.
+
+    Args:
+        message_dict (dict): The dictionary to create the AIMessage from.
+
+    Returns:
+        AIMessage: The created AIMessage.
+    &#34;&#34;&#34;
+    return AIMessage(message_dict[&#34;content&#34;], message_dict[&#34;tag_open&#34;], message_dict[&#34;tag_close&#34;])</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="glai.AIMessage.edit"><code class="name flex">
+<span>def <span class="ident">edit</span></span>(<span>self, new_content, new_tag_open=None, new_tag_close=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Edits the content of the message.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>new_content</code></strong> :&ensp;<code>str</code></dt>
+<dd>The new content for the message.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def edit(self, new_content, new_tag_open=None, new_tag_close=None):
+    &#34;&#34;&#34;
+    Edits the content of the message.
+
+    Args:
+        new_content (str): The new content for the message.
+    &#34;&#34;&#34;
+    self.content = new_content
+    if new_tag_open is not None:
+        self.tag_open = new_tag_open
+    if new_tag_close is not None:
+        self.tag_close = new_tag_close</code></pre>
+</details>
+</dd>
+<dt id="glai.AIMessage.get_tags"><code class="name flex">
+<span>def <span class="ident">get_tags</span></span>(<span>self) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the tags of the message.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>The tags of the message.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_tags(self) -&gt; tuple:
+    &#34;&#34;&#34;
+    Returns the tags of the message.
+
+    Returns:
+        tuple: The tags of the message.
+    &#34;&#34;&#34;
+    return (self.tag_open, self.tag_close)</code></pre>
+</details>
+</dd>
+<dt id="glai.AIMessage.text"><code class="name flex">
+<span>def <span class="ident">text</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the text representation of the message.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The text representation of the message.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def text(self):
+    &#34;&#34;&#34;
+    Returns the text representation of the message.
+
+    Returns:
+        str: The text representation of the message.
+    &#34;&#34;&#34;
+    return self.__str__()</code></pre>
+</details>
+</dd>
+<dt id="glai.AIMessage.to_dict"><code class="name flex">
+<span>def <span class="ident">to_dict</span></span>(<span>self) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the message as a dictionary.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>The message as a dictionary.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_dict(self) -&gt; dict:
+    &#34;&#34;&#34;
+    Returns the message as a dictionary.
+
+    Returns:
+        dict: The message as a dictionary.
+    &#34;&#34;&#34;
+    return {
+        &#34;content&#34;: self.content,
+        &#34;tag_open&#34;: self.tag_open,
+        &#34;tag_close&#34;: self.tag_close,
+    }</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 <dt id="glai.AIMessages"><code class="flex name class">
 <span>class <span class="ident">AIMessages</span></span>
 <span>(</span><span>user_tags: Union[tuple[str], list[str], dict] = ('[INST]', '[/INST]'), ai_tags: Union[tuple[str], list[str], dict] = ('', ''), system_tags: Union[tuple[str], list[str], dict, ForwardRef(None)] = None)</span>
@@ -76,7 +317,7 @@ messages (dict): The messages in the collection: {id: AIMessage}.
 _message_id_generator (int): The id generator for the messages.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>messages</code></strong> :&ensp;<code>Union[<a title="glai.AIMessages" href="#glai.AIMessages">AIMessages</a>, AIMessage, str, list]</code></dt>
+<dt><strong><code>messages</code></strong> :&ensp;<code>Union[<a title="glai.AIMessages" href="#glai.AIMessages">AIMessages</a>, <a title="glai.AIMessage" href="#glai.AIMessage">AIMessage</a>, str, list]</code></dt>
 <dd>The messages to add to the collection.</dd>
 <dt><strong><code>user_tags</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The tags to use for user messages.</dd>
@@ -452,7 +693,7 @@ _message_id_generator (int): The id generator for the messages.</p>
 <h3>Static methods</h3>
 <dl>
 <dt id="glai.AIMessages.create_single_message"><code class="name flex">
-<span>def <span class="ident">create_single_message</span></span>(<span>message: str, tag_open: str = '', tag_close: str = '') ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">create_single_message</span></span>(<span>message: str, tag_open: str = '', tag_close: str = '') ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a single AIMessage.</p>
@@ -467,7 +708,7 @@ _message_id_generator (int): The id generator for the messages.</p>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>AIMessage</code></dt>
+<dt><code><a title="glai.AIMessage" href="#glai.AIMessage">AIMessage</a></code></dt>
 <dd>The created AIMessage.</dd>
 </dl></div>
 <details class="source">
@@ -491,7 +732,7 @@ def create_single_message(message:str, tag_open:str=&#34;&#34;, tag_close:str=&#
 </details>
 </dd>
 <dt id="glai.AIMessages.from_dict"><code class="name flex">
-<span>def <span class="ident">from_dict</span></span>(<span>messages_dict: dict) ‑> <a title="glai.back_end.messages.AIMessages" href="back_end/messages.html#glai.back_end.messages.AIMessages">AIMessages</a></span>
+<span>def <span class="ident">from_dict</span></span>(<span>messages_dict: dict) ‑> <a title="glai.messages.messages.AIMessages" href="messages/messages.html#glai.messages.messages.AIMessages">AIMessages</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a new AIMessages from a dictionary.</p>
@@ -532,7 +773,7 @@ def from_dict(messages_dict:dict) -&gt; &#34;AIMessages&#34;:
 </details>
 </dd>
 <dt id="glai.AIMessages.from_json"><code class="name flex">
-<span>def <span class="ident">from_json</span></span>(<span>file_path: str) ‑> <a title="glai.back_end.messages.AIMessages" href="back_end/messages.html#glai.back_end.messages.AIMessages">AIMessages</a></span>
+<span>def <span class="ident">from_json</span></span>(<span>file_path: str) ‑> <a title="glai.messages.messages.AIMessages" href="messages/messages.html#glai.messages.messages.AIMessages">AIMessages</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a new AIMessages from a json file.</p>
@@ -568,7 +809,7 @@ def from_json(file_path:str) -&gt; &#34;AIMessages&#34;:
 <h3>Methods</h3>
 <dl>
 <dt id="glai.AIMessages.add_ai_message"><code class="name flex">
-<span>def <span class="ident">add_ai_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">add_ai_message</span></span>(<span>self, message: Union[str, <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a ai message to the message list.
@@ -598,7 +839,7 @@ Automatically iters the message ID generator.</p>
 </details>
 </dd>
 <dt id="glai.AIMessages.add_message"><code class="name flex">
-<span>def <span class="ident">add_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a>], tag_open: str, tag_close: str) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">add_message</span></span>(<span>self, message: Union[str, <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a>], tag_open: str, tag_close: str) ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a new message to the messages dictionary.
@@ -633,7 +874,7 @@ AIMessage</p></div>
 </details>
 </dd>
 <dt id="glai.AIMessages.add_user_message"><code class="name flex">
-<span>def <span class="ident">add_user_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">add_user_message</span></span>(<span>self, message: Union[str, <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a user message to the message list.
@@ -769,13 +1010,13 @@ tag_close (str): The new closing tag for the message.</p>
 </details>
 </dd>
 <dt id="glai.AIMessages.get_last_message"><code class="name flex">
-<span>def <span class="ident">get_last_message</span></span>(<span>self) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">get_last_message</span></span>(<span>self) ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns the last message in the collection.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>AIMessage</code></dt>
+<dt><code><a title="glai.AIMessage" href="#glai.AIMessage">AIMessage</a></code></dt>
 <dd>The last message in the collection.</dd>
 </dl></div>
 <details class="source">
@@ -817,7 +1058,7 @@ tag_close (str): The new closing tag for the message.</p>
 </details>
 </dd>
 <dt id="glai.AIMessages.load_messages"><code class="name flex">
-<span>def <span class="ident">load_messages</span></span>(<span>self, messages: Union[Any, <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a>, str, list[Union[dict, <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a>]]]) ‑> None</span>
+<span>def <span class="ident">load_messages</span></span>(<span>self, messages: Union[Any, <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a>, str, list[Union[dict, <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a>]]]) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -887,7 +1128,7 @@ tag_close (str): The new closing tag for the message.</p>
 </details>
 </dd>
 <dt id="glai.AIMessages.set_system_message"><code class="name flex">
-<span>def <span class="ident">set_system_message</span></span>(<span>self, message: Union[str, <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">set_system_message</span></span>(<span>self, message: Union[str, <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a>]) ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adds a system message to the message list.
@@ -1021,7 +1262,7 @@ Automatically iters the message ID generator.</p>
 </dd>
 <dt id="glai.AutoAI"><code class="flex name class">
 <span>class <span class="ident">AutoAI</span></span>
-<span>(</span><span>name_search: Optional[str] = None, quantization_search: Optional[str] = None, keyword_search: Optional[str] = None, max_total_tokens: int = 1500, model_db_dir: str = './gguf_db')</span>
+<span>(</span><span>name_search: Optional[str] = None, quantization_search: Optional[str] = None, keyword_search: Optional[str] = None, search_only_downloaded_models: bool = False, max_total_tokens: int = 1500, model_db_dir: Optional[str] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialize the AutoAI class for super easy LLM AI generation.</p>
@@ -1040,7 +1281,7 @@ Downloads model and sets up LlamaAI.</p>
 <dt><strong><code>max_input_tokens</code></strong></dt>
 <dd>Max input tokens for LlamaAI model. Default 900.</dd>
 <dt><strong><code>model_db_dir</code></strong></dt>
-<dd>Directory to store model data in. Default DEFAULT_LOCAL_GGUF_DIR.</dd>
+<dd>Directory to store model data in. Defaults to global packages model directory.</dd>
 </dl>
 <h2 id="attributes">Attributes</h2>
 <dl>
@@ -1070,7 +1311,7 @@ Downloads model and sets up LlamaAI.</p>
         keyword_search: Keyword of model to search for. Optional. Default None.
         new_tokens: New token length for LlamaAI model. Default 1500.
         max_input_tokens: Max input tokens for LlamaAI model. Default 900.
-        model_db_dir: Directory to store model data in. Default DEFAULT_LOCAL_GGUF_DIR.
+        model_db_dir: Directory to store model data in. Defaults to global packages model directory.
 
     Attributes:
         ai_db: ModelDB object. - represents the database of models, has useful functions for searching and importing models.
@@ -1083,13 +1324,14 @@ Downloads model and sets up LlamaAI.</p>
                  name_search: Optional[str] = None,
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
+                 search_only_downloaded_models:bool = False,
                  max_total_tokens: int = 1500,
-                 model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR,
+                 model_db_dir:Optional[str] = None,
                  ) -&gt; None:
 
-        self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
+        self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_verified_models=True)
         self.model_data: ModelData = self.ai_db.find_model(
-            name_search, quantization_search, keyword_search
+            name_search, quantization_search, keyword_search, search_only_downloaded_models
         )
         self.model_data.download_gguf()
         self.ai = LlamaAI(
@@ -1153,7 +1395,7 @@ Downloads model and sets up LlamaAI.</p>
             if system_message is not None:
                 generation_messages.set_system_message(system_message)
             else:
-                print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
+                print(&#34;WARNING: Model seeps to support system messages, but no system message provided.&#34;)
         generation_messages.add_user_message(user_message)
 
 
@@ -1273,7 +1515,7 @@ Downloads model and sets up LlamaAI.</p>
 </details>
 </dd>
 <dt id="glai.AutoAI.generate"><code class="name flex">
-<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate an AI response to a user message.</p>
@@ -1326,7 +1568,7 @@ You can check if a model supports system messages by checking the model_data.has
         if system_message is not None:
             generation_messages.set_system_message(system_message)
         else:
-            print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
+            print(&#34;WARNING: Model seeps to support system messages, but no system message provided.&#34;)
     generation_messages.add_user_message(user_message)
 
 
@@ -1355,7 +1597,7 @@ You can check if a model supports system messages by checking the model_data.has
 </details>
 </dd>
 <dt id="glai.AutoAI.generate_from_literal_string"><code class="name flex">
-<span>def <span class="ident">generate_from_literal_string</span></span>(<span>self, prompt: str, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate_from_literal_string</span></span>(<span>self, prompt: str, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate text from a prompt using the LlamaAI model.</p>
@@ -1391,7 +1633,7 @@ You can check if a model supports system messages by checking the model_data.has
 </details>
 </dd>
 <dt id="glai.AutoAI.generate_from_messages"><code class="name flex">
-<span>def <span class="ident">generate_from_messages</span></span>(<span>self, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate_from_messages</span></span>(<span>self, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1454,14 +1696,14 @@ for inference on CPU.</p>
 <p>Initialization:
 Can be intialized with no arguments, followed by following configuration methods, step by step, all in one or using a dict:</p>
 <p>Step by step call these with appropriate arguments:</p>
-<pre><code>1. `self.load_model_db(model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR)`
+<pre><code>1. `self.load_model_db(model_db_dir: str = MODEL_EXAMPLES_DB_DIR)`
 2. One of the following with necessary args: &lt;code&gt;self.model\_data\_from\_url()&lt;/code&gt; or &lt;code&gt;self.model\_data\_from\_file()&lt;/code&gt; or &lt;code&gt;self.find\_model\_data()&lt;/code&gt;
 3. `self.load_ai(max_total_tokens: int = 200)`
 </code></pre>
 <p>All in one:</p>
 <pre><code>```python
 self.configure(
-    model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR, 
+    model_db_dir:str = MODEL_EXAMPLES_DB_DIR, 
     model_url: Optional[str] = None, 
     model_gguf_path: Optional[str] = None, 
     name_search: Optional[str] = None, 
@@ -1472,7 +1714,7 @@ self.configure(
 ```
 
 Or with a dictionary with the following keys:
-- model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+- model_db_dir: Directory to store model data in. Defaults to MODEL_EXAMPLES_DB_DIR.
 - model_url: URL of model to configure with. Automatically downloads and builds as needed. (Optional)
 - name_search: Name of model to search for in the model db dir.(Optional)
 - quantization_search: Quantization of model to search for in the model db dir..(Optional)
@@ -1517,13 +1759,13 @@ LLama</p></div>
     Initialization:
     Can be intialized with no arguments, followed by following configuration methods, step by step, all in one or using a dict:\n
     Step by step call these with appropriate arguments:\n
-        1. `self.load_model_db(model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR)`
+        1. `self.load_model_db(model_db_dir: str = MODEL_EXAMPLES_DB_DIR)`
         2. One of the following with necessary args: `self.model_data_from_url()` or `self.model_data_from_file()` or `self.find_model_data()`
         3. `self.load_ai(max_total_tokens: int = 200)`
     All in one:\n
         ```python
         self.configure(
-            model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR, 
+            model_db_dir:str = MODEL_EXAMPLES_DB_DIR, 
             model_url: Optional[str] = None, 
             model_gguf_path: Optional[str] = None, 
             name_search: Optional[str] = None, 
@@ -1534,7 +1776,7 @@ LLama</p></div>
         ```
         
         Or with a dictionary with the following keys:
-        - model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+        - model_db_dir: Directory to store model data in. Defaults to MODEL_EXAMPLES_DB_DIR.
         - model_url: URL of model to configure with. Automatically downloads and builds as needed. (Optional)
         - name_search: Name of model to search for in the model db dir.(Optional)
         - quantization_search: Quantization of model to search for in the model db dir..(Optional)
@@ -1573,12 +1815,13 @@ LLama</p></div>
             self.configure(**kwds)
 
     def configure(self,
-                  model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR,
+                  model_db_dir: Optional[str] = None,
                   model_url: Optional[str] = None,
                   model_gguf_path: Optional[str] = None,
                   name_search: Optional[str] = None,
                   quantization_search: Optional[str] = None,
                   keyword_search: Optional[str] = None,
+                  search_only_downloaded: bool = False,
                   max_total_tokens: int = 200,
                                             ) -&gt; None:
         &#34;&#34;&#34;
@@ -1588,7 +1831,7 @@ LLama</p></div>
         Sets model data attribute.
 
         Args:
-            model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+            model_db_dir: Directory to store model data in. If none is provided global db is used.This is preferred for most use cases.
             max_total_tokens: Max tokens to be processed (input+generation) by LlamaAI model. (Defaults to 200, set to around 500-1k for regular use)
             
             Provide at least one of these args to fetch ModelData: 
@@ -1606,14 +1849,14 @@ LLama</p></div>
 
         &#34;&#34;&#34;
         if model_db_dir is None:
-            print(f&#34;Using default model DB dir: {DEFAULT_LOCAL_GGUF_DIR}&#34;)
+            print(f&#34;Using provided verified models DB, files at {VERIFIED_MODELS_DB_DIR}&#34;)
         self.load_model_db(model_db_dir)
         if model_url is not None:
             self.model_data_from_url(model_url)
         elif model_gguf_path is not None:
             self.model_data_from_file(model_gguf_path)
         elif name_search is not None or quantization_search is not None or keyword_search is not None:
-            self.find_model_data(name_search, quantization_search, keyword_search)
+            self.find_model_data(name_search, quantization_search, keyword_search, search_only_downloaded)
         else:
             raise Exception(&#34;Can&#39;t find model data. Please provide a model URL, GGUF file path, or model name/quantization/keyword.&#34;)
         
@@ -1625,7 +1868,7 @@ LLama</p></div>
             
 
 
-    def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR, copy_examples=True) -&gt; None:
+    def load_model_db(self, db_dir:Optional[str] = None, copy_verified_models=True) -&gt; None:
         &#34;&#34;&#34;
         Load ModelDB from given directory.
 
@@ -1633,12 +1876,32 @@ LLama</p></div>
             db_dir: Directory to load ModelDB from.
             copy_examples: Whether to copy example GGUF files to db_dir if db_dir is empty.
         &#34;&#34;&#34;
-        self.model_db = ModelDB(model_db_dir=db_dir, copy_examples=copy_examples)
+        self.model_db = ModelDB(model_db_dir=db_dir, copy_verified_models=copy_verified_models)
 
+    def import_verified_models_to_db(self, model_name_quantization_list:Optional[list[Union[list,set,tuple]]] = None) -&gt; None:
+        &#34;&#34;&#34;
+        Import verified models to new ModelDB.
+
+        Imports verified models from global verified models DB to new ModelDB. If model_name_quantization_list is provided, only models in the list are imported.
+
+        Args:
+            model_name_quantization_list: List of tuples of model name and quantization to import. If None, all models are imported.
+        &#34;&#34;&#34;
+        if self.model_db is None:
+            raise Exception(&#34;No model DB loaded. Use load_model_db() first.&#34;)
+        if model_name_quantization_list is not None:
+            for n_q_data in model_name_quantization_list:
+                name = n_q_data[0]
+                quantization = n_q_data[1]
+                self.model_db.import_verified_model(name, quantization, None, True)
+        else:
+            self.model_db.import_verified_model(None, None, None, True)
+        
     def find_model_data(self,
                         model_name: Optional[str] = None,  
                         quantization: Optional[str] = None,
-                        keyword: Optional[str] = None) -&gt; ModelData:
+                        keyword: Optional[str] = None,
+                        only_downloaded: bool = False) -&gt; ModelData:
         &#34;&#34;&#34;
         Find model data in database that matches given criteria.
 
@@ -1656,7 +1919,7 @@ LLama</p></div>
         &#34;&#34;&#34;
         if self.model_db is None:
             raise Exception(&#34;No model DB loaded. Use load_model_db() first.&#34;)
-        model_data = self.model_db.find_model(model_name, quantization, keyword)
+        model_data = self.model_db.find_model(model_name, quantization, keyword, only_downloaded)
         self.model_data = model_data
         return model_data
 
@@ -1804,6 +2067,7 @@ LLama</p></div>
             self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
         if stop_at is None:
             stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == &#34;&#34;, self.messages.ai_tag_close != &#34; &#34;]) else None
+            include_stop_str = False
         generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
         if ai_message_tbc is not None:
             self.messages.edit_last_message(generated,
@@ -1846,10 +2110,8 @@ LLama</p></div>
 
         return self.ai.count_tokens(generation_messages.text())
     
-    def is_within_input_limit(
-        self,
-        user_message_text: str,
-        ai_message_tbc: Optional[str] = None
+    def is_within_context(self,
+        prompt: str,
         ) -&gt; bool:
         &#34;&#34;&#34;
         Check if the generated message is within the input limit.
@@ -1861,12 +2123,41 @@ LLama</p></div>
         Returns:
             True if within input limit, False otherwise.
         &#34;&#34;&#34;
-        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))</code></pre>
+        return self.ai.is_prompt_within_limit(prompt)
+    
+    def import_from_repo(self, hf_repo_url: str, user_tags: Tuple[str, str] = (&#34;&#34;, &#34;&#34;), ai_tags: Tuple[str, str] = (&#34;&#34;, &#34;&#34;), system_tags: Optional[Tuple[str, str]] = (None, None), keywords: Optional[str] = None, description: Optional[str] = None, replace_existing: bool = False) -&gt; None:
+        &#34;&#34;&#34;
+        Imports model data from HuggingFace model repo to current model DB. 
+
+        Args:
+            hf_repo_url: URL of model to import.
+            user_tags: User tags to assign to model data.
+            ai_tags: AI tags to assign to model data.
+            system_tags: System tags to assign to model data.
+            description: Optional description for model data.
+            keyword: Optional keyword for model data.
+            replace_existing: Whether to replace existing model data if found.
+
+        Raises:
+            Exception: If no model DB loaded yet.
+        &#34;&#34;&#34;
+
+
+
+        self.model_db.import_models_from_repo(
+            hf_repo_url=hf_repo_url,
+            user_tags=user_tags,
+            ai_tags=ai_tags,
+            system_tags=system_tags,
+            keywords=keywords,
+            description=description,
+            replace_existing=replace_existing,
+        )</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="glai.EasyAI.configure"><code class="name flex">
-<span>def <span class="ident">configure</span></span>(<span>self, model_db_dir: str = './gguf_db', model_url: Optional[str] = None, model_gguf_path: Optional[str] = None, name_search: Optional[str] = None, quantization_search: Optional[str] = None, keyword_search: Optional[str] = None, max_total_tokens: int = 200) ‑> None</span>
+<span>def <span class="ident">configure</span></span>(<span>self, model_db_dir: Optional[str] = None, model_url: Optional[str] = None, model_gguf_path: Optional[str] = None, name_search: Optional[str] = None, quantization_search: Optional[str] = None, keyword_search: Optional[str] = None, search_only_downloaded: bool = False, max_total_tokens: int = 200) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Configure EasyAI with model data.</p>
@@ -1875,7 +2166,7 @@ Sets model data attribute.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>model_db_dir</code></strong></dt>
-<dd>Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.</dd>
+<dd>Directory to store model data in. If none is provided global db is used.This is preferred for most use cases.</dd>
 <dt><strong><code>max_total_tokens</code></strong></dt>
 <dd>Max tokens to be processed (input+generation) by LlamaAI model. (Defaults to 200, set to around 500-1k for regular use)</dd>
 </dl>
@@ -1905,12 +2196,13 @@ Sets model data attribute.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def configure(self,
-              model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR,
+              model_db_dir: Optional[str] = None,
               model_url: Optional[str] = None,
               model_gguf_path: Optional[str] = None,
               name_search: Optional[str] = None,
               quantization_search: Optional[str] = None,
               keyword_search: Optional[str] = None,
+              search_only_downloaded: bool = False,
               max_total_tokens: int = 200,
                                         ) -&gt; None:
     &#34;&#34;&#34;
@@ -1920,7 +2212,7 @@ Sets model data attribute.</p>
     Sets model data attribute.
 
     Args:
-        model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+        model_db_dir: Directory to store model data in. If none is provided global db is used.This is preferred for most use cases.
         max_total_tokens: Max tokens to be processed (input+generation) by LlamaAI model. (Defaults to 200, set to around 500-1k for regular use)
         
         Provide at least one of these args to fetch ModelData: 
@@ -1938,14 +2230,14 @@ Sets model data attribute.</p>
 
     &#34;&#34;&#34;
     if model_db_dir is None:
-        print(f&#34;Using default model DB dir: {DEFAULT_LOCAL_GGUF_DIR}&#34;)
+        print(f&#34;Using provided verified models DB, files at {VERIFIED_MODELS_DB_DIR}&#34;)
     self.load_model_db(model_db_dir)
     if model_url is not None:
         self.model_data_from_url(model_url)
     elif model_gguf_path is not None:
         self.model_data_from_file(model_gguf_path)
     elif name_search is not None or quantization_search is not None or keyword_search is not None:
-        self.find_model_data(name_search, quantization_search, keyword_search)
+        self.find_model_data(name_search, quantization_search, keyword_search, search_only_downloaded)
     else:
         raise Exception(&#34;Can&#39;t find model data. Please provide a model URL, GGUF file path, or model name/quantization/keyword.&#34;)
     
@@ -2000,7 +2292,7 @@ Sets model data attribute.</p>
 </details>
 </dd>
 <dt id="glai.EasyAI.find_model_data"><code class="name flex">
-<span>def <span class="ident">find_model_data</span></span>(<span>self, model_name: Optional[str] = None, quantization: Optional[str] = None, keyword: Optional[str] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
+<span>def <span class="ident">find_model_data</span></span>(<span>self, model_name: Optional[str] = None, quantization: Optional[str] = None, keyword: Optional[str] = None, only_downloaded: bool = False) ‑> gguf_modeldb.model_data.ModelData</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Find model data in database that matches given criteria.</p>
@@ -2025,7 +2317,8 @@ in the search.</p>
 <pre><code class="python">def find_model_data(self,
                     model_name: Optional[str] = None,  
                     quantization: Optional[str] = None,
-                    keyword: Optional[str] = None) -&gt; ModelData:
+                    keyword: Optional[str] = None,
+                    only_downloaded: bool = False) -&gt; ModelData:
     &#34;&#34;&#34;
     Find model data in database that matches given criteria.
 
@@ -2043,13 +2336,13 @@ in the search.</p>
     &#34;&#34;&#34;
     if self.model_db is None:
         raise Exception(&#34;No model DB loaded. Use load_model_db() first.&#34;)
-    model_data = self.model_db.find_model(model_name, quantization, keyword)
+    model_data = self.model_db.find_model(model_name, quantization, keyword, only_downloaded)
     self.model_data = model_data
     return model_data</code></pre>
 </details>
 </dd>
 <dt id="glai.EasyAI.generate"><code class="name flex">
-<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.back_end.messages.AIMessage" href="back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.messages.messages.AIMessage" href="messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate AI response to user message.</p>
@@ -2127,6 +2420,7 @@ You can check if a model supports system messages by checking the model_data.has
         self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
     if stop_at is None:
         stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == &#34;&#34;, self.messages.ai_tag_close != &#34; &#34;]) else None
+        include_stop_str = False
     generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
     if ai_message_tbc is not None:
         self.messages.edit_last_message(generated,
@@ -2138,8 +2432,104 @@ You can check if a model supports system messages by checking the model_data.has
     return self.messages.get_last_message()</code></pre>
 </details>
 </dd>
-<dt id="glai.EasyAI.is_within_input_limit"><code class="name flex">
-<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, user_message_text: str, ai_message_tbc: Optional[str] = None) ‑> bool</span>
+<dt id="glai.EasyAI.import_from_repo"><code class="name flex">
+<span>def <span class="ident">import_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Tuple[str, str] = ('', ''), ai_tags: Tuple[str, str] = ('', ''), system_tags: Optional[Tuple[str, str]] = (None, None), keywords: Optional[str] = None, description: Optional[str] = None, replace_existing: bool = False) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Imports model data from HuggingFace model repo to current model DB. </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>hf_repo_url</code></strong></dt>
+<dd>URL of model to import.</dd>
+<dt><strong><code>user_tags</code></strong></dt>
+<dd>User tags to assign to model data.</dd>
+<dt><strong><code>ai_tags</code></strong></dt>
+<dd>AI tags to assign to model data.</dd>
+<dt><strong><code>system_tags</code></strong></dt>
+<dd>System tags to assign to model data.</dd>
+<dt><strong><code>description</code></strong></dt>
+<dd>Optional description for model data.</dd>
+<dt><strong><code>keyword</code></strong></dt>
+<dd>Optional keyword for model data.</dd>
+<dt><strong><code>replace_existing</code></strong></dt>
+<dd>Whether to replace existing model data if found.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>Exception</code></dt>
+<dd>If no model DB loaded yet.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_from_repo(self, hf_repo_url: str, user_tags: Tuple[str, str] = (&#34;&#34;, &#34;&#34;), ai_tags: Tuple[str, str] = (&#34;&#34;, &#34;&#34;), system_tags: Optional[Tuple[str, str]] = (None, None), keywords: Optional[str] = None, description: Optional[str] = None, replace_existing: bool = False) -&gt; None:
+    &#34;&#34;&#34;
+    Imports model data from HuggingFace model repo to current model DB. 
+
+    Args:
+        hf_repo_url: URL of model to import.
+        user_tags: User tags to assign to model data.
+        ai_tags: AI tags to assign to model data.
+        system_tags: System tags to assign to model data.
+        description: Optional description for model data.
+        keyword: Optional keyword for model data.
+        replace_existing: Whether to replace existing model data if found.
+
+    Raises:
+        Exception: If no model DB loaded yet.
+    &#34;&#34;&#34;
+
+
+
+    self.model_db.import_models_from_repo(
+        hf_repo_url=hf_repo_url,
+        user_tags=user_tags,
+        ai_tags=ai_tags,
+        system_tags=system_tags,
+        keywords=keywords,
+        description=description,
+        replace_existing=replace_existing,
+    )</code></pre>
+</details>
+</dd>
+<dt id="glai.EasyAI.import_verified_models_to_db"><code class="name flex">
+<span>def <span class="ident">import_verified_models_to_db</span></span>(<span>self, model_name_quantization_list: Optional[list[typing.Union[list, set, tuple]]] = None) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Import verified models to new ModelDB.</p>
+<p>Imports verified models from global verified models DB to new ModelDB. If model_name_quantization_list is provided, only models in the list are imported.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model_name_quantization_list</code></strong></dt>
+<dd>List of tuples of model name and quantization to import. If None, all models are imported.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_verified_models_to_db(self, model_name_quantization_list:Optional[list[Union[list,set,tuple]]] = None) -&gt; None:
+    &#34;&#34;&#34;
+    Import verified models to new ModelDB.
+
+    Imports verified models from global verified models DB to new ModelDB. If model_name_quantization_list is provided, only models in the list are imported.
+
+    Args:
+        model_name_quantization_list: List of tuples of model name and quantization to import. If None, all models are imported.
+    &#34;&#34;&#34;
+    if self.model_db is None:
+        raise Exception(&#34;No model DB loaded. Use load_model_db() first.&#34;)
+    if model_name_quantization_list is not None:
+        for n_q_data in model_name_quantization_list:
+            name = n_q_data[0]
+            quantization = n_q_data[1]
+            self.model_db.import_verified_model(name, quantization, None, True)
+    else:
+        self.model_db.import_verified_model(None, None, None, True)</code></pre>
+</details>
+</dd>
+<dt id="glai.EasyAI.is_within_context"><code class="name flex">
+<span>def <span class="ident">is_within_context</span></span>(<span>self, prompt: str) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Check if the generated message is within the input limit.</p>
@@ -2156,10 +2546,8 @@ You can check if a model supports system messages by checking the model_data.has
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_within_input_limit(
-    self,
-    user_message_text: str,
-    ai_message_tbc: Optional[str] = None
+<pre><code class="python">def is_within_context(self,
+    prompt: str,
     ) -&gt; bool:
     &#34;&#34;&#34;
     Check if the generated message is within the input limit.
@@ -2171,7 +2559,7 @@ You can check if a model supports system messages by checking the model_data.has
     Returns:
         True if within input limit, False otherwise.
     &#34;&#34;&#34;
-    return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))</code></pre>
+    return self.ai.is_prompt_within_limit(prompt)</code></pre>
 </details>
 </dd>
 <dt id="glai.EasyAI.load_ai"><code class="name flex">
@@ -2217,7 +2605,7 @@ You can check if a model supports system messages by checking the model_data.has
 </details>
 </dd>
 <dt id="glai.EasyAI.load_model_db"><code class="name flex">
-<span>def <span class="ident">load_model_db</span></span>(<span>self, db_dir: str = './gguf_db', copy_examples=True) ‑> None</span>
+<span>def <span class="ident">load_model_db</span></span>(<span>self, db_dir: Optional[str] = None, copy_verified_models=True) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Load ModelDB from given directory.</p>
@@ -2232,7 +2620,7 @@ You can check if a model supports system messages by checking the model_data.has
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR, copy_examples=True) -&gt; None:
+<pre><code class="python">def load_model_db(self, db_dir:Optional[str] = None, copy_verified_models=True) -&gt; None:
     &#34;&#34;&#34;
     Load ModelDB from given directory.
 
@@ -2240,7 +2628,7 @@ You can check if a model supports system messages by checking the model_data.has
         db_dir: Directory to load ModelDB from.
         copy_examples: Whether to copy example GGUF files to db_dir if db_dir is empty.
     &#34;&#34;&#34;
-    self.model_db = ModelDB(model_db_dir=db_dir, copy_examples=copy_examples)</code></pre>
+    self.model_db = ModelDB(model_db_dir=db_dir, copy_verified_models=copy_verified_models)</code></pre>
 </details>
 </dd>
 <dt id="glai.EasyAI.model_data_from_file"><code class="name flex">
@@ -2361,1286 +2749,6 @@ the model from the URL and creates new model data. Sets model data attribute.</p
 </dd>
 </dl>
 </dd>
-<dt id="glai.ModelDB"><code class="flex name class">
-<span>class <span class="ident">ModelDB</span></span>
-<span>(</span><span>model_db_dir: Optional[str] = None, copy_examples=True)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class ModelDB:
-    def __init__(self, model_db_dir:Optional[str]=None, copy_examples=True):
-        self.gguf_db_dir = None
-        self.models = []
-
-        if model_db_dir is None:
-            model_db_dir = MODEL_EXAMPLES_DB_DIR
-        self.set_model_db_dir(model_db_dir)
-        if model_db_dir != MODEL_EXAMPLES_DB_DIR:
-            if copy_examples:
-                print(f&#34;Copying examples to {model_db_dir}...&#34;)
-                for file in list_files_in_dir(MODEL_EXAMPLES_DB_DIR, include_directories=False, only_with_extensions=[&#34;.json&#34;], just_names=False):
-                    f_mdt = ModelData.from_json(file)
-                    f_mdt.set_save_dir(model_db_dir)
-                    f_mdt.save_json()
-                    print(f&#34;Saved a copy of {file} to {model_db_dir}.&#34;)
-        else:
-            print(f&#34;Using default model db dir: {model_db_dir}, changes here will be visible and accessible globaly. If you would like to work with a specific db_dir provide it as an argument to the ModelDB constructor.&#34;)
-        self.load_models()
-    
-    def set_model_db_dir(self, model_db_dir:str) -&gt; None:
-        print(f&#34;ModelDB dir set to {model_db_dir}.&#34;)
-        self.gguf_db_dir = create_dir(model_db_dir)
-    
-    def load_models(self) -&gt; None:
-        self.models = []
-        files = list_files_in_dir(self.gguf_db_dir, include_directories=False, include_files=True, only_with_extensions=[&#34;.json&#34;])
-        for file in files:
-            try:
-                model_data = ModelData.from_json(file)
-                self.models.append(model_data)
-            except Exception as e:
-                print(f&#34;Error trying to load from {file}: \t\n{e}, \nskipping...&#34;)
-                continue
-        print(f&#34;Loaded {len(self.models)} models from {self.gguf_db_dir}.&#34;)
-
-    def find_models(self, name_query:Optional[str]=None, 
-                   quantization_query:Optional[str]=None, 
-                   keywords_query:Optional[str]=None,
-                   treshold:float=0.5) -&gt; Union[None, list]:
-        if name_query is None and quantization_query is None and keywords_query is None:
-            return None
-        scoring_models_dict = {}
-        for i, model in enumerate(self.models):
-            scoring_models_dict[i] = {&#34;model&#34;:model, &#34;score&#34;:0}
-        for id in scoring_models_dict.keys():
-            model = scoring_models_dict[id][&#34;model&#34;]
-            model:ModelData = model
-            model_name = model.name
-            model_quantization = model.model_quantization
-            model_keywords = model.keywords
-            if name_query is not None:
-                #print(f&#34;Searching for name: {name_query}&#34;)
-                top_name_score = 0
-                for model_subname in model_name.split(&#34;-&#34;):
-                    name_score = compare_two_strings(name_query, model_subname)
-                    if name_score &gt; top_name_score:
-                        top_name_score = name_score
-                if top_name_score &gt; treshold:
-                    scoring_models_dict[id][&#34;score&#34;] += top_name_score
-                #print(f&#34;Model {model_name} {model_quantization} top score: {top_name_score} treshold: {treshold}&#34;)
-            if quantization_query is not None:
-                #print(f&#34;Searching for quantization: {quantization_query}&#34;)
-                quantization_score = compare_two_strings(quantization_query, model_quantization)
-                if quantization_score &gt; treshold:
-                    scoring_models_dict[id][&#34;score&#34;] += quantization_score
-                #print(f&#34;Model {model_name} {model_quantization} score: {quantization_score} treshold: {treshold}&#34;)
-            if keywords_query is not None:
-                #print(f&#34;Searching for keyword: {keywords_query}&#34;)
-                best_keyword_score = 0
-                for keyword in model_keywords:
-                    keyword_score = compare_two_strings(keywords_query, keyword)
-                    if keyword_score &gt; best_keyword_score:
-                        best_keyword_score = keyword_score
-                if best_keyword_score &gt; treshold:
-                    scoring_models_dict[id][&#34;score&#34;] += best_keyword_score
-                #print(f&#34;Model {model_name} {model_quantization} score: {best_keyword_score} treshold: {treshold}&#34;)
-            #print(f&#34;Model {model_name} {model_quantization} score: {scoring_models_dict[id][&#39;score&#39;]}&#34;)
-        sorted_models = sorted(scoring_models_dict.items(), key=lambda x: x[1][&#34;score&#34;], reverse=True)
-        #keep just the list of model data
-        sorted_models = [x[1][&#34;model&#34;] for x in sorted_models]
-        #print(f&#34;Found {len(sorted_models)} models.&#34;)
-        #print(sorted_models)
-        return sorted_models
-    
-    def find_model(self, name_query:Optional[str]=None, 
-                   quantization_query:Optional[str]=None, 
-                   keywords_query:Optional[str]=None,
-                   ) -&gt; Optional[ModelData]:
-        sorted_models = self.find_models(name_query, quantization_query, keywords_query)
-        if sorted_models is None:
-            return None
-        else:
-            #print(f&#34;Found {len(sorted_models)} models.&#34;)
-            #print(sorted_models)
-            return sorted_models[0]
-    def get_model_by_url(self, url:str) -&gt; Optional[ModelData]:
-        for model in self.models:
-            model:ModelData = model
-            if model.gguf_url == url:
-                return model
-        return None    
-    def add_model_data(self, model_data:ModelData, save_model=True) -&gt; None:
-        self.models.append(model_data)
-        if save_model:
-            model_data.save_json()
-    
-    def add_model_by_url(self, url:str, ) -&gt; None:
-        model_data = ModelData(url, db_dir=self.gguf_db_dir)
-        self.add_model_data(model_data)
-
-    def add_model_by_json(self, json_file_path:str) -&gt; None:
-        model_data = ModelData.from_json(json_file_path)
-        self.add_model_data(model_data)
-
-    def save_all_models(self) -&gt; None:
-        for model in self.models:
-            model:ModelData = model
-            model.save_json()
-                
-    @staticmethod
-    def _model_links_from_repo(hf_repo_url:str):
-        #extract models from hf 
-        response = requests.get(hf_repo_url)
-        html = response.text
-        soup = bs4.BeautifulSoup(html, &#39;html.parser&#39;)
-        #find all links that end with .gguf
-        print(f&#34;Looking for {hf_repo_url} gguf files...&#34;)
-        model_links = []
-        for link in soup.find_all(&#39;a&#39;):
-            href = link.get(&#39;href&#39;)
-            if href is not None and href.endswith(&#34;.gguf&#34;):
-                print(f&#34;Found model: {href}&#34;)
-                model_links.append(href)
-        return model_links
-    def load_models_data_from_repo(self, hf_repo_url:str, 
-                        user_tags:Optional[list[str]]=None,
-                        ai_tags:Optional[list[str]]=None,
-                        system_tags:Optional[list[str]]=None,
-                        keywords:Optional[list[str]]=None, 
-                        description:Optional[str]=None):  
-        #create model data from hf repo
-        model_links = ModelDB._model_links_from_repo(hf_repo_url)
-        model_datas = []
-        for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
-            model_datas.append(model_data)
-            model_data.save_json()
-        self.models.extend(model_datas)
-        return model_datas
-
-    def import_models_from_repo(self, hf_repo_url:str,
-                        user_tags:Optional[list[str]]=None,
-                        ai_tags:Optional[list[str]]=None,
-                        system_tags:Optional[list[str]]=None,
-                        keywords:Optional[list[str]]=None, 
-                        description:Optional[str]=None,
-                        replace_existing:bool=False,
-                        ):  
-        #create model data from hf repo
-        model_links = ModelDB._model_links_from_repo(hf_repo_url)
-        print(f&#34;Loaded {len(model_links)} models from {hf_repo_url}.&#34;)
-        for model_link in model_links:
-            model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
-            model_data.save_json(replace_existing=replace_existing)
-        self.load_models()
-    
-    def list_available_models(self) -&gt; list[str]:
-        print(f&#34;Available models in {self.gguf_db_dir}:&#34;)
-        models = []
-        for model in self.models:
-            model:ModelData = model
-            if model.name not in models:
-                models.append(model.name)
-        return models
-    
-    def list_models_quantizations(self, model_name:str) -&gt; list[str]:
-        quantizations = []
-        for model in self.models:
-            model:ModelData = model
-            if model.name == model_name:
-                quantizations.append(model.model_quantization)
-        return quantizations
-
-    def show_db_info(self) -&gt; None:
-        print(f&#34;ModelDB summary:&#34;)
-        print(f&#34;ModelDB dir: {self.gguf_db_dir}&#34;)
-        print(f&#34;Number of models: {len(self.models)}&#34;)
-        print(f&#34;Available models:&#34;)
-        models_info = {}
-        for model in self.models:
-            model:ModelData = model
-            if model.name not in models_info.keys():
-                models_info[model.name] = {}
-                models_info[model.name][&#34;quantizations&#34;] = []
-                models_info[model.name][&#34;description&#34;] = model.description
-                models_info[model.name][&#34;keywords&#34;] = model.keywords
-            if model.model_quantization not in models_info[model.name][&#34;quantizations&#34;]:
-                models_info[model.name][&#34;quantizations&#34;].append(model.model_quantization)
-        
-        for model_name, models_info in models_info.items():
-            print(f&#34;\t{model_name}:&#34;)
-            print(f&#34;\t\tQuantizations: {models_info[&#39;quantizations&#39;]}&#34;)
-            print(f&#34;\t\tKeywords: {models_info[&#39;keywords&#39;]}&#34;)
-            print(f&#34;\t\tDescription: {models_info[&#39;description&#39;]}&#34;)
-            print(f&#34;\t-------------------------------&#34;)</code></pre>
-</details>
-<h3>Methods</h3>
-<dl>
-<dt id="glai.ModelDB.add_model_by_json"><code class="name flex">
-<span>def <span class="ident">add_model_by_json</span></span>(<span>self, json_file_path: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def add_model_by_json(self, json_file_path:str) -&gt; None:
-    model_data = ModelData.from_json(json_file_path)
-    self.add_model_data(model_data)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.add_model_by_url"><code class="name flex">
-<span>def <span class="ident">add_model_by_url</span></span>(<span>self, url: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def add_model_by_url(self, url:str, ) -&gt; None:
-    model_data = ModelData(url, db_dir=self.gguf_db_dir)
-    self.add_model_data(model_data)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.add_model_data"><code class="name flex">
-<span>def <span class="ident">add_model_data</span></span>(<span>self, model_data: <a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a>, save_model=True) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def add_model_data(self, model_data:ModelData, save_model=True) -&gt; None:
-    self.models.append(model_data)
-    if save_model:
-        model_data.save_json()</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.find_model"><code class="name flex">
-<span>def <span class="ident">find_model</span></span>(<span>self, name_query: Optional[str] = None, quantization_query: Optional[str] = None, keywords_query: Optional[str] = None) ‑> Optional[<a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a>]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def find_model(self, name_query:Optional[str]=None, 
-               quantization_query:Optional[str]=None, 
-               keywords_query:Optional[str]=None,
-               ) -&gt; Optional[ModelData]:
-    sorted_models = self.find_models(name_query, quantization_query, keywords_query)
-    if sorted_models is None:
-        return None
-    else:
-        #print(f&#34;Found {len(sorted_models)} models.&#34;)
-        #print(sorted_models)
-        return sorted_models[0]</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.find_models"><code class="name flex">
-<span>def <span class="ident">find_models</span></span>(<span>self, name_query: Optional[str] = None, quantization_query: Optional[str] = None, keywords_query: Optional[str] = None, treshold: float = 0.5) ‑> Optional[None]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def find_models(self, name_query:Optional[str]=None, 
-               quantization_query:Optional[str]=None, 
-               keywords_query:Optional[str]=None,
-               treshold:float=0.5) -&gt; Union[None, list]:
-    if name_query is None and quantization_query is None and keywords_query is None:
-        return None
-    scoring_models_dict = {}
-    for i, model in enumerate(self.models):
-        scoring_models_dict[i] = {&#34;model&#34;:model, &#34;score&#34;:0}
-    for id in scoring_models_dict.keys():
-        model = scoring_models_dict[id][&#34;model&#34;]
-        model:ModelData = model
-        model_name = model.name
-        model_quantization = model.model_quantization
-        model_keywords = model.keywords
-        if name_query is not None:
-            #print(f&#34;Searching for name: {name_query}&#34;)
-            top_name_score = 0
-            for model_subname in model_name.split(&#34;-&#34;):
-                name_score = compare_two_strings(name_query, model_subname)
-                if name_score &gt; top_name_score:
-                    top_name_score = name_score
-            if top_name_score &gt; treshold:
-                scoring_models_dict[id][&#34;score&#34;] += top_name_score
-            #print(f&#34;Model {model_name} {model_quantization} top score: {top_name_score} treshold: {treshold}&#34;)
-        if quantization_query is not None:
-            #print(f&#34;Searching for quantization: {quantization_query}&#34;)
-            quantization_score = compare_two_strings(quantization_query, model_quantization)
-            if quantization_score &gt; treshold:
-                scoring_models_dict[id][&#34;score&#34;] += quantization_score
-            #print(f&#34;Model {model_name} {model_quantization} score: {quantization_score} treshold: {treshold}&#34;)
-        if keywords_query is not None:
-            #print(f&#34;Searching for keyword: {keywords_query}&#34;)
-            best_keyword_score = 0
-            for keyword in model_keywords:
-                keyword_score = compare_two_strings(keywords_query, keyword)
-                if keyword_score &gt; best_keyword_score:
-                    best_keyword_score = keyword_score
-            if best_keyword_score &gt; treshold:
-                scoring_models_dict[id][&#34;score&#34;] += best_keyword_score
-            #print(f&#34;Model {model_name} {model_quantization} score: {best_keyword_score} treshold: {treshold}&#34;)
-        #print(f&#34;Model {model_name} {model_quantization} score: {scoring_models_dict[id][&#39;score&#39;]}&#34;)
-    sorted_models = sorted(scoring_models_dict.items(), key=lambda x: x[1][&#34;score&#34;], reverse=True)
-    #keep just the list of model data
-    sorted_models = [x[1][&#34;model&#34;] for x in sorted_models]
-    #print(f&#34;Found {len(sorted_models)} models.&#34;)
-    #print(sorted_models)
-    return sorted_models</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.get_model_by_url"><code class="name flex">
-<span>def <span class="ident">get_model_by_url</span></span>(<span>self, url: str) ‑> Optional[<a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a>]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_model_by_url(self, url:str) -&gt; Optional[ModelData]:
-    for model in self.models:
-        model:ModelData = model
-        if model.gguf_url == url:
-            return model
-    return None    </code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.import_models_from_repo"><code class="name flex">
-<span>def <span class="ident">import_models_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, system_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None, replace_existing: bool = False)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def import_models_from_repo(self, hf_repo_url:str,
-                    user_tags:Optional[list[str]]=None,
-                    ai_tags:Optional[list[str]]=None,
-                    system_tags:Optional[list[str]]=None,
-                    keywords:Optional[list[str]]=None, 
-                    description:Optional[str]=None,
-                    replace_existing:bool=False,
-                    ):  
-    #create model data from hf repo
-    model_links = ModelDB._model_links_from_repo(hf_repo_url)
-    print(f&#34;Loaded {len(model_links)} models from {hf_repo_url}.&#34;)
-    for model_link in model_links:
-        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
-        model_data.save_json(replace_existing=replace_existing)
-    self.load_models()</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.list_available_models"><code class="name flex">
-<span>def <span class="ident">list_available_models</span></span>(<span>self) ‑> list[str]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def list_available_models(self) -&gt; list[str]:
-    print(f&#34;Available models in {self.gguf_db_dir}:&#34;)
-    models = []
-    for model in self.models:
-        model:ModelData = model
-        if model.name not in models:
-            models.append(model.name)
-    return models</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.list_models_quantizations"><code class="name flex">
-<span>def <span class="ident">list_models_quantizations</span></span>(<span>self, model_name: str) ‑> list[str]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def list_models_quantizations(self, model_name:str) -&gt; list[str]:
-    quantizations = []
-    for model in self.models:
-        model:ModelData = model
-        if model.name == model_name:
-            quantizations.append(model.model_quantization)
-    return quantizations</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.load_models"><code class="name flex">
-<span>def <span class="ident">load_models</span></span>(<span>self) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def load_models(self) -&gt; None:
-    self.models = []
-    files = list_files_in_dir(self.gguf_db_dir, include_directories=False, include_files=True, only_with_extensions=[&#34;.json&#34;])
-    for file in files:
-        try:
-            model_data = ModelData.from_json(file)
-            self.models.append(model_data)
-        except Exception as e:
-            print(f&#34;Error trying to load from {file}: \t\n{e}, \nskipping...&#34;)
-            continue
-    print(f&#34;Loaded {len(self.models)} models from {self.gguf_db_dir}.&#34;)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.load_models_data_from_repo"><code class="name flex">
-<span>def <span class="ident">load_models_data_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Optional[list[str]] = None, ai_tags: Optional[list[str]] = None, system_tags: Optional[list[str]] = None, keywords: Optional[list[str]] = None, description: Optional[str] = None)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def load_models_data_from_repo(self, hf_repo_url:str, 
-                    user_tags:Optional[list[str]]=None,
-                    ai_tags:Optional[list[str]]=None,
-                    system_tags:Optional[list[str]]=None,
-                    keywords:Optional[list[str]]=None, 
-                    description:Optional[str]=None):  
-    #create model data from hf repo
-    model_links = ModelDB._model_links_from_repo(hf_repo_url)
-    model_datas = []
-    for model_link in model_links:
-        model_data = ModelData(gguf_url=model_link, db_dir=self.gguf_db_dir, user_tags=user_tags, ai_tags=ai_tags, system_tags=system_tags, description=description, keywords=keywords)
-        model_datas.append(model_data)
-        model_data.save_json()
-    self.models.extend(model_datas)
-    return model_datas</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.save_all_models"><code class="name flex">
-<span>def <span class="ident">save_all_models</span></span>(<span>self) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def save_all_models(self) -&gt; None:
-    for model in self.models:
-        model:ModelData = model
-        model.save_json()</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.set_model_db_dir"><code class="name flex">
-<span>def <span class="ident">set_model_db_dir</span></span>(<span>self, model_db_dir: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_model_db_dir(self, model_db_dir:str) -&gt; None:
-    print(f&#34;ModelDB dir set to {model_db_dir}.&#34;)
-    self.gguf_db_dir = create_dir(model_db_dir)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelDB.show_db_info"><code class="name flex">
-<span>def <span class="ident">show_db_info</span></span>(<span>self) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def show_db_info(self) -&gt; None:
-    print(f&#34;ModelDB summary:&#34;)
-    print(f&#34;ModelDB dir: {self.gguf_db_dir}&#34;)
-    print(f&#34;Number of models: {len(self.models)}&#34;)
-    print(f&#34;Available models:&#34;)
-    models_info = {}
-    for model in self.models:
-        model:ModelData = model
-        if model.name not in models_info.keys():
-            models_info[model.name] = {}
-            models_info[model.name][&#34;quantizations&#34;] = []
-            models_info[model.name][&#34;description&#34;] = model.description
-            models_info[model.name][&#34;keywords&#34;] = model.keywords
-        if model.model_quantization not in models_info[model.name][&#34;quantizations&#34;]:
-            models_info[model.name][&#34;quantizations&#34;].append(model.model_quantization)
-    
-    for model_name, models_info in models_info.items():
-        print(f&#34;\t{model_name}:&#34;)
-        print(f&#34;\t\tQuantizations: {models_info[&#39;quantizations&#39;]}&#34;)
-        print(f&#34;\t\tKeywords: {models_info[&#39;keywords&#39;]}&#34;)
-        print(f&#34;\t\tDescription: {models_info[&#39;description&#39;]}&#34;)
-        print(f&#34;\t-------------------------------&#34;)</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
-<dt id="glai.ModelData"><code class="flex name class">
-<span>class <span class="ident">ModelData</span></span>
-<span>(</span><span>gguf_url: str, db_dir: str, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), system_tags: Union[dict, list, set, ForwardRef(None)] = None, description: Optional[str] = None, keywords: Optional[None] = None)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class ModelData:
-    def __init__(self, 
-        gguf_url:str,
-        db_dir:str,
-        user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), 
-        ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
-        system_tags:Optional[Union[dict, list, set]] = None,
-        description:Optional[str] = None, 
-        keywords:Optional[list] = None,
-        ):
-
-        #init all as None
-        self.gguf_url = None
-        self.gguf_file_path = None
-        self.name = None
-        self.model_quantization = None
-        self.description = None
-        self.keywords = None
-        self.user_tags = None
-        self.ai_tags = None
-        self.system_tags = None
-        self.save_dir = None
-
-        #set values
-        self.gguf_url = gguf_url
-        self.set_save_dir(db_dir)
-        self.gguf_file_path = self._url_to_file_path(db_dir, gguf_url) 
-        self.name = self._url_extract_model_name(gguf_url)
-        self.model_quantization = self._url_extract_quantization(gguf_url)
-        self.description = description if description is not None else &#34;&#34;
-        self.keywords = keywords if keywords is not None else []
-        self.set_tags(ai_tags, user_tags, system_tags)
-
-    def __str__(self) -&gt; str:
-        t = f&#34;&#34;&#34;ModelData(
-            ---required---
-            gguf_url: {self.gguf_url},
-            ---required with defaults--- 
-            save_dir: {self.save_dir},
-            user_tags: {self.user_tags},
-            ai_tags: {self.ai_tags},
-            ---optionally provided, no defaults---
-            system_tags: {self.system_tags},
-            description: {self.description},
-            keywords: {self.keywords},
-            ---automatically generated---
-            gguf_file_path: {self.gguf_file_path},
-            model_name: {self.name},
-            model_quantization: {self.model_quantization}
-        )&#34;&#34;&#34;
-        return t
-    
-    def __repr__(self) -&gt; str:
-        return self.__str__()
-    
-    def __dict__(self) -&gt; dict:
-        return self.to_dict()
-    
-    @staticmethod
-    def _hf_url_to_download_url(url) -&gt; str:
-        #to download replace blob with resolve and add download=true
-        if not &#34;huggingface.co&#34; in url:
-            raise ValueError(f&#34;Invalid url: {url}, must be a huggingface.co url, other sources aren&#39;t implemented yet.&#34;)
-        url = url.replace(&#34;blob&#34;, &#34;resolve&#34;)
-        if url.endswith(&#34;/&#34;):
-            url = url[:-1]
-        if not url.endswith(&#34;?download=true&#34;):
-            url = url + &#34;?download=true&#34;
-        return url
-    
-    @staticmethod    
-    def _url_to_file_path(save_dir:str, url:str)-&gt;str:
-        #create_dirs_for(save_dir)
-        file_path = join_paths(save_dir, ModelData._url_extract_file_name(url))
-        return file_path 
-    
-    @staticmethod
-    def _url_extract_file_name(url:str) -&gt; str:
-        f_name =  url.split(&#34;/&#34;)[-1]
-        if is_file_format(f_name, &#34;.gguf&#34;):
-            return f_name
-        else:
-            raise ValueError(f&#34;File {f_name} is not a gguf file.&#34;)
-    
-    @staticmethod
-    def _url_extract_quantization(url:str) -&gt; str:
-        quantization = ModelData._url_extract_file_name(url).split(&#34;.&#34;)[-2]
-        return quantization
-    
-    @staticmethod
-    def _url_extract_model_name(url:str) -&gt; str:
-        model_name = ModelData._url_extract_file_name(url).split(&#34;.&#34;)[0:-2]
-        return &#34;.&#34;.join(model_name)
-
-    def set_ai_tags(self, ai_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
-        if isinstance(ai_tags, dict):
-            if &#34;open&#34; in ai_tags and &#34;close&#34; in ai_tags:
-                self.ai_tags = ai_tags
-            else:
-                raise ValueError(f&#34;Invalid user tags: {ai_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
-        elif isinstance(ai_tags, set) or isinstance(ai_tags, list) or isinstance(ai_tags, tuple):
-            self.ai_tags = {
-                &#34;open&#34;: ai_tags[0],
-                &#34;close&#34;: ai_tags[1]
-            }
-        else:
-            raise TypeError(f&#34;Invalid type for user tags: {type(ai_tags)}, must be dict, set or list.&#34;)
-        
-    def set_user_tags(self, user_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
-        if isinstance(user_tags, dict):
-            if &#34;open&#34; in user_tags and &#34;close&#34; in user_tags:
-                self.user_tags = user_tags
-            else:
-                raise ValueError(f&#34;Invalid user tags: {user_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
-        elif isinstance(user_tags, set) or isinstance(user_tags, list) or isinstance(user_tags, tuple):
-            self.user_tags = {
-                &#34;open&#34;: user_tags[0],
-                &#34;close&#34;: user_tags[1]
-            }
-        else:
-            raise TypeError(f&#34;Invalid type for user tags: {type(user_tags)}, must be dict, set or list.&#34;)
-
-    def set_system_tags(self, system_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
-        if isinstance(system_tags, dict):
-            if &#34;open&#34; in system_tags and &#34;close&#34; in system_tags:
-                self.system_tags = system_tags
-            else:
-                raise ValueError(f&#34;Invalid system tags: {system_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
-        elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
-            self.system_tags = {
-                &#34;open&#34;: system_tags[0],
-                &#34;close&#34;: system_tags[1]
-            }
-        else:
-            raise TypeError(f&#34;Invalid type for system tags: {type(system_tags)}, must be dict, set or list.&#34;)
-    def set_tags(self, 
-                 ai_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-                 user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-                 system_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-                 ) -&gt; None:
-        if ai_tags is not None:
-            self.set_ai_tags(ai_tags)
-        if user_tags is not None:
-            self.set_user_tags(user_tags)
-        if system_tags is not None:
-            self.set_system_tags(system_tags)
-
-    def set_save_dir(self, save_dir:str) -&gt; None:
-        self.save_dir = save_dir
-        self.gguf_file_path = self._url_to_file_path(save_dir, self.gguf_url)
-
-    def to_dict(self):
-        model_data = {
-            &#34;url&#34;: self.gguf_url,
-            &#34;gguf_file_path&#34;: self.gguf_file_path,
-            &#34;model_name&#34;: self.name,
-            &#34;model_quantization&#34;: self.model_quantization, 
-            &#34;description&#34;: self.description,
-            &#34;keywords&#34;: self.keywords,
-            &#34;user_tags&#34;: self.user_tags,
-            &#34;ai_tags&#34;: self.ai_tags,
-            &#34;system_tags&#34;: self.system_tags,
-            &#34;save_dir&#34;: self.save_dir,
-        }
-        return model_data
-    @staticmethod
-    def from_dict(model_data:dict) -&gt; &#34;ModelData&#34;:
-        url = model_data[&#34;url&#34;]
-        save_dir = model_data[&#34;save_dir&#34;]
-        description = model_data[&#34;description&#34;] if &#34;description&#34; in model_data else None
-        keywords = model_data[&#34;keywords&#34;] if &#34;keywords&#34; in model_data else None
-        user_tags = model_data[&#34;user_tags&#34;]
-        ai_tags = model_data[&#34;ai_tags&#34;]
-        system_tags = model_data[&#34;system_tags&#34;] if &#34;system_tags&#34; in model_data else None
-        new_model_data = ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
-        return new_model_data
-
-    def is_downloaded(self) -&gt; bool:
-        &#34;&#34;&#34;Checks if the model file is downloaded.&#34;&#34;&#34;
-        return does_file_exist(self.gguf_file_path)
-    
-    def has_json(self) -&gt; bool:
-        &#34;&#34;&#34;Checks if the model is in the db.&#34;&#34;&#34;
-        return does_file_exist(self.json_path())
-    
-    def download_gguf(self, force_redownload:bool=False) -&gt; str:
-        print(f&#34;Preparing {self.gguf_file_path}\n for {self.name} : {self.model_quantization}...&#34;)
-        if not does_file_exist(self.gguf_file_path) or force_redownload:
-            print(f&#34;Downloading {self.name} : {self.model_quantization}...&#34;)
-            gguf_download_url = self._hf_url_to_download_url(self.gguf_url)
-            response = requests.get(gguf_download_url, stream=True)
-            total_size = int(response.headers.get(&#39;content-length&#39;, 0))
-            block_size = 1024000  # 100 KB
-            progress_bar = f&#34;Please wait, downloading {self.name} : {self.model_quantization}: {{0:0.2f}}% | {{1:0.3f}}/{{2:0.3f}} GB) | {{3:0.3f}} MB/s&#34;
-            unfinished_save_path = self.gguf_file_path + &#34;.unfinished&#34;
-            with open(unfinished_save_path, &#34;wb&#34;) as f:
-                downloaded_size = 0
-                start_time = time.time()
-                elapsed_time = 0
-                downloaded_since_last = 0
-                for data in response.iter_content(block_size):
-                    downloaded_size += len(data)
-                    downloaded_since_last += len(data)
-                    f.write(data)
-                    elapsed_time = time.time() - start_time
-                    download_speed = (downloaded_since_last*10/(1024**3)) / elapsed_time if elapsed_time &gt; 0 else 0
-                    progress = downloaded_size / total_size * 100
-                    gb_downloaded = downloaded_size/(1024**3)
-                    gb_total = total_size/(1024**3)
-                    if elapsed_time &gt;= 1:
-                        print(progress_bar.format(progress, gb_downloaded, gb_total, download_speed), end=&#39;\r&#39;)
-                        downloaded_since_last = 0
-                        start_time = time.time()
-            print(progress_bar.format(100, gb_downloaded, gb_total, download_speed))
-            rename_file(unfinished_save_path, self.gguf_file_path)
-        else:
-            print(f&#34;File {self.gguf_file_path} already exists. Skipping download.&#34;)
-        return self.gguf_file_path
-    
-    def json_path(self) -&gt; str:
-        return change_extension(self.gguf_file_path, &#34;.json&#34;)
-    
-    def save_json(self, replace_existing:bool=True) -&gt; str:
-        if replace_existing or not self.has_json():
-            save_json_file(self.json_path(), self.to_dict())
-        else:
-            print(f&#34;File {self.json_path()} already exists and replace_existing={replace_existing}. Skipping save.&#34;)
-        return self.json_path()
-    
-    @staticmethod
-    def from_json(json_file_path:str) -&gt; &#34;ModelData&#34;:
-        model_data = load_json_file(json_file_path)
-        return ModelData.from_dict(model_data)
-
-    @staticmethod
-    def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
-                  description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
-        return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
-
-    def model_path(self) -&gt; str:
-        return self.gguf_file_path
-
-    @staticmethod
-    def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
-                  description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
-        #creates a model where url is also the file path
-        save_dir = get_directory(gguf_file_path) if save_dir is None else save_dir
-        url = gguf_file_path
-        return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
-
-    def get_ai_tag_open(self) -&gt; str:
-        return self.ai_tags[&#34;open&#34;]
-    
-    def get_ai_tag_close(self) -&gt; str:
-        return self.ai_tags[&#34;close&#34;]
-    
-    def get_user_tag_open(self) -&gt; str:
-        return self.user_tags[&#34;open&#34;]
-    
-    def get_user_tag_close(self) -&gt; str:
-        return self.user_tags[&#34;close&#34;]
-    
-    def get_system_tag_open(self) -&gt; str:
-        return self.system_tags[&#34;open&#34;]
-    
-    def get_system_tag_close(self) -&gt; str:
-        return self.system_tags[&#34;close&#34;]
-    
-    def get_ai_tags(self) -&gt; list[str]:
-        return [self.get_ai_tag_open(), self.get_ai_tag_close()]
-    
-    def get_user_tags(self) -&gt; list[str]:
-        return [self.get_user_tag_open(), self.get_user_tag_close()]
-    
-    def get_system_tags(self) -&gt; list[str]:
-        return [self.get_system_tag_open(), self.get_system_tag_close()]
-    
-    def has_system_tags(self) -&gt; bool:
-        return self.system_tags is not None</code></pre>
-</details>
-<h3>Static methods</h3>
-<dl>
-<dt id="glai.ModelData.from_dict"><code class="name flex">
-<span>def <span class="ident">from_dict</span></span>(<span>model_data: dict) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@staticmethod
-def from_dict(model_data:dict) -&gt; &#34;ModelData&#34;:
-    url = model_data[&#34;url&#34;]
-    save_dir = model_data[&#34;save_dir&#34;]
-    description = model_data[&#34;description&#34;] if &#34;description&#34; in model_data else None
-    keywords = model_data[&#34;keywords&#34;] if &#34;keywords&#34; in model_data else None
-    user_tags = model_data[&#34;user_tags&#34;]
-    ai_tags = model_data[&#34;ai_tags&#34;]
-    system_tags = model_data[&#34;system_tags&#34;] if &#34;system_tags&#34; in model_data else None
-    new_model_data = ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)
-    return new_model_data</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.from_file"><code class="name flex">
-<span>def <span class="ident">from_file</span></span>(<span>gguf_file_path: str, save_dir: Optional[str] = None, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), system_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@staticmethod
-def from_file(gguf_file_path:str, save_dir:Optional[str]=None, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
-              description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
-    #creates a model where url is also the file path
-    save_dir = get_directory(gguf_file_path) if save_dir is None else save_dir
-    url = gguf_file_path
-    return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.from_json"><code class="name flex">
-<span>def <span class="ident">from_json</span></span>(<span>json_file_path: str) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@staticmethod
-def from_json(json_file_path:str) -&gt; &#34;ModelData&#34;:
-    model_data = load_json_file(json_file_path)
-    return ModelData.from_dict(model_data)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.from_url"><code class="name flex">
-<span>def <span class="ident">from_url</span></span>(<span>url: str, save_dir: str, user_tags: Union[dict, list, set] = ('', ''), ai_tags: Union[dict, list, set] = ('', ''), system_tags: Union[dict, list, set] = ('', ''), description: Optional[str] = None, keywords: Optional[None] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@staticmethod
-def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), ai_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;), system_tags:Union[dict, list, set] = (&#34;&#34;, &#34;&#34;),
-              description:Optional[str] = None, keywords:Optional[list] = None) -&gt; &#34;ModelData&#34;:
-    return ModelData(url, save_dir, user_tags, ai_tags, system_tags, description, keywords)</code></pre>
-</details>
-</dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="glai.ModelData.download_gguf"><code class="name flex">
-<span>def <span class="ident">download_gguf</span></span>(<span>self, force_redownload: bool = False) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def download_gguf(self, force_redownload:bool=False) -&gt; str:
-    print(f&#34;Preparing {self.gguf_file_path}\n for {self.name} : {self.model_quantization}...&#34;)
-    if not does_file_exist(self.gguf_file_path) or force_redownload:
-        print(f&#34;Downloading {self.name} : {self.model_quantization}...&#34;)
-        gguf_download_url = self._hf_url_to_download_url(self.gguf_url)
-        response = requests.get(gguf_download_url, stream=True)
-        total_size = int(response.headers.get(&#39;content-length&#39;, 0))
-        block_size = 1024000  # 100 KB
-        progress_bar = f&#34;Please wait, downloading {self.name} : {self.model_quantization}: {{0:0.2f}}% | {{1:0.3f}}/{{2:0.3f}} GB) | {{3:0.3f}} MB/s&#34;
-        unfinished_save_path = self.gguf_file_path + &#34;.unfinished&#34;
-        with open(unfinished_save_path, &#34;wb&#34;) as f:
-            downloaded_size = 0
-            start_time = time.time()
-            elapsed_time = 0
-            downloaded_since_last = 0
-            for data in response.iter_content(block_size):
-                downloaded_size += len(data)
-                downloaded_since_last += len(data)
-                f.write(data)
-                elapsed_time = time.time() - start_time
-                download_speed = (downloaded_since_last*10/(1024**3)) / elapsed_time if elapsed_time &gt; 0 else 0
-                progress = downloaded_size / total_size * 100
-                gb_downloaded = downloaded_size/(1024**3)
-                gb_total = total_size/(1024**3)
-                if elapsed_time &gt;= 1:
-                    print(progress_bar.format(progress, gb_downloaded, gb_total, download_speed), end=&#39;\r&#39;)
-                    downloaded_since_last = 0
-                    start_time = time.time()
-        print(progress_bar.format(100, gb_downloaded, gb_total, download_speed))
-        rename_file(unfinished_save_path, self.gguf_file_path)
-    else:
-        print(f&#34;File {self.gguf_file_path} already exists. Skipping download.&#34;)
-    return self.gguf_file_path</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.get_ai_tag_close"><code class="name flex">
-<span>def <span class="ident">get_ai_tag_close</span></span>(<span>self) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_ai_tag_close(self) -&gt; str:
-    return self.ai_tags[&#34;close&#34;]</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.get_ai_tag_open"><code class="name flex">
-<span>def <span class="ident">get_ai_tag_open</span></span>(<span>self) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_ai_tag_open(self) -&gt; str:
-    return self.ai_tags[&#34;open&#34;]</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.get_ai_tags"><code class="name flex">
-<span>def <span class="ident">get_ai_tags</span></span>(<span>self) ‑> list[str]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_ai_tags(self) -&gt; list[str]:
-    return [self.get_ai_tag_open(), self.get_ai_tag_close()]</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.get_system_tag_close"><code class="name flex">
-<span>def <span class="ident">get_system_tag_close</span></span>(<span>self) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_system_tag_close(self) -&gt; str:
-    return self.system_tags[&#34;close&#34;]</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.get_system_tag_open"><code class="name flex">
-<span>def <span class="ident">get_system_tag_open</span></span>(<span>self) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_system_tag_open(self) -&gt; str:
-    return self.system_tags[&#34;open&#34;]</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.get_system_tags"><code class="name flex">
-<span>def <span class="ident">get_system_tags</span></span>(<span>self) ‑> list[str]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_system_tags(self) -&gt; list[str]:
-    return [self.get_system_tag_open(), self.get_system_tag_close()]</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.get_user_tag_close"><code class="name flex">
-<span>def <span class="ident">get_user_tag_close</span></span>(<span>self) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_user_tag_close(self) -&gt; str:
-    return self.user_tags[&#34;close&#34;]</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.get_user_tag_open"><code class="name flex">
-<span>def <span class="ident">get_user_tag_open</span></span>(<span>self) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_user_tag_open(self) -&gt; str:
-    return self.user_tags[&#34;open&#34;]</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.get_user_tags"><code class="name flex">
-<span>def <span class="ident">get_user_tags</span></span>(<span>self) ‑> list[str]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_user_tags(self) -&gt; list[str]:
-    return [self.get_user_tag_open(), self.get_user_tag_close()]</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.has_json"><code class="name flex">
-<span>def <span class="ident">has_json</span></span>(<span>self) ‑> bool</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Checks if the model is in the db.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def has_json(self) -&gt; bool:
-    &#34;&#34;&#34;Checks if the model is in the db.&#34;&#34;&#34;
-    return does_file_exist(self.json_path())</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.has_system_tags"><code class="name flex">
-<span>def <span class="ident">has_system_tags</span></span>(<span>self) ‑> bool</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def has_system_tags(self) -&gt; bool:
-    return self.system_tags is not None</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.is_downloaded"><code class="name flex">
-<span>def <span class="ident">is_downloaded</span></span>(<span>self) ‑> bool</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Checks if the model file is downloaded.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def is_downloaded(self) -&gt; bool:
-    &#34;&#34;&#34;Checks if the model file is downloaded.&#34;&#34;&#34;
-    return does_file_exist(self.gguf_file_path)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.json_path"><code class="name flex">
-<span>def <span class="ident">json_path</span></span>(<span>self) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def json_path(self) -&gt; str:
-    return change_extension(self.gguf_file_path, &#34;.json&#34;)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.model_path"><code class="name flex">
-<span>def <span class="ident">model_path</span></span>(<span>self) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def model_path(self) -&gt; str:
-    return self.gguf_file_path</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.save_json"><code class="name flex">
-<span>def <span class="ident">save_json</span></span>(<span>self, replace_existing: bool = True) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def save_json(self, replace_existing:bool=True) -&gt; str:
-    if replace_existing or not self.has_json():
-        save_json_file(self.json_path(), self.to_dict())
-    else:
-        print(f&#34;File {self.json_path()} already exists and replace_existing={replace_existing}. Skipping save.&#34;)
-    return self.json_path()</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.set_ai_tags"><code class="name flex">
-<span>def <span class="ident">set_ai_tags</span></span>(<span>self, ai_tags: Union[dict, set[str], list[str], tuple[str]]) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_ai_tags(self, ai_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
-    if isinstance(ai_tags, dict):
-        if &#34;open&#34; in ai_tags and &#34;close&#34; in ai_tags:
-            self.ai_tags = ai_tags
-        else:
-            raise ValueError(f&#34;Invalid user tags: {ai_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
-    elif isinstance(ai_tags, set) or isinstance(ai_tags, list) or isinstance(ai_tags, tuple):
-        self.ai_tags = {
-            &#34;open&#34;: ai_tags[0],
-            &#34;close&#34;: ai_tags[1]
-        }
-    else:
-        raise TypeError(f&#34;Invalid type for user tags: {type(ai_tags)}, must be dict, set or list.&#34;)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.set_save_dir"><code class="name flex">
-<span>def <span class="ident">set_save_dir</span></span>(<span>self, save_dir: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_save_dir(self, save_dir:str) -&gt; None:
-    self.save_dir = save_dir
-    self.gguf_file_path = self._url_to_file_path(save_dir, self.gguf_url)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.set_system_tags"><code class="name flex">
-<span>def <span class="ident">set_system_tags</span></span>(<span>self, system_tags: Union[dict, set[str], list[str], tuple[str]]) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_system_tags(self, system_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
-    if isinstance(system_tags, dict):
-        if &#34;open&#34; in system_tags and &#34;close&#34; in system_tags:
-            self.system_tags = system_tags
-        else:
-            raise ValueError(f&#34;Invalid system tags: {system_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
-    elif isinstance(system_tags, set) or isinstance(system_tags, list) or isinstance(system_tags, tuple):
-        self.system_tags = {
-            &#34;open&#34;: system_tags[0],
-            &#34;close&#34;: system_tags[1]
-        }
-    else:
-        raise TypeError(f&#34;Invalid type for system tags: {type(system_tags)}, must be dict, set or list.&#34;)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.set_tags"><code class="name flex">
-<span>def <span class="ident">set_tags</span></span>(<span>self, ai_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)], user_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)], system_tags: Union[dict, set[str], list[str], tuple[str], ForwardRef(None)]) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_tags(self, 
-             ai_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-             user_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-             system_tags:Optional[Union[dict, set[str], list[str], tuple[str]]],
-             ) -&gt; None:
-    if ai_tags is not None:
-        self.set_ai_tags(ai_tags)
-    if user_tags is not None:
-        self.set_user_tags(user_tags)
-    if system_tags is not None:
-        self.set_system_tags(system_tags)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.set_user_tags"><code class="name flex">
-<span>def <span class="ident">set_user_tags</span></span>(<span>self, user_tags: Union[dict, set[str], list[str], tuple[str]]) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_user_tags(self, user_tags:Union[dict, set[str], list[str], tuple[str]]) -&gt; None:
-    if isinstance(user_tags, dict):
-        if &#34;open&#34; in user_tags and &#34;close&#34; in user_tags:
-            self.user_tags = user_tags
-        else:
-            raise ValueError(f&#34;Invalid user tags: {user_tags}, for dict tags both &#39;open&#39; and &#39;close&#39; keys must be present.&#34;)
-    elif isinstance(user_tags, set) or isinstance(user_tags, list) or isinstance(user_tags, tuple):
-        self.user_tags = {
-            &#34;open&#34;: user_tags[0],
-            &#34;close&#34;: user_tags[1]
-        }
-    else:
-        raise TypeError(f&#34;Invalid type for user tags: {type(user_tags)}, must be dict, set or list.&#34;)</code></pre>
-</details>
-</dd>
-<dt id="glai.ModelData.to_dict"><code class="name flex">
-<span>def <span class="ident">to_dict</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def to_dict(self):
-    model_data = {
-        &#34;url&#34;: self.gguf_url,
-        &#34;gguf_file_path&#34;: self.gguf_file_path,
-        &#34;model_name&#34;: self.name,
-        &#34;model_quantization&#34;: self.model_quantization, 
-        &#34;description&#34;: self.description,
-        &#34;keywords&#34;: self.keywords,
-        &#34;user_tags&#34;: self.user_tags,
-        &#34;ai_tags&#34;: self.ai_tags,
-        &#34;system_tags&#34;: self.system_tags,
-        &#34;save_dir&#34;: self.save_dir,
-    }
-    return model_data</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
 </dl>
 </section>
 </article>
@@ -3653,11 +2761,21 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;&#3
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
 <li><code><a title="glai.ai" href="ai/index.html">glai.ai</a></code></li>
-<li><code><a title="glai.back_end" href="back_end/index.html">glai.back_end</a></code></li>
+<li><code><a title="glai.messages" href="messages/index.html">glai.messages</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="glai.AIMessage" href="#glai.AIMessage">AIMessage</a></code></h4>
+<ul class="">
+<li><code><a title="glai.AIMessage.edit" href="#glai.AIMessage.edit">edit</a></code></li>
+<li><code><a title="glai.AIMessage.from_dict" href="#glai.AIMessage.from_dict">from_dict</a></code></li>
+<li><code><a title="glai.AIMessage.get_tags" href="#glai.AIMessage.get_tags">get_tags</a></code></li>
+<li><code><a title="glai.AIMessage.text" href="#glai.AIMessage.text">text</a></code></li>
+<li><code><a title="glai.AIMessage.to_dict" href="#glai.AIMessage.to_dict">to_dict</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="glai.AIMessages" href="#glai.AIMessages">AIMessages</a></code></h4>
 <ul class="">
@@ -3700,61 +2818,13 @@ def from_url(url:str, save_dir:str, user_tags:Union[dict, list, set] = (&#34;&#3
 <li><code><a title="glai.EasyAI.count_tokens" href="#glai.EasyAI.count_tokens">count_tokens</a></code></li>
 <li><code><a title="glai.EasyAI.find_model_data" href="#glai.EasyAI.find_model_data">find_model_data</a></code></li>
 <li><code><a title="glai.EasyAI.generate" href="#glai.EasyAI.generate">generate</a></code></li>
-<li><code><a title="glai.EasyAI.is_within_input_limit" href="#glai.EasyAI.is_within_input_limit">is_within_input_limit</a></code></li>
+<li><code><a title="glai.EasyAI.import_from_repo" href="#glai.EasyAI.import_from_repo">import_from_repo</a></code></li>
+<li><code><a title="glai.EasyAI.import_verified_models_to_db" href="#glai.EasyAI.import_verified_models_to_db">import_verified_models_to_db</a></code></li>
+<li><code><a title="glai.EasyAI.is_within_context" href="#glai.EasyAI.is_within_context">is_within_context</a></code></li>
 <li><code><a title="glai.EasyAI.load_ai" href="#glai.EasyAI.load_ai">load_ai</a></code></li>
 <li><code><a title="glai.EasyAI.load_model_db" href="#glai.EasyAI.load_model_db">load_model_db</a></code></li>
 <li><code><a title="glai.EasyAI.model_data_from_file" href="#glai.EasyAI.model_data_from_file">model_data_from_file</a></code></li>
 <li><code><a title="glai.EasyAI.model_data_from_url" href="#glai.EasyAI.model_data_from_url">model_data_from_url</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="glai.ModelDB" href="#glai.ModelDB">ModelDB</a></code></h4>
-<ul class="">
-<li><code><a title="glai.ModelDB.add_model_by_json" href="#glai.ModelDB.add_model_by_json">add_model_by_json</a></code></li>
-<li><code><a title="glai.ModelDB.add_model_by_url" href="#glai.ModelDB.add_model_by_url">add_model_by_url</a></code></li>
-<li><code><a title="glai.ModelDB.add_model_data" href="#glai.ModelDB.add_model_data">add_model_data</a></code></li>
-<li><code><a title="glai.ModelDB.find_model" href="#glai.ModelDB.find_model">find_model</a></code></li>
-<li><code><a title="glai.ModelDB.find_models" href="#glai.ModelDB.find_models">find_models</a></code></li>
-<li><code><a title="glai.ModelDB.get_model_by_url" href="#glai.ModelDB.get_model_by_url">get_model_by_url</a></code></li>
-<li><code><a title="glai.ModelDB.import_models_from_repo" href="#glai.ModelDB.import_models_from_repo">import_models_from_repo</a></code></li>
-<li><code><a title="glai.ModelDB.list_available_models" href="#glai.ModelDB.list_available_models">list_available_models</a></code></li>
-<li><code><a title="glai.ModelDB.list_models_quantizations" href="#glai.ModelDB.list_models_quantizations">list_models_quantizations</a></code></li>
-<li><code><a title="glai.ModelDB.load_models" href="#glai.ModelDB.load_models">load_models</a></code></li>
-<li><code><a title="glai.ModelDB.load_models_data_from_repo" href="#glai.ModelDB.load_models_data_from_repo">load_models_data_from_repo</a></code></li>
-<li><code><a title="glai.ModelDB.save_all_models" href="#glai.ModelDB.save_all_models">save_all_models</a></code></li>
-<li><code><a title="glai.ModelDB.set_model_db_dir" href="#glai.ModelDB.set_model_db_dir">set_model_db_dir</a></code></li>
-<li><code><a title="glai.ModelDB.show_db_info" href="#glai.ModelDB.show_db_info">show_db_info</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="glai.ModelData" href="#glai.ModelData">ModelData</a></code></h4>
-<ul class="">
-<li><code><a title="glai.ModelData.download_gguf" href="#glai.ModelData.download_gguf">download_gguf</a></code></li>
-<li><code><a title="glai.ModelData.from_dict" href="#glai.ModelData.from_dict">from_dict</a></code></li>
-<li><code><a title="glai.ModelData.from_file" href="#glai.ModelData.from_file">from_file</a></code></li>
-<li><code><a title="glai.ModelData.from_json" href="#glai.ModelData.from_json">from_json</a></code></li>
-<li><code><a title="glai.ModelData.from_url" href="#glai.ModelData.from_url">from_url</a></code></li>
-<li><code><a title="glai.ModelData.get_ai_tag_close" href="#glai.ModelData.get_ai_tag_close">get_ai_tag_close</a></code></li>
-<li><code><a title="glai.ModelData.get_ai_tag_open" href="#glai.ModelData.get_ai_tag_open">get_ai_tag_open</a></code></li>
-<li><code><a title="glai.ModelData.get_ai_tags" href="#glai.ModelData.get_ai_tags">get_ai_tags</a></code></li>
-<li><code><a title="glai.ModelData.get_system_tag_close" href="#glai.ModelData.get_system_tag_close">get_system_tag_close</a></code></li>
-<li><code><a title="glai.ModelData.get_system_tag_open" href="#glai.ModelData.get_system_tag_open">get_system_tag_open</a></code></li>
-<li><code><a title="glai.ModelData.get_system_tags" href="#glai.ModelData.get_system_tags">get_system_tags</a></code></li>
-<li><code><a title="glai.ModelData.get_user_tag_close" href="#glai.ModelData.get_user_tag_close">get_user_tag_close</a></code></li>
-<li><code><a title="glai.ModelData.get_user_tag_open" href="#glai.ModelData.get_user_tag_open">get_user_tag_open</a></code></li>
-<li><code><a title="glai.ModelData.get_user_tags" href="#glai.ModelData.get_user_tags">get_user_tags</a></code></li>
-<li><code><a title="glai.ModelData.has_json" href="#glai.ModelData.has_json">has_json</a></code></li>
-<li><code><a title="glai.ModelData.has_system_tags" href="#glai.ModelData.has_system_tags">has_system_tags</a></code></li>
-<li><code><a title="glai.ModelData.is_downloaded" href="#glai.ModelData.is_downloaded">is_downloaded</a></code></li>
-<li><code><a title="glai.ModelData.json_path" href="#glai.ModelData.json_path">json_path</a></code></li>
-<li><code><a title="glai.ModelData.model_path" href="#glai.ModelData.model_path">model_path</a></code></li>
-<li><code><a title="glai.ModelData.save_json" href="#glai.ModelData.save_json">save_json</a></code></li>
-<li><code><a title="glai.ModelData.set_ai_tags" href="#glai.ModelData.set_ai_tags">set_ai_tags</a></code></li>
-<li><code><a title="glai.ModelData.set_save_dir" href="#glai.ModelData.set_save_dir">set_save_dir</a></code></li>
-<li><code><a title="glai.ModelData.set_system_tags" href="#glai.ModelData.set_system_tags">set_system_tags</a></code></li>
-<li><code><a title="glai.ModelData.set_tags" href="#glai.ModelData.set_tags">set_tags</a></code></li>
-<li><code><a title="glai.ModelData.set_user_tags" href="#glai.ModelData.set_user_tags">set_user_tags</a></code></li>
-<li><code><a title="glai.ModelData.to_dict" href="#glai.ModelData.to_dict">to_dict</a></code></li>
 </ul>
 </li>
 </ul>

@@ -29,7 +29,8 @@
 <pre><code class="python">from __future__ import annotations
 
 from typing import Optional
-from ..back_end import AIMessages, AIMessage, ModelData, ModelDB, DEFAULT_LOCAL_GGUF_DIR
+from ..messages import AIMessages, AIMessage
+from gguf_modeldb import ModelDB, ModelData
 from gguf_llama import LlamaAI
 
 __all__ = [&#39;AutoAI&#39;]
@@ -48,7 +49,7 @@ class AutoAI:
         keyword_search: Keyword of model to search for. Optional. Default None.
         new_tokens: New token length for LlamaAI model. Default 1500.
         max_input_tokens: Max input tokens for LlamaAI model. Default 900.
-        model_db_dir: Directory to store model data in. Default DEFAULT_LOCAL_GGUF_DIR.
+        model_db_dir: Directory to store model data in. Defaults to global packages model directory.
 
     Attributes:
         ai_db: ModelDB object. - represents the database of models, has useful functions for searching and importing models.
@@ -61,13 +62,14 @@ class AutoAI:
                  name_search: Optional[str] = None,
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
+                 search_only_downloaded_models:bool = False,
                  max_total_tokens: int = 1500,
-                 model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR,
+                 model_db_dir:Optional[str] = None,
                  ) -&gt; None:
 
-        self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
+        self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_verified_models=True)
         self.model_data: ModelData = self.ai_db.find_model(
-            name_search, quantization_search, keyword_search
+            name_search, quantization_search, keyword_search, search_only_downloaded_models
         )
         self.model_data.download_gguf()
         self.ai = LlamaAI(
@@ -131,7 +133,7 @@ class AutoAI:
             if system_message is not None:
                 generation_messages.set_system_message(system_message)
             else:
-                print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
+                print(&#34;WARNING: Model seeps to support system messages, but no system message provided.&#34;)
         generation_messages.add_user_message(user_message)
 
 
@@ -214,7 +216,7 @@ class AutoAI:
 <dl>
 <dt id="glai.ai.auto_ai.AutoAI"><code class="flex name class">
 <span>class <span class="ident">AutoAI</span></span>
-<span>(</span><span>name_search: Optional[str] = None, quantization_search: Optional[str] = None, keyword_search: Optional[str] = None, max_total_tokens: int = 1500, model_db_dir: str = './gguf_db')</span>
+<span>(</span><span>name_search: Optional[str] = None, quantization_search: Optional[str] = None, keyword_search: Optional[str] = None, search_only_downloaded_models: bool = False, max_total_tokens: int = 1500, model_db_dir: Optional[str] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialize the AutoAI class for super easy LLM AI generation.</p>
@@ -233,7 +235,7 @@ Downloads model and sets up LlamaAI.</p>
 <dt><strong><code>max_input_tokens</code></strong></dt>
 <dd>Max input tokens for LlamaAI model. Default 900.</dd>
 <dt><strong><code>model_db_dir</code></strong></dt>
-<dd>Directory to store model data in. Default DEFAULT_LOCAL_GGUF_DIR.</dd>
+<dd>Directory to store model data in. Defaults to global packages model directory.</dd>
 </dl>
 <h2 id="attributes">Attributes</h2>
 <dl>
@@ -263,7 +265,7 @@ Downloads model and sets up LlamaAI.</p>
         keyword_search: Keyword of model to search for. Optional. Default None.
         new_tokens: New token length for LlamaAI model. Default 1500.
         max_input_tokens: Max input tokens for LlamaAI model. Default 900.
-        model_db_dir: Directory to store model data in. Default DEFAULT_LOCAL_GGUF_DIR.
+        model_db_dir: Directory to store model data in. Defaults to global packages model directory.
 
     Attributes:
         ai_db: ModelDB object. - represents the database of models, has useful functions for searching and importing models.
@@ -276,13 +278,14 @@ Downloads model and sets up LlamaAI.</p>
                  name_search: Optional[str] = None,
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
+                 search_only_downloaded_models:bool = False,
                  max_total_tokens: int = 1500,
-                 model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR,
+                 model_db_dir:Optional[str] = None,
                  ) -&gt; None:
 
-        self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_examples=True)
+        self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_verified_models=True)
         self.model_data: ModelData = self.ai_db.find_model(
-            name_search, quantization_search, keyword_search
+            name_search, quantization_search, keyword_search, search_only_downloaded_models
         )
         self.model_data.download_gguf()
         self.ai = LlamaAI(
@@ -346,7 +349,7 @@ Downloads model and sets up LlamaAI.</p>
             if system_message is not None:
                 generation_messages.set_system_message(system_message)
             else:
-                print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
+                print(&#34;WARNING: Model seeps to support system messages, but no system message provided.&#34;)
         generation_messages.add_user_message(user_message)
 
 
@@ -466,7 +469,7 @@ Downloads model and sets up LlamaAI.</p>
 </details>
 </dd>
 <dt id="glai.ai.auto_ai.AutoAI.generate"><code class="name flex">
-<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.back_end.messages.AIMessage" href="../back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.messages.messages.AIMessage" href="../messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate an AI response to a user message.</p>
@@ -519,7 +522,7 @@ You can check if a model supports system messages by checking the model_data.has
         if system_message is not None:
             generation_messages.set_system_message(system_message)
         else:
-            print(&#34;WARNING: Model supports system messages, but no system message provided.&#34;)
+            print(&#34;WARNING: Model seeps to support system messages, but no system message provided.&#34;)
     generation_messages.add_user_message(user_message)
 
 
@@ -548,7 +551,7 @@ You can check if a model supports system messages by checking the model_data.has
 </details>
 </dd>
 <dt id="glai.ai.auto_ai.AutoAI.generate_from_literal_string"><code class="name flex">
-<span>def <span class="ident">generate_from_literal_string</span></span>(<span>self, prompt: str, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="../back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate_from_literal_string</span></span>(<span>self, prompt: str, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.messages.messages.AIMessage" href="../messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate text from a prompt using the LlamaAI model.</p>
@@ -584,7 +587,7 @@ You can check if a model supports system messages by checking the model_data.has
 </details>
 </dd>
 <dt id="glai.ai.auto_ai.AutoAI.generate_from_messages"><code class="name flex">
-<span>def <span class="ident">generate_from_messages</span></span>(<span>self, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.back_end.messages.AIMessage" href="../back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate_from_messages</span></span>(<span>self, stop_at: str = None, include_stop_str: bool = True) ‑> <a title="glai.messages.messages.AIMessage" href="../messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>

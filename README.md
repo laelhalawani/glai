@@ -16,12 +16,15 @@ Visit API documentation at: https://laelhalawani.github.io/glai/
 - Handles downloading model data, loading it to memory, and configuring message formatting.
 - Use generate() method to get completions by providing a user message.
 
-### ModelDB (used by AutoAI and EasyAI):
+## Requirement: 
+All requirements install automatically, but here's information on seleceted packages for more context.
+### ModelDB (used by AutoAI and EasyAI) 
+https://github.com/laelhalawani/gguf_modeldb
 - Manages database of model data files. via ModelData class objects.
 - Useful for searching for models and retrieving model metadata.
 - Can import models from HuggingFace repo URLs or import and download models from .gguf urls on huggingface.
-
 ### ModelData (used by ModelDB):
+https://github.com/laelhalawani/gguf_modeldb
 - Represents metadata and info about a specific model.
 - Used by ModelDB to track and load models.
 - Can be initialized from URL, file, or ModelDB search.
@@ -37,7 +40,8 @@ Usage examples.
 
 ### Import package
 ```python
-from glai import AutoAI, EasyAI, ModelDB, ModelData
+from glai import AutoAI, EasyAI 
+#it's enough to use one of these, probaly EasyAI will be better except some most basic cases
 ```
 ### AutoAI - automatic model loading
 ```python
@@ -64,9 +68,11 @@ db.show_db_info()
 Import models from a HuggingFace repo into the model database:
 ```python
 from glai.back_end.model_db.db import ModelDB
-
-mdb = ModelDB('./gguf_db', False)
-mdb.import_models_from_repo(
+print(f"----> EXAMPLE: Importing models from repo...")
+#input()
+easy_ai = EasyAI()
+easy_ai.load_model_db('./gguf_db', False)
+easy_ai.import_from_repo(
     hf_repo_url="https://huggingface.co/TheBloke/SOLAR-10.7B-Instruct-v1.0-GGUF",
     user_tags=["[INST]", "[/INST]"],
     ai_tags=["", ""],
@@ -74,7 +80,7 @@ mdb.import_models_from_repo(
     keywords=["10.7B", "upstage","isntruct", "solar"],
     replace_existing=False,
 )
-mdb.show_db_info()
+easy_ai.model_db.show_db_info()
 ```
 ### AutoAI Quick Example
 Quickly generate using AutoAI:
@@ -172,11 +178,8 @@ Get a model from a URL and generate:
 from glai.back_end.model_db.db import ModelDB
 from glai.ai import EasyAI
 
-mdb = ModelDB('./gguf_db', False)
-mdb.show_db_info()
-
 eai = EasyAI()
-eai.load_model_db('./gguf_db')
+eai.load_model_db('./gguf_db', False)
 eai.model_data_from_url(
     url="https://huggingface.co/TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF/blob/main/mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf",
     user_tags=("[INST]", "[/INST]"),

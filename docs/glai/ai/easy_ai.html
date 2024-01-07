@@ -26,8 +26,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import Optional, Tuple
-from ..back_end import AIMessages, AIMessage, ModelData, ModelDB, DEFAULT_LOCAL_GGUF_DIR
+<pre><code class="python">from typing import Optional, Tuple, Union
+from ..messages import AIMessages, AIMessage
+from gguf_modeldb import ModelDB, ModelData, VERIFIED_MODELS_DB_DIR
 from gguf_llama import LlamaAI
 
 __all__ = [&#39;EasyAI&#39;]
@@ -40,13 +41,13 @@ class EasyAI:
     Initialization:
     Can be intialized with no arguments, followed by following configuration methods, step by step, all in one or using a dict:\n
     Step by step call these with appropriate arguments:\n
-        1. `self.load_model_db(model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR)`
+        1. `self.load_model_db(model_db_dir: str = MODEL_EXAMPLES_DB_DIR)`
         2. One of the following with necessary args: `self.model_data_from_url()` or `self.model_data_from_file()` or `self.find_model_data()`
         3. `self.load_ai(max_total_tokens: int = 200)`
     All in one:\n
         ```python
         self.configure(
-            model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR, 
+            model_db_dir:str = MODEL_EXAMPLES_DB_DIR, 
             model_url: Optional[str] = None, 
             model_gguf_path: Optional[str] = None, 
             name_search: Optional[str] = None, 
@@ -57,7 +58,7 @@ class EasyAI:
         ```
         
         Or with a dictionary with the following keys:
-        - model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+        - model_db_dir: Directory to store model data in. Defaults to MODEL_EXAMPLES_DB_DIR.
         - model_url: URL of model to configure with. Automatically downloads and builds as needed. (Optional)
         - name_search: Name of model to search for in the model db dir.(Optional)
         - quantization_search: Quantization of model to search for in the model db dir..(Optional)
@@ -96,12 +97,13 @@ class EasyAI:
             self.configure(**kwds)
 
     def configure(self,
-                  model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR,
+                  model_db_dir: Optional[str] = None,
                   model_url: Optional[str] = None,
                   model_gguf_path: Optional[str] = None,
                   name_search: Optional[str] = None,
                   quantization_search: Optional[str] = None,
                   keyword_search: Optional[str] = None,
+                  search_only_downloaded: bool = False,
                   max_total_tokens: int = 200,
                                             ) -&gt; None:
         &#34;&#34;&#34;
@@ -111,7 +113,7 @@ class EasyAI:
         Sets model data attribute.
 
         Args:
-            model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+            model_db_dir: Directory to store model data in. If none is provided global db is used.This is preferred for most use cases.
             max_total_tokens: Max tokens to be processed (input+generation) by LlamaAI model. (Defaults to 200, set to around 500-1k for regular use)
             
             Provide at least one of these args to fetch ModelData: 
@@ -129,14 +131,14 @@ class EasyAI:
 
         &#34;&#34;&#34;
         if model_db_dir is None:
-            print(f&#34;Using default model DB dir: {DEFAULT_LOCAL_GGUF_DIR}&#34;)
+            print(f&#34;Using provided verified models DB, files at {VERIFIED_MODELS_DB_DIR}&#34;)
         self.load_model_db(model_db_dir)
         if model_url is not None:
             self.model_data_from_url(model_url)
         elif model_gguf_path is not None:
             self.model_data_from_file(model_gguf_path)
         elif name_search is not None or quantization_search is not None or keyword_search is not None:
-            self.find_model_data(name_search, quantization_search, keyword_search)
+            self.find_model_data(name_search, quantization_search, keyword_search, search_only_downloaded)
         else:
             raise Exception(&#34;Can&#39;t find model data. Please provide a model URL, GGUF file path, or model name/quantization/keyword.&#34;)
         
@@ -148,7 +150,7 @@ class EasyAI:
             
 
 
-    def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR, copy_examples=True) -&gt; None:
+    def load_model_db(self, db_dir:Optional[str] = None, copy_verified_models=True) -&gt; None:
         &#34;&#34;&#34;
         Load ModelDB from given directory.
 
@@ -156,12 +158,32 @@ class EasyAI:
             db_dir: Directory to load ModelDB from.
             copy_examples: Whether to copy example GGUF files to db_dir if db_dir is empty.
         &#34;&#34;&#34;
-        self.model_db = ModelDB(model_db_dir=db_dir, copy_examples=copy_examples)
+        self.model_db = ModelDB(model_db_dir=db_dir, copy_verified_models=copy_verified_models)
 
+    def import_verified_models_to_db(self, model_name_quantization_list:Optional[list[Union[list,set,tuple]]] = None) -&gt; None:
+        &#34;&#34;&#34;
+        Import verified models to new ModelDB.
+
+        Imports verified models from global verified models DB to new ModelDB. If model_name_quantization_list is provided, only models in the list are imported.
+
+        Args:
+            model_name_quantization_list: List of tuples of model name and quantization to import. If None, all models are imported.
+        &#34;&#34;&#34;
+        if self.model_db is None:
+            raise Exception(&#34;No model DB loaded. Use load_model_db() first.&#34;)
+        if model_name_quantization_list is not None:
+            for n_q_data in model_name_quantization_list:
+                name = n_q_data[0]
+                quantization = n_q_data[1]
+                self.model_db.import_verified_model(name, quantization, None, True)
+        else:
+            self.model_db.import_verified_model(None, None, None, True)
+        
     def find_model_data(self,
                         model_name: Optional[str] = None,  
                         quantization: Optional[str] = None,
-                        keyword: Optional[str] = None) -&gt; ModelData:
+                        keyword: Optional[str] = None,
+                        only_downloaded: bool = False) -&gt; ModelData:
         &#34;&#34;&#34;
         Find model data in database that matches given criteria.
 
@@ -179,7 +201,7 @@ class EasyAI:
         &#34;&#34;&#34;
         if self.model_db is None:
             raise Exception(&#34;No model DB loaded. Use load_model_db() first.&#34;)
-        model_data = self.model_db.find_model(model_name, quantization, keyword)
+        model_data = self.model_db.find_model(model_name, quantization, keyword, only_downloaded)
         self.model_data = model_data
         return model_data
 
@@ -327,6 +349,7 @@ class EasyAI:
             self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
         if stop_at is None:
             stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == &#34;&#34;, self.messages.ai_tag_close != &#34; &#34;]) else None
+            include_stop_str = False
         generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
         if ai_message_tbc is not None:
             self.messages.edit_last_message(generated,
@@ -369,10 +392,8 @@ class EasyAI:
 
         return self.ai.count_tokens(generation_messages.text())
     
-    def is_within_input_limit(
-        self,
-        user_message_text: str,
-        ai_message_tbc: Optional[str] = None
+    def is_within_context(self,
+        prompt: str,
         ) -&gt; bool:
         &#34;&#34;&#34;
         Check if the generated message is within the input limit.
@@ -384,7 +405,36 @@ class EasyAI:
         Returns:
             True if within input limit, False otherwise.
         &#34;&#34;&#34;
-        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))</code></pre>
+        return self.ai.is_prompt_within_limit(prompt)
+    
+    def import_from_repo(self, hf_repo_url: str, user_tags: Tuple[str, str] = (&#34;&#34;, &#34;&#34;), ai_tags: Tuple[str, str] = (&#34;&#34;, &#34;&#34;), system_tags: Optional[Tuple[str, str]] = (None, None), keywords: Optional[str] = None, description: Optional[str] = None, replace_existing: bool = False) -&gt; None:
+        &#34;&#34;&#34;
+        Imports model data from HuggingFace model repo to current model DB. 
+
+        Args:
+            hf_repo_url: URL of model to import.
+            user_tags: User tags to assign to model data.
+            ai_tags: AI tags to assign to model data.
+            system_tags: System tags to assign to model data.
+            description: Optional description for model data.
+            keyword: Optional keyword for model data.
+            replace_existing: Whether to replace existing model data if found.
+
+        Raises:
+            Exception: If no model DB loaded yet.
+        &#34;&#34;&#34;
+
+
+
+        self.model_db.import_models_from_repo(
+            hf_repo_url=hf_repo_url,
+            user_tags=user_tags,
+            ai_tags=ai_tags,
+            system_tags=system_tags,
+            keywords=keywords,
+            description=description,
+            replace_existing=replace_existing,
+        )</code></pre>
 </details>
 </section>
 <section>
@@ -406,14 +456,14 @@ for inference on CPU.</p>
 <p>Initialization:
 Can be intialized with no arguments, followed by following configuration methods, step by step, all in one or using a dict:</p>
 <p>Step by step call these with appropriate arguments:</p>
-<pre><code>1. `self.load_model_db(model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR)`
+<pre><code>1. `self.load_model_db(model_db_dir: str = MODEL_EXAMPLES_DB_DIR)`
 2. One of the following with necessary args: &lt;code&gt;self.model\_data\_from\_url()&lt;/code&gt; or &lt;code&gt;self.model\_data\_from\_file()&lt;/code&gt; or &lt;code&gt;self.find\_model\_data()&lt;/code&gt;
 3. `self.load_ai(max_total_tokens: int = 200)`
 </code></pre>
 <p>All in one:</p>
 <pre><code>```python
 self.configure(
-    model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR, 
+    model_db_dir:str = MODEL_EXAMPLES_DB_DIR, 
     model_url: Optional[str] = None, 
     model_gguf_path: Optional[str] = None, 
     name_search: Optional[str] = None, 
@@ -424,7 +474,7 @@ self.configure(
 ```
 
 Or with a dictionary with the following keys:
-- model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+- model_db_dir: Directory to store model data in. Defaults to MODEL_EXAMPLES_DB_DIR.
 - model_url: URL of model to configure with. Automatically downloads and builds as needed. (Optional)
 - name_search: Name of model to search for in the model db dir.(Optional)
 - quantization_search: Quantization of model to search for in the model db dir..(Optional)
@@ -469,13 +519,13 @@ LLama</p></div>
     Initialization:
     Can be intialized with no arguments, followed by following configuration methods, step by step, all in one or using a dict:\n
     Step by step call these with appropriate arguments:\n
-        1. `self.load_model_db(model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR)`
+        1. `self.load_model_db(model_db_dir: str = MODEL_EXAMPLES_DB_DIR)`
         2. One of the following with necessary args: `self.model_data_from_url()` or `self.model_data_from_file()` or `self.find_model_data()`
         3. `self.load_ai(max_total_tokens: int = 200)`
     All in one:\n
         ```python
         self.configure(
-            model_db_dir:str = DEFAULT_LOCAL_GGUF_DIR, 
+            model_db_dir:str = MODEL_EXAMPLES_DB_DIR, 
             model_url: Optional[str] = None, 
             model_gguf_path: Optional[str] = None, 
             name_search: Optional[str] = None, 
@@ -486,7 +536,7 @@ LLama</p></div>
         ```
         
         Or with a dictionary with the following keys:
-        - model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+        - model_db_dir: Directory to store model data in. Defaults to MODEL_EXAMPLES_DB_DIR.
         - model_url: URL of model to configure with. Automatically downloads and builds as needed. (Optional)
         - name_search: Name of model to search for in the model db dir.(Optional)
         - quantization_search: Quantization of model to search for in the model db dir..(Optional)
@@ -525,12 +575,13 @@ LLama</p></div>
             self.configure(**kwds)
 
     def configure(self,
-                  model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR,
+                  model_db_dir: Optional[str] = None,
                   model_url: Optional[str] = None,
                   model_gguf_path: Optional[str] = None,
                   name_search: Optional[str] = None,
                   quantization_search: Optional[str] = None,
                   keyword_search: Optional[str] = None,
+                  search_only_downloaded: bool = False,
                   max_total_tokens: int = 200,
                                             ) -&gt; None:
         &#34;&#34;&#34;
@@ -540,7 +591,7 @@ LLama</p></div>
         Sets model data attribute.
 
         Args:
-            model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+            model_db_dir: Directory to store model data in. If none is provided global db is used.This is preferred for most use cases.
             max_total_tokens: Max tokens to be processed (input+generation) by LlamaAI model. (Defaults to 200, set to around 500-1k for regular use)
             
             Provide at least one of these args to fetch ModelData: 
@@ -558,14 +609,14 @@ LLama</p></div>
 
         &#34;&#34;&#34;
         if model_db_dir is None:
-            print(f&#34;Using default model DB dir: {DEFAULT_LOCAL_GGUF_DIR}&#34;)
+            print(f&#34;Using provided verified models DB, files at {VERIFIED_MODELS_DB_DIR}&#34;)
         self.load_model_db(model_db_dir)
         if model_url is not None:
             self.model_data_from_url(model_url)
         elif model_gguf_path is not None:
             self.model_data_from_file(model_gguf_path)
         elif name_search is not None or quantization_search is not None or keyword_search is not None:
-            self.find_model_data(name_search, quantization_search, keyword_search)
+            self.find_model_data(name_search, quantization_search, keyword_search, search_only_downloaded)
         else:
             raise Exception(&#34;Can&#39;t find model data. Please provide a model URL, GGUF file path, or model name/quantization/keyword.&#34;)
         
@@ -577,7 +628,7 @@ LLama</p></div>
             
 
 
-    def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR, copy_examples=True) -&gt; None:
+    def load_model_db(self, db_dir:Optional[str] = None, copy_verified_models=True) -&gt; None:
         &#34;&#34;&#34;
         Load ModelDB from given directory.
 
@@ -585,12 +636,32 @@ LLama</p></div>
             db_dir: Directory to load ModelDB from.
             copy_examples: Whether to copy example GGUF files to db_dir if db_dir is empty.
         &#34;&#34;&#34;
-        self.model_db = ModelDB(model_db_dir=db_dir, copy_examples=copy_examples)
+        self.model_db = ModelDB(model_db_dir=db_dir, copy_verified_models=copy_verified_models)
 
+    def import_verified_models_to_db(self, model_name_quantization_list:Optional[list[Union[list,set,tuple]]] = None) -&gt; None:
+        &#34;&#34;&#34;
+        Import verified models to new ModelDB.
+
+        Imports verified models from global verified models DB to new ModelDB. If model_name_quantization_list is provided, only models in the list are imported.
+
+        Args:
+            model_name_quantization_list: List of tuples of model name and quantization to import. If None, all models are imported.
+        &#34;&#34;&#34;
+        if self.model_db is None:
+            raise Exception(&#34;No model DB loaded. Use load_model_db() first.&#34;)
+        if model_name_quantization_list is not None:
+            for n_q_data in model_name_quantization_list:
+                name = n_q_data[0]
+                quantization = n_q_data[1]
+                self.model_db.import_verified_model(name, quantization, None, True)
+        else:
+            self.model_db.import_verified_model(None, None, None, True)
+        
     def find_model_data(self,
                         model_name: Optional[str] = None,  
                         quantization: Optional[str] = None,
-                        keyword: Optional[str] = None) -&gt; ModelData:
+                        keyword: Optional[str] = None,
+                        only_downloaded: bool = False) -&gt; ModelData:
         &#34;&#34;&#34;
         Find model data in database that matches given criteria.
 
@@ -608,7 +679,7 @@ LLama</p></div>
         &#34;&#34;&#34;
         if self.model_db is None:
             raise Exception(&#34;No model DB loaded. Use load_model_db() first.&#34;)
-        model_data = self.model_db.find_model(model_name, quantization, keyword)
+        model_data = self.model_db.find_model(model_name, quantization, keyword, only_downloaded)
         self.model_data = model_data
         return model_data
 
@@ -756,6 +827,7 @@ LLama</p></div>
             self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
         if stop_at is None:
             stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == &#34;&#34;, self.messages.ai_tag_close != &#34; &#34;]) else None
+            include_stop_str = False
         generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
         if ai_message_tbc is not None:
             self.messages.edit_last_message(generated,
@@ -798,10 +870,8 @@ LLama</p></div>
 
         return self.ai.count_tokens(generation_messages.text())
     
-    def is_within_input_limit(
-        self,
-        user_message_text: str,
-        ai_message_tbc: Optional[str] = None
+    def is_within_context(self,
+        prompt: str,
         ) -&gt; bool:
         &#34;&#34;&#34;
         Check if the generated message is within the input limit.
@@ -813,12 +883,41 @@ LLama</p></div>
         Returns:
             True if within input limit, False otherwise.
         &#34;&#34;&#34;
-        return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))</code></pre>
+        return self.ai.is_prompt_within_limit(prompt)
+    
+    def import_from_repo(self, hf_repo_url: str, user_tags: Tuple[str, str] = (&#34;&#34;, &#34;&#34;), ai_tags: Tuple[str, str] = (&#34;&#34;, &#34;&#34;), system_tags: Optional[Tuple[str, str]] = (None, None), keywords: Optional[str] = None, description: Optional[str] = None, replace_existing: bool = False) -&gt; None:
+        &#34;&#34;&#34;
+        Imports model data from HuggingFace model repo to current model DB. 
+
+        Args:
+            hf_repo_url: URL of model to import.
+            user_tags: User tags to assign to model data.
+            ai_tags: AI tags to assign to model data.
+            system_tags: System tags to assign to model data.
+            description: Optional description for model data.
+            keyword: Optional keyword for model data.
+            replace_existing: Whether to replace existing model data if found.
+
+        Raises:
+            Exception: If no model DB loaded yet.
+        &#34;&#34;&#34;
+
+
+
+        self.model_db.import_models_from_repo(
+            hf_repo_url=hf_repo_url,
+            user_tags=user_tags,
+            ai_tags=ai_tags,
+            system_tags=system_tags,
+            keywords=keywords,
+            description=description,
+            replace_existing=replace_existing,
+        )</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="glai.ai.easy_ai.EasyAI.configure"><code class="name flex">
-<span>def <span class="ident">configure</span></span>(<span>self, model_db_dir: str = './gguf_db', model_url: Optional[str] = None, model_gguf_path: Optional[str] = None, name_search: Optional[str] = None, quantization_search: Optional[str] = None, keyword_search: Optional[str] = None, max_total_tokens: int = 200) ‑> None</span>
+<span>def <span class="ident">configure</span></span>(<span>self, model_db_dir: Optional[str] = None, model_url: Optional[str] = None, model_gguf_path: Optional[str] = None, name_search: Optional[str] = None, quantization_search: Optional[str] = None, keyword_search: Optional[str] = None, search_only_downloaded: bool = False, max_total_tokens: int = 200) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Configure EasyAI with model data.</p>
@@ -827,7 +926,7 @@ Sets model data attribute.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>model_db_dir</code></strong></dt>
-<dd>Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.</dd>
+<dd>Directory to store model data in. If none is provided global db is used.This is preferred for most use cases.</dd>
 <dt><strong><code>max_total_tokens</code></strong></dt>
 <dd>Max tokens to be processed (input+generation) by LlamaAI model. (Defaults to 200, set to around 500-1k for regular use)</dd>
 </dl>
@@ -857,12 +956,13 @@ Sets model data attribute.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def configure(self,
-              model_db_dir: str = DEFAULT_LOCAL_GGUF_DIR,
+              model_db_dir: Optional[str] = None,
               model_url: Optional[str] = None,
               model_gguf_path: Optional[str] = None,
               name_search: Optional[str] = None,
               quantization_search: Optional[str] = None,
               keyword_search: Optional[str] = None,
+              search_only_downloaded: bool = False,
               max_total_tokens: int = 200,
                                         ) -&gt; None:
     &#34;&#34;&#34;
@@ -872,7 +972,7 @@ Sets model data attribute.</p>
     Sets model data attribute.
 
     Args:
-        model_db_dir: Directory to store model data in. Defaults to DEFAULT_LOCAL_GGUF_DIR.
+        model_db_dir: Directory to store model data in. If none is provided global db is used.This is preferred for most use cases.
         max_total_tokens: Max tokens to be processed (input+generation) by LlamaAI model. (Defaults to 200, set to around 500-1k for regular use)
         
         Provide at least one of these args to fetch ModelData: 
@@ -890,14 +990,14 @@ Sets model data attribute.</p>
 
     &#34;&#34;&#34;
     if model_db_dir is None:
-        print(f&#34;Using default model DB dir: {DEFAULT_LOCAL_GGUF_DIR}&#34;)
+        print(f&#34;Using provided verified models DB, files at {VERIFIED_MODELS_DB_DIR}&#34;)
     self.load_model_db(model_db_dir)
     if model_url is not None:
         self.model_data_from_url(model_url)
     elif model_gguf_path is not None:
         self.model_data_from_file(model_gguf_path)
     elif name_search is not None or quantization_search is not None or keyword_search is not None:
-        self.find_model_data(name_search, quantization_search, keyword_search)
+        self.find_model_data(name_search, quantization_search, keyword_search, search_only_downloaded)
     else:
         raise Exception(&#34;Can&#39;t find model data. Please provide a model URL, GGUF file path, or model name/quantization/keyword.&#34;)
     
@@ -952,7 +1052,7 @@ Sets model data attribute.</p>
 </details>
 </dd>
 <dt id="glai.ai.easy_ai.EasyAI.find_model_data"><code class="name flex">
-<span>def <span class="ident">find_model_data</span></span>(<span>self, model_name: Optional[str] = None, quantization: Optional[str] = None, keyword: Optional[str] = None) ‑> <a title="glai.back_end.model_db.model_data.ModelData" href="../back_end/model_db/model_data.html#glai.back_end.model_db.model_data.ModelData">ModelData</a></span>
+<span>def <span class="ident">find_model_data</span></span>(<span>self, model_name: Optional[str] = None, quantization: Optional[str] = None, keyword: Optional[str] = None, only_downloaded: bool = False) ‑> gguf_modeldb.model_data.ModelData</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Find model data in database that matches given criteria.</p>
@@ -977,7 +1077,8 @@ in the search.</p>
 <pre><code class="python">def find_model_data(self,
                     model_name: Optional[str] = None,  
                     quantization: Optional[str] = None,
-                    keyword: Optional[str] = None) -&gt; ModelData:
+                    keyword: Optional[str] = None,
+                    only_downloaded: bool = False) -&gt; ModelData:
     &#34;&#34;&#34;
     Find model data in database that matches given criteria.
 
@@ -995,13 +1096,13 @@ in the search.</p>
     &#34;&#34;&#34;
     if self.model_db is None:
         raise Exception(&#34;No model DB loaded. Use load_model_db() first.&#34;)
-    model_data = self.model_db.find_model(model_name, quantization, keyword)
+    model_data = self.model_db.find_model(model_name, quantization, keyword, only_downloaded)
     self.model_data = model_data
     return model_data</code></pre>
 </details>
 </dd>
 <dt id="glai.ai.easy_ai.EasyAI.generate"><code class="name flex">
-<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.back_end.messages.AIMessage" href="../back_end/messages.html#glai.back_end.messages.AIMessage">AIMessage</a></span>
+<span>def <span class="ident">generate</span></span>(<span>self, user_message: str, ai_message_tbc: Optional[str] = None, stop_at: Optional[str] = None, include_stop_str: bool = True, system_message: Optional[str] = None) ‑> <a title="glai.messages.messages.AIMessage" href="../messages/messages.html#glai.messages.messages.AIMessage">AIMessage</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate AI response to user message.</p>
@@ -1079,6 +1180,7 @@ You can check if a model supports system messages by checking the model_data.has
         self.messages.add_message(ai_message_tbc, self.model_data.get_ai_tag_open(), &#34;&#34;)
     if stop_at is None:
         stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == &#34;&#34;, self.messages.ai_tag_close != &#34; &#34;]) else None
+        include_stop_str = False
     generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
     if ai_message_tbc is not None:
         self.messages.edit_last_message(generated,
@@ -1090,8 +1192,104 @@ You can check if a model supports system messages by checking the model_data.has
     return self.messages.get_last_message()</code></pre>
 </details>
 </dd>
-<dt id="glai.ai.easy_ai.EasyAI.is_within_input_limit"><code class="name flex">
-<span>def <span class="ident">is_within_input_limit</span></span>(<span>self, user_message_text: str, ai_message_tbc: Optional[str] = None) ‑> bool</span>
+<dt id="glai.ai.easy_ai.EasyAI.import_from_repo"><code class="name flex">
+<span>def <span class="ident">import_from_repo</span></span>(<span>self, hf_repo_url: str, user_tags: Tuple[str, str] = ('', ''), ai_tags: Tuple[str, str] = ('', ''), system_tags: Optional[Tuple[str, str]] = (None, None), keywords: Optional[str] = None, description: Optional[str] = None, replace_existing: bool = False) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Imports model data from HuggingFace model repo to current model DB. </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>hf_repo_url</code></strong></dt>
+<dd>URL of model to import.</dd>
+<dt><strong><code>user_tags</code></strong></dt>
+<dd>User tags to assign to model data.</dd>
+<dt><strong><code>ai_tags</code></strong></dt>
+<dd>AI tags to assign to model data.</dd>
+<dt><strong><code>system_tags</code></strong></dt>
+<dd>System tags to assign to model data.</dd>
+<dt><strong><code>description</code></strong></dt>
+<dd>Optional description for model data.</dd>
+<dt><strong><code>keyword</code></strong></dt>
+<dd>Optional keyword for model data.</dd>
+<dt><strong><code>replace_existing</code></strong></dt>
+<dd>Whether to replace existing model data if found.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>Exception</code></dt>
+<dd>If no model DB loaded yet.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_from_repo(self, hf_repo_url: str, user_tags: Tuple[str, str] = (&#34;&#34;, &#34;&#34;), ai_tags: Tuple[str, str] = (&#34;&#34;, &#34;&#34;), system_tags: Optional[Tuple[str, str]] = (None, None), keywords: Optional[str] = None, description: Optional[str] = None, replace_existing: bool = False) -&gt; None:
+    &#34;&#34;&#34;
+    Imports model data from HuggingFace model repo to current model DB. 
+
+    Args:
+        hf_repo_url: URL of model to import.
+        user_tags: User tags to assign to model data.
+        ai_tags: AI tags to assign to model data.
+        system_tags: System tags to assign to model data.
+        description: Optional description for model data.
+        keyword: Optional keyword for model data.
+        replace_existing: Whether to replace existing model data if found.
+
+    Raises:
+        Exception: If no model DB loaded yet.
+    &#34;&#34;&#34;
+
+
+
+    self.model_db.import_models_from_repo(
+        hf_repo_url=hf_repo_url,
+        user_tags=user_tags,
+        ai_tags=ai_tags,
+        system_tags=system_tags,
+        keywords=keywords,
+        description=description,
+        replace_existing=replace_existing,
+    )</code></pre>
+</details>
+</dd>
+<dt id="glai.ai.easy_ai.EasyAI.import_verified_models_to_db"><code class="name flex">
+<span>def <span class="ident">import_verified_models_to_db</span></span>(<span>self, model_name_quantization_list: Optional[list[typing.Union[list, set, tuple]]] = None) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Import verified models to new ModelDB.</p>
+<p>Imports verified models from global verified models DB to new ModelDB. If model_name_quantization_list is provided, only models in the list are imported.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model_name_quantization_list</code></strong></dt>
+<dd>List of tuples of model name and quantization to import. If None, all models are imported.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_verified_models_to_db(self, model_name_quantization_list:Optional[list[Union[list,set,tuple]]] = None) -&gt; None:
+    &#34;&#34;&#34;
+    Import verified models to new ModelDB.
+
+    Imports verified models from global verified models DB to new ModelDB. If model_name_quantization_list is provided, only models in the list are imported.
+
+    Args:
+        model_name_quantization_list: List of tuples of model name and quantization to import. If None, all models are imported.
+    &#34;&#34;&#34;
+    if self.model_db is None:
+        raise Exception(&#34;No model DB loaded. Use load_model_db() first.&#34;)
+    if model_name_quantization_list is not None:
+        for n_q_data in model_name_quantization_list:
+            name = n_q_data[0]
+            quantization = n_q_data[1]
+            self.model_db.import_verified_model(name, quantization, None, True)
+    else:
+        self.model_db.import_verified_model(None, None, None, True)</code></pre>
+</details>
+</dd>
+<dt id="glai.ai.easy_ai.EasyAI.is_within_context"><code class="name flex">
+<span>def <span class="ident">is_within_context</span></span>(<span>self, prompt: str) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Check if the generated message is within the input limit.</p>
@@ -1108,10 +1306,8 @@ You can check if a model supports system messages by checking the model_data.has
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_within_input_limit(
-    self,
-    user_message_text: str,
-    ai_message_tbc: Optional[str] = None
+<pre><code class="python">def is_within_context(self,
+    prompt: str,
     ) -&gt; bool:
     &#34;&#34;&#34;
     Check if the generated message is within the input limit.
@@ -1123,7 +1319,7 @@ You can check if a model supports system messages by checking the model_data.has
     Returns:
         True if within input limit, False otherwise.
     &#34;&#34;&#34;
-    return self.ai.is_within_input_limit(self.count_tokens(user_message_text, ai_message_tbc))</code></pre>
+    return self.ai.is_prompt_within_limit(prompt)</code></pre>
 </details>
 </dd>
 <dt id="glai.ai.easy_ai.EasyAI.load_ai"><code class="name flex">
@@ -1169,7 +1365,7 @@ You can check if a model supports system messages by checking the model_data.has
 </details>
 </dd>
 <dt id="glai.ai.easy_ai.EasyAI.load_model_db"><code class="name flex">
-<span>def <span class="ident">load_model_db</span></span>(<span>self, db_dir: str = './gguf_db', copy_examples=True) ‑> None</span>
+<span>def <span class="ident">load_model_db</span></span>(<span>self, db_dir: Optional[str] = None, copy_verified_models=True) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Load ModelDB from given directory.</p>
@@ -1184,7 +1380,7 @@ You can check if a model supports system messages by checking the model_data.has
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def load_model_db(self, db_dir: str = DEFAULT_LOCAL_GGUF_DIR, copy_examples=True) -&gt; None:
+<pre><code class="python">def load_model_db(self, db_dir:Optional[str] = None, copy_verified_models=True) -&gt; None:
     &#34;&#34;&#34;
     Load ModelDB from given directory.
 
@@ -1192,7 +1388,7 @@ You can check if a model supports system messages by checking the model_data.has
         db_dir: Directory to load ModelDB from.
         copy_examples: Whether to copy example GGUF files to db_dir if db_dir is empty.
     &#34;&#34;&#34;
-    self.model_db = ModelDB(model_db_dir=db_dir, copy_examples=copy_examples)</code></pre>
+    self.model_db = ModelDB(model_db_dir=db_dir, copy_verified_models=copy_verified_models)</code></pre>
 </details>
 </dd>
 <dt id="glai.ai.easy_ai.EasyAI.model_data_from_file"><code class="name flex">
@@ -1336,7 +1532,9 @@ the model from the URL and creates new model data. Sets model data attribute.</p
 <li><code><a title="glai.ai.easy_ai.EasyAI.count_tokens" href="#glai.ai.easy_ai.EasyAI.count_tokens">count_tokens</a></code></li>
 <li><code><a title="glai.ai.easy_ai.EasyAI.find_model_data" href="#glai.ai.easy_ai.EasyAI.find_model_data">find_model_data</a></code></li>
 <li><code><a title="glai.ai.easy_ai.EasyAI.generate" href="#glai.ai.easy_ai.EasyAI.generate">generate</a></code></li>
-<li><code><a title="glai.ai.easy_ai.EasyAI.is_within_input_limit" href="#glai.ai.easy_ai.EasyAI.is_within_input_limit">is_within_input_limit</a></code></li>
+<li><code><a title="glai.ai.easy_ai.EasyAI.import_from_repo" href="#glai.ai.easy_ai.EasyAI.import_from_repo">import_from_repo</a></code></li>
+<li><code><a title="glai.ai.easy_ai.EasyAI.import_verified_models_to_db" href="#glai.ai.easy_ai.EasyAI.import_verified_models_to_db">import_verified_models_to_db</a></code></li>
+<li><code><a title="glai.ai.easy_ai.EasyAI.is_within_context" href="#glai.ai.easy_ai.EasyAI.is_within_context">is_within_context</a></code></li>
 <li><code><a title="glai.ai.easy_ai.EasyAI.load_ai" href="#glai.ai.easy_ai.EasyAI.load_ai">load_ai</a></code></li>
 <li><code><a title="glai.ai.easy_ai.EasyAI.load_model_db" href="#glai.ai.easy_ai.EasyAI.load_model_db">load_model_db</a></code></li>
 <li><code><a title="glai.ai.easy_ai.EasyAI.model_data_from_file" href="#glai.ai.easy_ai.EasyAI.model_data_from_file">model_data_from_file</a></code></li>
