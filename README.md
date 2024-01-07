@@ -64,9 +64,11 @@ db.show_db_info()
 Import models from a HuggingFace repo into the model database:
 ```python
 from glai.back_end.model_db.db import ModelDB
-
-mdb = ModelDB('./gguf_db', False)
-mdb.import_models_from_repo(
+print(f"----> EXAMPLE: Importing models from repo...")
+#input()
+easy_ai = EasyAI()
+easy_ai.load_model_db('./gguf_db', False)
+easy_ai.import_from_repo(
     hf_repo_url="https://huggingface.co/TheBloke/SOLAR-10.7B-Instruct-v1.0-GGUF",
     user_tags=["[INST]", "[/INST]"],
     ai_tags=["", ""],
@@ -74,7 +76,7 @@ mdb.import_models_from_repo(
     keywords=["10.7B", "upstage","isntruct", "solar"],
     replace_existing=False,
 )
-mdb.show_db_info()
+easy_ai.model_db.show_db_info()
 ```
 ### AutoAI Quick Example
 Quickly generate using AutoAI:
@@ -172,11 +174,8 @@ Get a model from a URL and generate:
 from glai.back_end.model_db.db import ModelDB
 from glai.ai import EasyAI
 
-mdb = ModelDB('./gguf_db', False)
-mdb.show_db_info()
-
 eai = EasyAI()
-eai.load_model_db('./gguf_db')
+eai.load_model_db('./gguf_db', False)
 eai.model_data_from_url(
     url="https://huggingface.co/TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF/blob/main/mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf",
     user_tags=("[INST]", "[/INST]"),

@@ -378,3 +378,32 @@ class EasyAI:
             True if within input limit, False otherwise.
         """
         return self.ai.is_prompt_within_limit(prompt)
+    
+    def import_from_repo(self, hf_repo_url: str, user_tags: Tuple[str, str] = ("", ""), ai_tags: Tuple[str, str] = ("", ""), system_tags: Optional[Tuple[str, str]] = (None, None), keywords: Optional[str] = None, description: Optional[str] = None, replace_existing: bool = False) -> None:
+        """
+        Imports model data from HuggingFace model repo to current model DB. 
+
+        Args:
+            hf_repo_url: URL of model to import.
+            user_tags: User tags to assign to model data.
+            ai_tags: AI tags to assign to model data.
+            system_tags: System tags to assign to model data.
+            description: Optional description for model data.
+            keyword: Optional keyword for model data.
+            replace_existing: Whether to replace existing model data if found.
+
+        Raises:
+            Exception: If no model DB loaded yet.
+        """
+
+
+
+        self.model_db.import_models_from_repo(
+            hf_repo_url=hf_repo_url,
+            user_tags=user_tags,
+            ai_tags=ai_tags,
+            system_tags=system_tags,
+            keywords=keywords,
+            description=description,
+            replace_existing=replace_existing,
+        )

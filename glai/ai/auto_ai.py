@@ -34,14 +34,14 @@ class AutoAI:
                  name_search: Optional[str] = None,
                  quantization_search: Optional[str] = None,
                  keyword_search: Optional[str] = None,
+                 search_only_downloaded_models:bool = False,
                  max_total_tokens: int = 1500,
-                 model_db_dir:str = None,
-                 includ_only_downloaded_models:bool = False
+                 model_db_dir:Optional[str] = None,
                  ) -> None:
 
         self.ai_db = ModelDB(model_db_dir=model_db_dir, copy_verified_models=True)
         self.model_data: ModelData = self.ai_db.find_model(
-            name_search, quantization_search, keyword_search, includ_only_downloaded_models
+            name_search, quantization_search, keyword_search, search_only_downloaded_models
         )
         self.model_data.download_gguf()
         self.ai = LlamaAI(
