@@ -1,6 +1,6 @@
 requests>=2.31.0,
 beautifulsoup4>=4.9.3
 gguf-llama==0.0.16
-gguf-modeldb==0.0.1
+gguf-modeldb==0.0.2
 
     
