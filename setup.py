@@ -9,8 +9,8 @@ setup(
     install_requires=[
         'requests>=2.31.0',
         'beautifulsoup4>=4.9.3',
-        'gguf_llama>=0.0.17',
-        'gguf_modeldb>=0.0.2'
+        'gguf_llama>=0.0.18',
+        'gguf_modeldb>=0.0.3'
     ],
     include_package_data=True,
     author="Łael Al-Halawani",
