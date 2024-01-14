@@ -77,6 +77,7 @@ class EasyAI:
                   keyword_search: Optional[str] = None,
                   search_only_downloaded: bool = False,
                   max_total_tokens: int = 200,
+                  **llama_kwds,
                                             ) -> None:
         """
         Configure EasyAI with model data.
@@ -114,7 +115,8 @@ class EasyAI:
         else:
             raise Exception("Can't find model data. Please provide a model URL, GGUF file path, or model name/quantization/keyword.")
         
-        self.load_ai(max_total_tokens)
+        self.load_ai(max_total_tokens, **llama_kwds)
+
     
 
 
@@ -255,7 +257,7 @@ class EasyAI:
         self.messages = AIMessages(user_tags=self.model_data.user_tags, ai_tags=self.model_data.ai_tags, system_tags=self.model_data.system_tags)
 
     def load_ai(self,
-                max_total_tokens: int = 200,) -> None:
+                max_total_tokens: int = 200, **llama_kwds) -> None:
         """
         Load LlamaAI model from model data.
 
@@ -265,6 +267,10 @@ class EasyAI:
             max_total_tokens: Max tokens for LlamaAI model.
         Raises:
             Exception: If no model data or messages loaded yet.
+        
+        Some useful llama_kwds:
+        - gpu_layers: Number of layers to run on GPU. Defaults to 0.
+        - embeddings: Whether to use embeddings mode which allows to generate embeddings. Defaults to True.
         """
         self._load_messages()
         if self.messages is None:
@@ -272,8 +278,13 @@ class EasyAI:
         if self.model_data is None:
             raise Exception("No model data loaded. Use find_model_data(), get_model_data_from_url(), or get_model_data_from_file() first.")
         self.model_data.download_gguf()
-        self.ai = LlamaAI(self.model_data.model_path(), max_tokens=max_total_tokens)
-        print(f"Loaded: {self.model_data}")
+        #check if there are any llama_kwds
+        if llama_kwds:
+            self.ai = LlamaAI(self.model_data.model_path(), max_tokens=max_total_tokens, **llama_kwds)
+            print(f"Loaded: {self.model_data} with {llama_kwds}")
+        else:
+            self.ai = LlamaAI(self.model_data.model_path(), max_tokens=max_total_tokens)
+            print(f"Loaded: {self.model_data}")
 
     def generate(self,
               user_message: str,
@@ -314,7 +325,6 @@ class EasyAI:
             else:
                 print("WARNING: Model supports system messages, but no system message provided.")
         self.messages.add_user_message(user_message)
-        print(f"Input to model: \n{self.messages.text()}")
         generated: str = ""
         if ai_message_tbc is not None:
             generated += ai_message_tbc
@@ -322,6 +332,7 @@ class EasyAI:
         if stop_at is None:
             stop_at = self.messages.ai_tag_close if any([self.messages.ai_tag_close is None, self.messages.ai_tag_close == "", self.messages.ai_tag_close != " "]) else None
             include_stop_str = False
+        print(f"Input to model: \n{self.messages.text()}")
         generated += self.ai.infer(self.messages.text(), only_string=True, stop_at_str=stop_at, include_stop_str=include_stop_str)
         if ai_message_tbc is not None:
             self.messages.edit_last_message(generated,
@@ -330,6 +341,8 @@ class EasyAI:
         else:
             self.messages.add_ai_message(generated)
         print(f"AI message: \n{self.messages.get_last_message()}")
+        print(f"Generated tokens: {self.ai.count_tokens(str(self.messages.get_last_message()))}")
+        print(f"Total used context tokens: {self.ai.count_tokens(str(self.messages.text()))}")
         return self.messages.get_last_message()
 
     
@@ -353,6 +366,7 @@ class EasyAI:
         """
         generation_messages = AIMessages()
         generation_messages.reset_messages()
+
         generation_messages.add_user_message(user_message_text)
 
         if ai_message_tbc is not None:
@@ -395,8 +409,6 @@ class EasyAI:
         Raises:
             Exception: If no model DB loaded yet.
         """
-
-
 
         self.model_db.import_models_from_repo(
             hf_repo_url=hf_repo_url,
